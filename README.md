@@ -2,6 +2,8 @@
 
 Reverse-engineered source code for the MS-DOS version of the 1991 game "Sid Meier's Civilization".
 
+[Technical book](https://sjmelia.github.io/civd/book/) · [Reading Civilization from the inside](https://sjmelia.github.io/civd/story/)
+
 > [!WARNING]
 > This is a reconstruction, not MicroProse's original source. Names, comments
 > and some type declarations are inferred. An exact executable match does not
