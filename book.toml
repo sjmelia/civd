@@ -8,6 +8,7 @@ title = "Sid Meier's Civilization (1991) Source Guide"
 build-dir = "build/book"
 
 [output.html]
+site-url = "/civd/book/"
 default-theme = "rust"
 preferred-dark-theme = "coal"
 git-repository-url = "https://github.com/sjmelia/civd"

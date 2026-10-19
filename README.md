@@ -27,12 +27,16 @@ It builds on earlier decompilation work, particularly
 
 ## Documentation
 
-- A [technical book](book/src/SUMMARY.md) (`just book`)
-- A Docco story, [Reading Civilization from the inside](story/00-opening.c.md) (`just story`)
+- The [technical book](https://sjmelia.github.io/civd/book/) explains the game systems.
+- The Docco story, [Reading Civilization from the inside](https://sjmelia.github.io/civd/story/), follows complete source files with commentary beside the code.
 
-The book explains the game systems. The story follows a few complete source
-files, with commentary beside the code. Generated pages go to `build/book/`
-and `build/story/`; open `index.html` in either directory.
+To build locally, run `just book` and, after `npm ci`, `just story`.
+Open `build/book/index.html` or `build/story/index.html`.
+The book's sources are in [book/](book/src/SUMMARY.md); the story's are in [story/](story/00-opening.c.md).
+
+The build workflow publishes both to [GitHub Pages](https://sjmelia.github.io/civd/)
+after checks pass on `main`. Pull requests build and check the documentation
+without deploying it.
 
 ## Building
 
