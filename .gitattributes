@@ -1,0 +1,13 @@
+# Preserve the DOS tool inputs' literal CRLF endings. Treat CR as a line
+# ending in whitespace checks while still detecting trailing spaces.
+src/*.ASM -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+src/*.C -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+src/*.H -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+src/*.INC -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+src/*.RSP -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+src/MAKEFILE -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Host shell inputs must also run in Linux containers after a Windows checkout.
+justfile text eol=lf
+tools/*.sh text eol=lf
+.devcontainer/Dockerfile text eol=lf

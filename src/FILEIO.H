@@ -1,0 +1,31 @@
+/* FILEIO.H: shared declarations of symbols defined in FILEIO.C. */
+
+extern int resource_open(char *, int);
+extern int file_create(char *);
+extern void resource_close(int);
+extern int resource_read(char *, char *);
+extern int file_read_far(char *, char far *);
+extern int resource_write(char *, char far *, unsigned int);
+extern void LOAD_PIC(int, int, int, char *, char *);
+extern void load_picture(int, char *);
+extern void load_picture_mode(int, char *, char *);
+extern void load_screen(int, char *);
+extern void load_back(char *);
+extern void load_palette();
+extern int load_block(unsigned int, unsigned int, char *);
+extern int load_tile(int, int, char *);
+extern void LOAD_SPRITES(char *, int);
+extern void load_rows(char *, int);
+extern void load_memory_rows(int, int);
+extern int load_memory_block(int, int, int, int);
+extern void set_file_reader(int);
+extern int memory_reader(void);
+extern int read_first_block(int);
+extern int read_next_block(void);
+extern void file_error(char *);
+extern void file_video_mode(int);
+extern int archive_open(char *);
+extern void archive_close(void);
+extern int archive_find(char *, struct archive_entry *);
+extern int file_seek(int, long);
+extern void load_cursor(char *);

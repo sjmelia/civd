@@ -1,0 +1,16 @@
+{
+  "name": "civd-story",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A guided story through the recovered Civilization code, published with Docco",
+  "scripts": {
+    "story": "node tools/build_story.js",
+    "test:story": "node --test tools/build_story.test.js"
+  },
+  "devDependencies": {
+    "docco": "0.9.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

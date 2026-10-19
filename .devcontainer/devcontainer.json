@@ -1,0 +1,30 @@
+{
+  "name": "Civilization DOS build",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/civd,type=bind",
+  "workspaceFolder": "/workspaces/civd",
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true,
+  "postCreateCommand": "just setup && just lint && just verify && just book",
+  "forwardPorts": [
+    3000
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Civilization book"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "files.associations": {
+          "*.C": "c",
+          "*.H": "c"
+        }
+      }
+    }
+  }
+}

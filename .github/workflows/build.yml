@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Build the devcontainer image
+        run: |
+          docker build --tag civd-build \
+            --build-arg USER_UID="$(id -u)" \
+            --build-arg USER_GID="$(id -g)" .devcontainer
+
+      - name: Install tools, verify the executable and build documentation
+        run: |
+          docker run --rm \
+            --volume "$PWD:/workspaces/civd" --workdir /workspaces/civd \
+            civd-build sh -c 'just setup && just lint && just verify && just book && npm ci && npm run test:story && npm run story'
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: build-logs
+          path: |
+            build/*.log
+            build/dos/*.LOG
+          if-no-files-found: ignore

@@ -1,0 +1,15 @@
+[book]
+authors = ["civd contributors"]
+language = "en"
+src = "book/src"
+title = "Sid Meier's Civilization (1991) Source Guide"
+
+[build]
+build-dir = "build/book"
+
+[output.html]
+default-theme = "rust"
+preferred-dark-theme = "coal"
+git-repository-url = "https://github.com/sjmelia/civd"
+
+mathjax-support = true

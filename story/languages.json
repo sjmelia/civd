@@ -1,0 +1,10 @@
+{
+  ".c": {
+    "name": "c",
+    "symbol": "@docco"
+  },
+  ".mk": {
+    "name": "makefile",
+    "symbol": "@docco"
+  }
+}

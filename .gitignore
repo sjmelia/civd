@@ -1,0 +1,52 @@
+# Local game references and original toolchain media/installations.
+/data/
+
+# Generated objects, executables, maps, reports, and emulator captures.
+/build/
+
+# Direct DOS builds (make MAKEFILE in src/) write outputs beside the sources.
+# Keep these scoped: original binary fixtures elsewhere may be intentional.
+/src/*.[oO][bB][jJ]
+/src/*.[eE][xX][eE]
+/src/*.[mM][aA][pP]
+/src/*.[cC][oO][dD]
+/src/*.[lL][oO][gG]
+/src/*.[lL][sS][tT]
+
+# Python caches and local environments.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local credentials and environment settings.
+/.aws/
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system scratch files.
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.cache
+
+# Local recovery workspace and agent/editor configuration
+/recovery/
+/.agents/
+/AGENTS.md
+/CLAUDE.md
+/.codex/
+/.vscode/
+
+# Docco story dependencies (HTML is generated under build/story/).
+/node_modules/
+
+# Local language-server configuration and generated compile database.
+/.clangd
+/compile_commands.json
