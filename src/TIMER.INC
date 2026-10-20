@@ -30,15 +30,6 @@ timer_install:
     mov WORD PTR DS:[tm_countdown],01H
     mov WORD PTR DS:[tm_elapsed_low],00H
     mov WORD PTR DS:[tm_elapsed_high],00H
-    mov al,036H
-    out 043H,al
-    jmp SHORT tm_install_low
-tm_install_low:
-    xor al,al
-    out 040H,al
-    jmp SHORT tm_install_high
-tm_install_high:
-    out 040H,al
     call NEAR PTR timer_calibrate
     mov ah,035H
     mov al,08H

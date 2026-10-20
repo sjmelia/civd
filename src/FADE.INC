@@ -11,9 +11,9 @@ fd_rate EQU 066H
 fd_pending EQU 068H
 fd_fraction EQU 06AH
 fd_fraction_step EQU 06CH
-fd_target EQU 0BA06H
-fd_initial EQU 0BD06H
-fd_mixed EQU 0C006H
+fd_target EQU 0C926H
+fd_initial EQU 0CC26H
+fd_mixed EQU 0CF26H
 _install_palette:
     push bp
     mov bp,sp

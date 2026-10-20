@@ -204,7 +204,7 @@ void trade_rpt(int civ)
 {                               /* trade report */
     int tot_inc, tc, dummy, rate, i, turn, city, y, building_costs[24];
 
-    rate = cur_tier / 2;
+    rate = 0;
     if (has_tech(civ, 34))
         rate++;
     if (has_tech(civ, 37))

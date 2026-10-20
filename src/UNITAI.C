@@ -30,7 +30,7 @@ extern int treaties[8][8];
 extern struct unit armydata[8][128];
 extern struct unit_type utypes[28];
 extern struct city townbuf[128];
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 extern char far fog_map[];
 
 struct terr {
@@ -56,7 +56,7 @@ extern int rand_scaled(int v);
 
 extern int adj_grp(int player, int x, int y);
 
-extern int battle(int p1, int i1, int p2, int i2, int a, int b);
+extern int battle();
 
 extern int work_rules[][6];
 extern struct terr terrains[];
@@ -125,7 +125,7 @@ void unit_phase(int player)
         if (townbuf[i].status == -1)
             continue;
         if (player != townbuf[i].owner) {
-            if (turn_tick * cur_tier > 200 || (map_visible_to[townbuf[i].x * 50 + townbuf[i].y] & (1 << player))
+            if (turn_tick * cur_tier > 200 || (civ_vis_grid[townbuf[i].x * 50 + townbuf[i].y] & (1 << player))
                 || civnow != townbuf[i].owner) {
                 if ((treaties[player][townbuf[i].owner] & 0x102) != 2 && ((i + turn_tick) & 3) != 0)
                     add_target(player, townbuf[i].x, townbuf[i].y, 1, (townbuf[i].buildings & 0x80) ? 3 : 5);
@@ -209,8 +209,6 @@ void unit_phase(int player)
         return;
     if ((1 << player) & human_set)
         return;
-    if (civ_settlers_n[player] == 0 && city_count[player] == 0 && player != civnow)
-        kill_civ(player, 0);
     if (((player + turn_tick) & 7) == 0) {
         if (troop_over <= 0) {
             if (has_tech(player, 0x2c) && margin_democracy >= 0)
@@ -368,10 +366,11 @@ int ai_order(int player, int unit)
                         home = k;
                     }
                 }
-                if (home == -1)
-                    goto give_up;
-                armydata[player][unit].goto_x = townbuf[home].x;
-                armydata[player][unit].goto_y = townbuf[home].y;
+                if (home != -1) {
+                    armydata[player][unit].goto_x = townbuf[home].x;
+                    armydata[player][unit].goto_y = townbuf[home].y;
+                } else
+                    return 0x20;
             }
         }
     }
@@ -444,11 +443,11 @@ int ai_order(int player, int unit)
                     put_unit(player, unit, nx, ny);
                     if (townbuf[home].owner == civnow)
                         last_met_turn[player] = -2;
-                    return k ^ 4;
+                    return ((k - 1) ^ 4) + 1;
                 }
             }
         }
-        goto give_up;
+        return 0x20;
     }
     if (utypej == 26) {
         if ((unsigned char) armydata[player][unit].goto_x != 0xff)
@@ -482,11 +481,12 @@ int ai_order(int player, int unit)
         }
         if (best_scorem >= 8 && 15 - city_distj <= best_scorem && blocked_i == 0) {
             if (rolel == 0) {
-                if (result_i != 0)
-                    goto done;
-                return 0x62;
-            }
-            site_add(player, uxk, uyk, 0, 2);
+                if (result_i == 0)
+                    return 0x62;
+                else
+                    return result_i;
+            } else
+                site_add(player, uxk, uyk, 0, 2);
         }
     }
     if (rolel == 0 && cur_tier != 0 && townbuf[home].owner == civnow && blocked_i == 0 && city_distj > 1 && player != townbuf[home].owner && tech_count[player] < tech_count[civnow]) {
@@ -498,12 +498,14 @@ int ai_order(int player, int unit)
         if (rolel == 2) {
             if (armydata[player][unit].next == -1)
                 return 0x66;
-            sc_d = armydata[player][unit].type;
-            armydata[player][unit].type = 26;
-            own_b = select_location_record(player, unit);
-            armydata[player][unit].type = sc_d;
-            if (own_b != -1 && utypes[armydata[player][own_b].type].defense < utypes[armydata[player][unit].type].defense)
-                return 0x66;
+            else {
+                sc_d = armydata[player][unit].type;
+                armydata[player][unit].type = 26;
+                own_b = select_location_record(player, unit);
+                armydata[player][unit].type = sc_d;
+                if (own_b != -1 && utypes[armydata[player][own_b].type].defense < utypes[armydata[player][unit].type].defense)
+                    return 0x66;
+            }
             divisor = unit_blocked(player, uxk, uyk) ? 3 : 4;
             if (townbuf[home].buildings & 1)
                 divisor--;
@@ -519,23 +521,20 @@ int ai_order(int player, int unit)
             if (select_location_record(player, unit) == unit && townbuf[home].size / divisor + 1 > stack_len(player, unit, 4)) {
                 armydata[player][unit].status = sc_d;
                 return 0x66;
+            } else {
+                armydata[player][unit].status = sc_d;
+                if (((unit + turn_tick) & 7) == 0)
+                    armydata[player][unit].status &= 0xf2;
             }
-            armydata[player][unit].status = sc_d;
-            if (((unit + turn_tick) & 7) == 0)
-                armydata[player][unit].status &= 0xf2;
         } else if (near_dist > 0 && rolel != 0) {
             add_target(player, uxk, uyk, 2, 4);
-give_up:
             return 0x20;
         }
     }
     if (rolel == 5 || rolel == 3) {
         count_f = roles = result_i = 0;
-        for (own_b = armydata[player][unit].next;; own_b = armydata[player][own_b].next) {
-            if (own_b == -1)
-                break;
-            if (own_b == unit)
-                break;
+        own_b = armydata[player][unit].next;
+        while (own_b != -1 && own_b != unit) {
             if (!(armydata[player][own_b].status & 8)) {
                 roles |= 1 << utypes[armydata[player][own_b].type].role;
                 if (utypes[armydata[player][own_b].type].domain == 0)
@@ -544,6 +543,7 @@ give_up:
                 armydata[player][own_b].status &= ~8;
                 count_f++;
             }
+            own_b = armydata[player][own_b].next;
         }
         if (((city_distj ? 1 : 3) > count_f || roles == 1) && rolel == 5) {
             best_d_c = 999;
@@ -561,12 +561,12 @@ give_up:
                     dn += 16;
                 else
                     dn -= civ_cont_attackers[player][regn] / 4;
-                if (dn >= best_d_c)
-                    continue;
-                best_d_c = dn;
-                armydata[player][unit].goto_x = townbuf[cn].x;
-                armydata[player][unit].goto_y = townbuf[cn].y;
-                sc_d = civ_area_plan[player][regn];
+                if (dn < best_d_c) {
+                    best_d_c = dn;
+                    armydata[player][unit].goto_x = townbuf[cn].x;
+                    armydata[player][unit].goto_y = townbuf[cn].y;
+                    sc_d = civ_area_plan[player][regn];
+                }
             }
             dn = sc_d == 5 ? 4 : 2;
             if (3 * dn >= best_d_c) {
@@ -583,69 +583,59 @@ give_up:
                     nx = wrap_x(spiral_x[k] + uxk);
                     ny = spiral_y[k] + uyk;
                     own_b = map_owner(nx, ny);
-                    if (terrain_at(nx, ny) == 10)
-                        continue;
-                    if (!map_in_bounds(nx, ny))
-                        continue;
-                    if (own_b != -1 && own_b != player)
-                        continue;
-                    if (own_b == player && stack_len(player, map_stack(nx, ny), 2) >= 2)
-                        continue;
-                    if ((treaties[player][civnow] & 2) && map_city(nx, ny) == civnow && (map_flags(nx, ny) & 0xf))
-                        continue;
-                    regn = region_key(nx, ny);
-                    ok = 0;
-                    if ((defenders_island[player][regn] < 16 && civ_area_plan[player][regn] != 5)
-                        || ((1 << civ_area_plan[player][regn]) & roles & 6))
-                        ok = 1;
-                    if ((unsigned char) armydata[player][unit].goto_x != 0xff && region_key((unsigned char) armydata[player][unit].goto_x, (unsigned char) armydata[player][unit].goto_y) == regn)
-                        ok = 1;
-                    if (ok && ai_zone_places[regn] >= 5 && ny > 1 && ny < 48) {
-                        if (armydata[player][unit].moves > 3 && (sc_d = ocean_edge(player, uxk, uyk)) > 0)
-                            return sc_d;
-                        if (civ_area_plan[player][regn] == 1)
-                            add_target(player, uxk, uyk, 3, 5);
-                        armydata[player][unit].moves = 0;
-                        armydata[player][unit].goto_x = -1;
-                        return 0x75;
-                    } else {
-                        if (!(turn_tick & 3))
+                    if (terrain_at(nx, ny) != 10 && map_in_bounds(nx, ny) && (own_b == -1 || own_b == player)) {
+                        if (own_b == player && stack_len(player, map_stack(nx, ny), 2) >= 2)
+                            continue;
+                        if ((treaties[player][civnow] & 2) && map_city(nx, ny) == civnow && (map_flags(nx, ny) & 0xf))
+                            continue;
+                        regn = region_key(nx, ny);
+                        ok = 0;
+                        if ((defenders_island[player][regn] < 16 && civ_area_plan[player][regn] != 5)
+                            || ((1 << civ_area_plan[player][regn]) & roles & 6))
+                            ok = 1;
+                        if ((unsigned char) armydata[player][unit].goto_x != 0xff && region_key((unsigned char) armydata[player][unit].goto_x, (unsigned char) armydata[player][unit].goto_y) == regn)
+                            ok = 1;
+                        if (ok && ai_zone_places[regn] >= 5 && ny > 1 && ny < 48) {
+                            if (armydata[player][unit].moves > 3) {
+                                sc_d = ocean_edge(player, uxk, uyk);
+                                if (sc_d > 0)
+                                    return sc_d;
+                            }
+                            if (civ_area_plan[player][regn] == 1)
+                                add_target(player, uxk, uyk, 3, 5);
+                            armydata[player][unit].moves = 0;
                             armydata[player][unit].goto_x = -1;
+                            return 0x75;
+                        } else {
+                            if (!(turn_tick & 3))
+                                armydata[player][unit].goto_x = -1;
+                        }
                         break;
                     }
                 }
                 if (armydata[player][unit].moves <= 3) {
                     nx = ((unsigned char) armydata[player][unit].x + (unsigned char) armydata[player][unit].goto_x) / 2;
                     ny = ((unsigned char) armydata[player][unit].y + (unsigned char) armydata[player][unit].goto_y) / 2;
-                    if ((unsigned char) armydata[player][unit].goto_x != 0xff) {
-                        switch (terrain_at(nx, ny)) {
-                        case 10:
-                            add_target(player, nx, ny, 3, 3);
-                            break;
-                        }
-                    }
+                    if ((unsigned char) armydata[player][unit].goto_x == 0xff || terrain_at(nx, ny) != 10) {
+                    } else
+                        add_target(player, nx, ny, 3, 3);
                 }
             }
             if (blocked_i == 0 || rolel == 5) {
                 if ((unsigned char) armydata[player][unit].goto_x == 0xff && ((roles & 2) || !(roles & 1))
                     && armydata[player][unit].type != 16) {
                     best_d_c = 999;
-                    k = turn_tick & 7;
-                    goto test_c;
-loop_c:
-                    sc_d = townbuf[k].owner;
-                    if (townbuf[k].status != -1 && sc_d != player && (treaties[player][sc_d] & 0x102) != 2 && (nation_ratings[civnow] < 7 || sc_d == civnow)) {
-                        dn = map_dist(uxk, townbuf[k].x, uyk, townbuf[k].y);
-                        if (dn < best_d_c) {
-                            best_d_c = dn;
-                            armydata[player][unit].goto_x = townbuf[k].x;
-                            armydata[player][unit].goto_y = townbuf[k].y;
+                    for (k = turn_tick & 7; k < 128; k += 8) {
+                        sc_d = townbuf[k].owner;
+                        if (townbuf[k].status != -1 && sc_d != player && (treaties[player][sc_d] & 0x102) != 2 && (nation_ratings[civnow] < 7 || sc_d == civnow)) {
+                            dn = map_dist(uxk, townbuf[k].x, uyk, townbuf[k].y);
+                            if (dn < best_d_c) {
+                                best_d_c = dn;
+                                armydata[player][unit].goto_x = townbuf[k].x;
+                                armydata[player][unit].goto_y = townbuf[k].y;
+                            }
                         }
                     }
-                    k += 8;
-test_c:
-                    if (k < 128)
-                        goto loop_c;
                 }
                 if ((unsigned char) armydata[player][unit].goto_x == 0xff && armydata[player][unit].type != 16) {
                     best_d_c = 999;
@@ -665,11 +655,11 @@ test_c:
                                 continue;
                             if (!((1 << civ_area_plan[player][regn]) & roles & 7))
                                 dn *= 2;
-                            if (dn >= best_d_c)
-                                continue;
-                            best_d_c = dn;
-                            armydata[player][unit].goto_x = townbuf[k].x;
-                            armydata[player][unit].goto_y = townbuf[k].y;
+                            if (dn < best_d_c) {
+                                best_d_c = dn;
+                                armydata[player][unit].goto_x = townbuf[k].x;
+                                armydata[player][unit].goto_y = townbuf[k].y;
+                            }
                         }
                     }
                 }
@@ -729,7 +719,7 @@ test_c:
                     nx = spiral_x[sc_d] + uxk;
                     ny = spiral_y[sc_d] + uyk;
                     own_b = map_stack(nx, ny);
-                    if (own_b != -1 && (player != the_enemy || count_u(player, own_b, 0)))
+                    if (own_b != -1 && (player != fight_enemy || count_u(player, own_b, 0)))
                         continue;
                     if (work_rules[terrain_at(nx, ny)][has_tech(player, 5) ? 5 : 4] != 0 && work_tile(nx, ny)
                         && !(townbuf[home].size < 3 && terrain_at(nx, ny) == 4 && !patterned_cell(4, nx, ny))
@@ -755,13 +745,8 @@ test_c:
                     }
                 }
                 vl &= vl >> 4;
-                if (count_f < 4) {
-                    if (vl)
-                        return 0x72;
-                    if (city_distj == 1 && terrain_g <= 2)
-                        return 0x72;
-                }
-                if (count_f == 1 && sc_d && terrains[terrain_g].cost == 1)
+                if ((count_f < 4 && (vl || (city_distj == 1 && terrain_g <= 2)))
+                    || (count_f == 1 && sc_d && terrains[terrain_g].cost == 1))
                     return 0x72;
             }
         }
@@ -776,19 +761,16 @@ test_c:
             if (map_in_bounds((unsigned char) armydata[player][unit].goto_x, (unsigned char) armydata[player][unit].goto_y)
                 && terrains[terrain_at((unsigned char) armydata[player][unit].goto_x, (unsigned char) armydata[player][unit].goto_y)].shields != 0 && region_key((unsigned char) armydata[player][unit].goto_x, (unsigned char) armydata[player][unit].goto_y) == region)
                 return 0;
-            armydata[player][unit].goto_x = -1;
+            else
+                armydata[player][unit].goto_x = -1;
         }
     }
     if ((unsigned char) armydata[player][unit].goto_x != 0xff) {
-        if (rolel != 3)
-            return 0;
-        if (!adj_grp(player, uxk, uyk))
+        if (rolel != 3 || !adj_grp(player, uxk, uyk))
             return 0;
     }
     if (rolel == 2 && terrain_g != 10) {
-        if (near_dist > 1 && city_distj <= 3 && townbuf[home].owner == player)
-            return 0x66;
-        if (blocked_i && near_dist)
+        if ((near_dist > 1 && city_distj <= 3 && townbuf[home].owner == player) || (blocked_i && near_dist))
             return 0x66;
     }
     if (rolel == 0 && ai_continent_towns[player][region] > ai_zone_places[region] / 8) {
@@ -819,11 +801,11 @@ test_c:
         if (tern == 10 && utypes[armydata[player][unit].type].domain == 0)
             continue;
         stk_d = map_stack(nx, ny);
-        if (stk_d != -1 && armydata[the_enemy][stk_d].type == 26) {
+        if (stk_d != -1 && armydata[fight_enemy][stk_d].type == 26) {
             own_b = stk_d;
             do {
-                own_b = armydata[the_enemy][own_b].next;
-            } while (own_b != -1 && own_b != stk_d && armydata[the_enemy][own_b].type == 26);
+                own_b = armydata[fight_enemy][own_b].next;
+            } while (own_b != -1 && own_b != stk_d && armydata[fight_enemy][own_b].type == 26);
             if (own_b != -1)
                 stk_d = own_b;
         }
@@ -876,7 +858,7 @@ test_c:
                     stk_d = stack_other(cowner, stk_d);
                     if (utypes[armydata[cowner][stk_d].type].domain == 1 && armydata[player][unit].type != 14 && !(map_flags(nx, ny) & 1))
                         continue;
-                    odds_f = battle(player, unit, cowner, stk_d, 0, 0);
+                    odds_f = battle(player, unit, cowner, stk_d, 0L);
                     odds_f = (stack_len(cowner, stk_d, 0) + 1) * odds_f;
                     odds_f = odds_f / utypes[armydata[player][unit].type].cost;
                     if (map_flags(nx, ny) & 1)
@@ -919,7 +901,7 @@ test_c:
                 mym = spiral_y[j2] + ny;
                 if (!map_in_bounds(mxm, mym))
                     continue;
-                if (!(map_visible_to[mxm * 50 + mym] & pbitn)) {
+                if (!(civ_vis_grid[mxm * 50 + mym] & pbitn)) {
                     if (terrain_at(mxm, mym) != 10 || utypes[armydata[player][unit].type].domain == 2)
                         vl += 2;
                 }
@@ -940,7 +922,6 @@ test_c:
     if (attack_f && armydata[player][unit].moves < 3)
         result_i = 0;
     armydata[player][unit].f8 = result_i;
-done:
     return result_i;
 }
 
@@ -1217,7 +1198,7 @@ int unit_ai_move(int player, int unit)
             tx1 = wrap_x(spiral_x[n1] + ux1);
             ty1 = spiral_y[n1] + uy;
             if (town_gap <= 8 && terrain_at(tx1, ty1) != 10 && !(map_flags(tx1, ty1) & 1) && map_owner(tx1, ty1) == -1 && ty1 > 1 && ty1 < 0x30) {
-                if ((map_visible_to[tx1 * 50 + ty1] & (1 << civnow)) && townbuf[home].owner == civnow && region_key(tx1, ty1) == region_key(townbuf[home].x, townbuf[home].y)) {
+                if ((civ_vis_grid[tx1 * 50 + ty1] & (1 << civnow)) && townbuf[home].owner == civnow && region_key(tx1, ty1) == region_key(townbuf[home].x, townbuf[home].y)) {
                     armydata[player][unit].visibility |= 1 << civnow;
                     map_center(civnow, tx1, ty1);
                     message_mode = 3;
@@ -1227,7 +1208,7 @@ int unit_ai_move(int player, int unit)
                     strcat(msgtext, "!\nCitizens are alarmed.\n");
                     show_msg(msgtext, 100, 32);
                 }
-                armydata[player][unit].visibility |= map_visible_to[tx1 * 50 + ty1];
+                armydata[player][unit].visibility |= civ_vis_grid[tx1 * 50 + ty1];
                 armydata[player][unit].moves = 0;
                 return 0x75;
             }
@@ -1239,7 +1220,7 @@ int unit_ai_move(int player, int unit)
             home = 0;
             do {
                 if (townbuf[home].status != -1) {
-                    dist29 = (unrest_chance(home) + 50) / (map_dist(ux1, townbuf[home].x, uy, townbuf[home].y) + 1);
+                    dist29 = (unrest_chance(home) + 50) / map_dist(ux1, townbuf[home].x, uy, townbuf[home].y);
                     if (dist29 > best_value3) {
                         best_value3 = dist29;
                         city5 = home;
@@ -1321,7 +1302,7 @@ next:
         if (armydata[player][unit].type == 0x1a) {
             value = 0;
             if (st6 != -1)
-                value += (player == the_enemy) ? 99 : -99;
+                value += (player == fight_enemy) ? 99 : -99;
             near_city(tx1, ty1);
             value += terrains[land].cost + rand_scaled(4) + town_gap * 4;
         } else {
@@ -1332,14 +1313,14 @@ next:
             }
             value = rand_scaled(6) + ((map_flags(tx1, ty1) & 6) ? 6 : 0) + (map_city(tx1, ty1) == player ? 0 : 4);
             if (st6 != -1) {
-                if (player == the_enemy) {
+                if (player == fight_enemy) {
                     if (terrain_at(ux1, uy) != 10)
                         continue;
                     value -= 20;
                 } else {
                     if (terrain_at(ux1, uy) == 10)
                         continue;
-                    if (armydata[the_enemy][st6].type != 0x1a)
+                    if (armydata[fight_enemy][st6].type != 0x1a)
                         value += 99;
                 }
             }

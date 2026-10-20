@@ -27,8 +27,8 @@ int town_gap;                   /* distance found by the last nearest-city searc
 int history_rating[8];          /* historian score per civ */
 int defenders_island[8][16];    /* defence strength per civ and continent */
 int map_label_xorg[32];         /* x of each city label on the map */
-int civ_research_tally[8];      /* research accumulated toward the next advance */
 int small_space_check;          /* run the low-memory check */
+int civ_research_tally[8];      /* research accumulated toward the next advance */
 int terrain_coast_sprites[32];  /* river tiles by neighbour mask; GLOBALS.H names the parts */
 int map_label_yorg[32];         /* y of each city label on the map */
 int int_filler_b;               /* unused */
@@ -59,6 +59,7 @@ int max_rating;                 /* best value found so far */
 int icons_council[4][3];        /* advisor bodies [i][0] and heads [i][1..2] */
 int need_ok_key;                /* dialog shows an OK button */
 int civ_settlers_n[8];          /* settlers per civ */
+char civ_vis_grid[80][50];      /* per-civ visibility bits by map square */
 int gangmode;                   /* AI civs gang up on the leader */
 int civ_cont_attackers[8][16];  /* attack strength per civ and continent */
 int houses_sprite[5][4];        /* city view house tiles by size and era */
@@ -129,8 +130,8 @@ struct _iobuf *credits_stream;  /* credits text file */
 int beginner_help;              /* tutorial help enabled */
 int setting_value;              /* value passed to the current dialog */
 char spot_classes[8][16];       /* AI site kind per civ and slot (-1 free) */
+int fight_enemy;                /* civ of the defending unit */
 int civnow;                     /* civ whose turn it is */
-int the_enemy;                  /* civ of the defending unit */
 int marked_mask;                /* marked menu items mask */
 int civ_tribe_of[8];            /* tribe shown for each civ (+8 alternate) */
 int audience_active;            /* audience under way; blocks re-entry */

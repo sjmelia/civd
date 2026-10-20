@@ -44,7 +44,7 @@ extern struct city townbuf[];
 extern struct unit_type utypes[];
 extern int far advance_owners[];
 extern char far adv_source[];
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 
 extern int city_process();
 
@@ -118,7 +118,7 @@ void vanish(int idx, int x, int y)
     city_count[townbuf[idx].owner]--;
     townbuf[idx].status = 0xff;
     flag_tile(0, x, y);
-    if (map_visible_to[50 * x + y] & (1 << civnow))
+    if (civ_vis_grid[50 * x + y] & (1 << civnow))
         map_mark(x, y);
     for (dist = 0; dist < 128; dist++)
         for (j = 0; j < 3; j++)
@@ -318,7 +318,7 @@ int find_slot(int civ, int city)
         for (i = 1; i < ncand; i++) {
             what = cand[i];
             if (what < 0 || what >= 26) {
-                rank = 999;
+                rank = 99;
                 military_build_c = 0;
                 switch (-what) {
                 case 4:
@@ -392,7 +392,7 @@ int find_slot(int civ, int city)
                             rank = 3;
                     }
                     if (civ == civnow && (townbuf[city].status & 0x10))
-                        rank = 999;
+                        rank = 99;
                     break;
                 case -26:
                     if (civnow <= 0)
@@ -409,11 +409,10 @@ int find_slot(int civ, int city)
                     rank = clamp(tech_count[civ] - tech_count[civnow] + 10, 5, 10);
                     break;
                 }
-                if (rank < 400) {
+                {
                     rank *= (military_area_m != military_build_c) ? 20 : 10;
                     rank = 3 * rank / (civt[civ_tribe_of[civ]].f2 + 3);
-                } else
-                    rank = 0x3fff;
+                }
                 if (townbuf[city].buildings & 2)
                     rank += rank / 4;
             } else {
@@ -498,7 +497,7 @@ int find_slot(int civ, int city)
         }
         if ((debug & 1) && !warned) {
             scrbuf->font = 2;
-            if (best_u2 != -1) {
+            {
                 rank = cand[best_u2];
                 if (rank >= 0)
                     strcpy(choice_text_l + 1, utypes[rank].name);
@@ -509,10 +508,12 @@ int find_slot(int civ, int city)
                 strcpy(message_slot, choice_text_l + 1);
                 help_open();
                 news_wrap(50);
-                abort_flag = 1;
-                show_menu(msgtext, 8, 160);
+                if (best_u2 != -1) {
+                    abort_flag = 1;
+                    show_menu(msgtext, 8, 160);
+                }
             }
-            if (best_i != -1) {
+            {
                 rank = cand[best_i];
                 if (rank >= 0)
                     strcpy(choice_text_l + 1, utypes[rank].name);
@@ -523,8 +524,10 @@ int find_slot(int civ, int city)
                 strcpy(message_slot, choice_text_l + 1);
                 help_open();
                 news_wrap(50);
-                abort_flag = 1;
-                show_menu(msgtext, 164, 160);
+                if (best_i != -1) {
+                    abort_flag = 1;
+                    show_menu(msgtext, 164, 160);
+                }
             }
             warned = 1;
             scrbuf->font = 1;
@@ -844,7 +847,7 @@ void give_advance(int civ, int adv, int src)
             if (townbuf[k].status != -1 && townbuf[k].owner == civ)
                 townbuf[k].buildings &= ~2L;
         }
-        if (civ == civnow && mouse_mode == -1) {
+        if (civ == civnow) {
             strcpy(msgtext, "Development of ");
             strcat(msgtext, advances[adv].name);
             strcat(msgtext, "\nmakes existing Barracks\nobsolete.\n");

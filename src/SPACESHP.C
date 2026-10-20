@@ -80,9 +80,8 @@ void spaceship_open(void)
     set_cycle(3, 20, 224, 239);
     set_cycle(4, 8, 144, 159);
     set_cycle(5, 150, 128, 129);
-    if (vga_modes)
-        for (i = 1; i <= 5; i++)
-            start_cycle(i);
+    for (i = 1; i <= 5; i++)
+        start_cycle(i);
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
@@ -94,10 +93,9 @@ void spaceship_close(void)
     char name[16];
 
     free_block(ship_tiles[0], "dock");
-    if (vga_modes)
-        for (i = 1; i <= 5; i++)
-            stop_cycle(i);
-    disk_insert(0, 1L);
+    for (i = 1; i <= 5; i++)
+        stop_cycle(i);
+    disk_insert(1, 1L);
     strcpy(name, "back0a.pal");
     name[4] = civ_gov[civnow] / 2 + '0';
     if (has_tech(civnow, 20))
@@ -367,7 +365,7 @@ int spaceship_ai_build(int civ, int type)
                 break;
             }
         }
-    } while (ship_layout[++n][0] != -1 && (n - first < 4 || type == 2 || !has_tech(civ, improvements[type + 23].prereq)));
+    } while (ship_layout[++n][0] != -1 && (n - first < 4 || type == 2));
     if (ship_layout[n][0] == -1 && first == 999)
         return 2;
     if (found)
@@ -566,7 +564,6 @@ void spaceship_launch(int civ)
     game_flags |= 1 << civ;
     mouse_off();
     rect_fill(scrbuf, 0, 0, 320, 200, 0);
-    repaint();
     strcpy(msgtext, civ_names[civ]);
     strcat(msgtext, " LAUNCH space ship!");
     draw_text(msgtext, 160, 92, 15);

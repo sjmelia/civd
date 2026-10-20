@@ -9,8 +9,8 @@
 #include <string.h>
 
 static unsigned char block[512];
-static unsigned char before[5] = { 0x9a, 0x42, 0x04, 0x45, 0x20 };
-static unsigned char after[4] = { 0xc1, 0x01, 0xa8, 0x01 };
+static unsigned char before[5] = { 0x9a, 0x46, 0x04, 0x58, 0x20 };
+static unsigned char after[4] = { 0xc3, 0x01, 0xa7, 0x01 };
 
 static unsigned long crc_byte(unsigned long crc, unsigned char value)
 {
@@ -37,9 +37,9 @@ int main(void)
             crc = crc_byte(crc, block[i]);
         length += count;
     }
-    if (ferror(input) || length != 305030L || (crc ^ 0xffffffffUL) != 0x3fec5673UL)
+    if (ferror(input) || length != 304512L || (crc ^ 0xffffffffUL) != 0x18631131UL)
         goto bad_input;
-    if (fseek(input, 0x204c9L, SEEK_SET) || fread(block, 1, 5, input) != 5 || memcmp(block, before, 5) || fseek(input, 0L, SEEK_SET))
+    if (fseek(input, 0x205fdL, SEEK_SET) || fread(block, 1, 5, input) != 5 || memcmp(block, before, 5) || fseek(input, 0L, SEEK_SET))
         goto bad_input;
     output = fopen("CIV.EXE", "wb");
     if (!output)
@@ -48,15 +48,15 @@ int main(void)
     position = 0;
     while ((count = fread(block, 1, sizeof(block), input)) != 0) {
         for (i = 0; i < count; ++i) {
-            if (position + i >= 0x204caL && position + i < 0x204ceL)
-                block[i] = after[(int) (position + i - 0x204caL)];
+            if (position + i >= 0x205feL && position + i < 0x20602L)
+                block[i] = after[(int) (position + i - 0x205feL)];
             output_crc = crc_byte(output_crc, block[i]);
         }
         if (fwrite(block, 1, count, output) != count)
             goto bad_output;
         position += count;
     }
-    if (ferror(input) || position != length || (output_crc ^ 0xffffffffUL) != 0x92248218UL)
+    if (ferror(input) || position != length || (output_crc ^ 0xffffffffUL) != 0x45f95f3bUL)
         goto bad_output;
     if (fclose(output)) {
         fclose(input);

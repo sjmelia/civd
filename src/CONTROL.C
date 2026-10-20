@@ -42,7 +42,7 @@ extern int debug;
 extern struct unit armydata[4][128];
 extern struct unit_type utypes[];
 extern struct city townbuf[];
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 
 extern int map_flags(int, int), city_at(int, int), adj_grp();
 extern int terrain_at(int, int), wrap_x(int);
@@ -295,7 +295,7 @@ rd:                            /* redraw map and units */
                             mse_held = 2;
                     }
                     if (mse_held == 2) {
-                        if ((map_visible_to[oq * 50 + mc] & (1 << civnow)) || xray_on) {
+                        if ((civ_vis_grid[oq * 50 + mc] & (1 << civnow)) || xray_on) {
                             mouse_off();
                             pedia_show(terrain_at(oq, mc), 3);
                             sel_player();
@@ -306,7 +306,7 @@ ck:                            /* mouse click */
                     if (mse_held == 1) {
                         if (ig != 0 && jf < 128) {
                             gi = terrain_at(oq, mc);
-                            if (ig == 2 || ((map_visible_to[oq * 50 + mc] & (1 << civnow)) && ((utypes[U.type].domain == 2 && gi == 10) || (utypes[U.type].domain == 0 && gi != 10) || (map_flags(oq, mc) & 1) || utypes[U.type].domain == 1))) {
+                            if (ig == 2 || ((civ_vis_grid[oq * 50 + mc] & (1 << civnow)) && ((utypes[U.type].domain == 2 && gi == 10) || (utypes[U.type].domain == 0 && gi != 10) || (map_flags(oq, mc) & 1) || utypes[U.type].domain == 1))) {
                                 U.goto_x = oq;
                                 U.goto_y = mc;
                                 U.f8 = -1;
@@ -315,7 +315,7 @@ ck:                            /* mouse click */
                             set_mousecur(0, 0, splashhand);
                             if (xx != 0) {
                                 xx = 0;
-                                if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                                if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                                     map_note(vj, tl);
                                 vj = -1;
                             }
@@ -328,16 +328,16 @@ ck:                            /* mouse click */
                                 oa = 0;
                                 if (xx != 0) {
                                     xx = 0;
-                                    if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                                    if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                                         map_note(vj, tl);
                                     vj = -1;
                                 }
                             } else {
                                 ek = map_stack(oq, mc);
                                 if (xray_on && ek != -1)
-                                    report_unit(the_enemy, ek);
-                                if (ek != -1 && civ == the_enemy) {
-                                    hh = pick_unit(the_enemy, ek);
+                                    report_unit(fight_enemy, ek);
+                                if (ek != -1 && civ == fight_enemy) {
+                                    hh = pick_unit(fight_enemy, ek);
                                     if (!(armydata[civ][hh].status & 9)) {
                                         jf = hh;
                                         dl = (hh - 1) & 127;
@@ -345,7 +345,7 @@ ck:                            /* mouse click */
                                         oa = 0;
                                         if (xx != 0) {
                                             xx = 0;
-                                            if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                                            if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                                                 map_note(vj, tl);
                                             vj = -1;
                                         }
@@ -434,7 +434,7 @@ uc:                            /* unit command */
                             } else {
                                 if (xx != 0) {
                                     xx = 0;
-                                    if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                                    if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                                         map_note(vj, tl);
                                     vj = -1;
                                 }
@@ -573,7 +573,7 @@ uc:                            /* unit command */
                             break;
                         if (hh >= 0) {
                             map_claim(ku, jv, hh, 2);
-                            map_visible_to[ku * 50 + jv] |= 1;
+                            civ_vis_grid[ku * 50 + jv] |= 1;
                             unflag(6, ku, jv);
                         } else {
                             unflag(4, ku, jv);
@@ -611,7 +611,7 @@ uc:                            /* unit command */
                             if (++U.fuel <= 5)
                                 break;
                             map_claim(ku, jv, hh, 2);
-                            map_visible_to[ku * 50 + jv] |= 1;
+                            civ_vis_grid[ku * 50 + jv] |= 1;
                             unflag(6, ku, jv);
                         } else {
                             unflag(2, ku, jv);
@@ -626,7 +626,7 @@ uc:                            /* unit command */
                             human_msg("*SETTLERS");
                             break;
                         }
-                        if (terrain_at(ku, jv) == 10 || jv < 2 || jv >= 48)
+                        if (terrain_at(ku, jv) == 10)
                             break;
                         if (map_flags(ku, jv) & 1) {
                             uk = get_city(ku, jv);
@@ -699,7 +699,7 @@ uc:                            /* unit command */
                         break;
 mv:                            /* move unit */
                         if (xx != 0) {
-                            if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                            if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                                 map_note(vj, tl);
                             vj = wrap_x(spiral_x[ms] + vj);
                             tl = clamp(spiral_y[ms] + tl, 0, 49);
@@ -711,7 +711,7 @@ mv:                            /* move unit */
                             fz = map_flags(ku, jv);
                             if (!(fz & 1) && (fz & 6) && U.type != 3 && U.type != 7 && townbuf[near_city(ku, jv)].owner == civnow) {
                                 unflag(6, ku, jv);
-                                if (map_visible_to[ku * 50 + jv] & (1 << civnow)) {
+                                if (civ_vis_grid[ku * 50 + jv] & (1 << civnow)) {
                                     map_mark(ku, jv);
                                     map_note(ku, jv);
                                 }
@@ -932,9 +932,9 @@ mv:                            /* move unit */
                                 U.visibility |= 1 << yg;
                         }
                         cm = map_city(oq, mc);
-                        if (civ == 0 && gi != 10 && ((1 << civnow) & map_visible_to[ku * 50 + jv]) && !((1 << civnow) & U.visibility) && townbuf[near_city(ku, jv)].owner == civnow)
-                            U.visibility |= map_visible_to[ku * 50 + jv];
-                        if ((fz & 1) && cm != civ && (map_visible_to[oq * 50 + mc] & (1 << civnow)) && ((treaties[civnow][civ] & 64) || (treaties[civnow][cm] & 64)))
+                        if (civ == 0 && gi != 10 && ((1 << civnow) & civ_vis_grid[ku * 50 + jv]) && !((1 << civnow) & U.visibility) && townbuf[near_city(ku, jv)].owner == civnow)
+                            U.visibility |= civ_vis_grid[ku * 50 + jv];
+                        if ((fz & 1) && cm != civ && (civ_vis_grid[oq * 50 + mc] & (1 << civnow)) && ((treaties[civnow][civ] & 64) || (treaties[civnow][cm] & 64)))
                             U.visibility |= 1 << civnow;
                         if (gi == 10 && (map_flags(oq, mc) & 2))
                             U.visibility |= 1 << cm;
@@ -995,12 +995,12 @@ mv:                            /* move unit */
                         unit_sight(oq, mc, civ, jf, 1L);
                         if (has_hut(gi, oq, mc) != 0) {
                             enter_hut(civ, jf);
-                            map_visible_to[oq * 50 + mc] |= 1;
+                            civ_vis_grid[oq * 50 + mc] |= 1;
                         }
                         if (gi == 10 && utypes[U.type].domain != 2)
                             each_stack(civ, jf, reset_state);
-                        if (civ == 0 && gi != 10 && ((1 << civnow) & map_visible_to[oq * 50 + mc]) && !((1 << civnow) & U.visibility) && townbuf[near_city(oq, mc)].owner == civnow)
-                            U.visibility |= map_visible_to[oq * 50 + mc];
+                        if (civ == 0 && gi != 10 && ((1 << civnow) & civ_vis_grid[oq * 50 + mc]) && !((1 << civnow) & U.visibility) && townbuf[near_city(oq, mc)].owner == civnow)
+                            U.visibility |= civ_vis_grid[oq * 50 + mc];
                         if ((U.visibility & (1 << civnow)) || civ == civnow || (xray_on && civ != 0)) {
                             if (civ == civnow || (debug & 32)) {
                                 map_center(civnow, oq, mc);
@@ -1116,6 +1116,10 @@ sc:                            /* scroll map */
                 case '?':
                     goto_city();
                     break;
+                case '%':
+                    if (key_cmd() == '^')
+                        xray_on ^= 1;
+                    break;
                 case 'S':
                     if (turn_tick != 0)
                         save_game(-1);
@@ -1207,7 +1211,7 @@ sc:                            /* scroll map */
                 case 27:
                     if (has_mouse == 0 && xx != 0) {
                         xx = 0;
-                        if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                        if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                             map_note(vj, tl);
                         vj = -1;
                     }
@@ -1215,7 +1219,7 @@ sc:                            /* scroll map */
                 case 9:
                     if (has_mouse == 0) {
                         if (xx != 0) {
-                            if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                            if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                                 map_note(vj, tl);
                             vj = -1;
                         } else {
@@ -1226,7 +1230,7 @@ sc:                            /* scroll map */
                                 vj = map_x0 + 7;
                                 tl = map_y0 + 6;
                             }
-                            if (map_visible_to[vj * 50 + tl] & (1 << civ))
+                            if (civ_vis_grid[vj * 50 + tl] & (1 << civ))
                                 map_note(vj, tl);
                         }
                         xx ^= 1;
@@ -1313,7 +1317,7 @@ fn:                            /* end of turn */
 
 extern struct unit_type utypes[];
 
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 extern struct unit armydata[4][128];
 
 extern int map_flags(int, int), terrain_at(int, int);
@@ -1321,7 +1325,7 @@ extern void map_note(int, int);
 
 void note_map(int x, int y)
 {
-    if ((map_visible_to[x * 50 + y] & (1 << civnow)) || xray_on)
+    if ((civ_vis_grid[x * 50 + y] & (1 << civnow)) || xray_on)
         map_note(x, y);
 }
 

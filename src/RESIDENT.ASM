@@ -43,7 +43,7 @@ F0D12 SEGMENT WORD PUBLIC 'CODE'
 PUBLIC _F0D12
 _F0D12 LABEL BYTE
 F0D12 ENDS
-F1459 SEGMENT PARA PUBLIC 'CODE'
+F1459 SEGMENT WORD PUBLIC 'CODE'
 PUBLIC _F1459
 _F1459 LABEL BYTE
 F1459 ENDS
@@ -63,11 +63,11 @@ F1AEA SEGMENT WORD PUBLIC 'CODE'
 PUBLIC _F1AEA
 _F1AEA LABEL BYTE
 F1AEA ENDS
-F1C84 SEGMENT PARA PUBLIC 'CODE'
+F1C84 SEGMENT WORD PUBLIC 'CODE'
 PUBLIC _F1C84
 _F1C84 LABEL BYTE
 F1C84 ENDS
-F1D05 SEGMENT PARA PUBLIC 'CODE'
+F1D05 SEGMENT WORD PUBLIC 'CODE'
 PUBLIC _F1D05
 _F1D05 LABEL BYTE
 F1D05 ENDS
@@ -79,7 +79,7 @@ F1E31 SEGMENT WORD PUBLIC 'CODE'
 PUBLIC _F1E31
 _F1E31 LABEL BYTE
 F1E31 ENDS
-F1F4D SEGMENT PARA PUBLIC 'CODE'
+F1F4D SEGMENT WORD PUBLIC 'CODE'
 PUBLIC _F1F4D
 _F1F4D LABEL BYTE
 F1F4D ENDS
@@ -132,19 +132,19 @@ _F2B01 LABEL BYTE
 DANCHOR ENDS
 _DATA SEGMENT WORD PUBLIC 'DATA'
 PUBLIC _random_seed
-_random_seed EQU _F2B01+05C38H
+_random_seed EQU _F2B01+05BDAH
 PUBLIC _target_value, _match_count
-_target_value EQU _F2B01+0653AH
-_match_count EQU _F2B01+0653CH
+_target_value EQU _F2B01+064BEH
+_match_count EQU _F2B01+064C0H
 PUBLIC _scrbuf
-_scrbuf EQU _F2B01+0AAH
+_scrbuf EQU _F2B01+000AAH
 PUBLIC _sound_command
 PUBLIC _file_exists, _sprite_arena_release
 PUBLIC _sprite_arena_init, _load_program
 PUBLIC _mouse_hide_limit
 PUBLIC _page_ready
 PUBLIC _sound_shutdown, _restore_timer, _set_page, _set_palette
-_mouse_hide_limit EQU _F2B01+0652EH
+_mouse_hide_limit EQU _F2B01+064B2H
 PUBLIC _blit, _apply_palette, _free_paragraphs
 PUBLIC _set_cycle, _start_cycle, _stop_cycle
 DB 00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H
@@ -203,7 +203,7 @@ PAD ENDS
 EPAD SEGMENT BYTE COMMON 'MSG'
 EPAD ENDS
 _BSS SEGMENT WORD PUBLIC 'BSS'
-DB 05DEH DUP (0)
+DB 05DCH DUP (0)
 _BSS ENDS
 XOB SEGMENT WORD PUBLIC 'BSS'
 XOB ENDS
@@ -227,161 +227,151 @@ TAIL ENDS
 F1DC4 SEGMENT WORD PUBLIC 'CODE'
 F1DC4 ENDS
 PUBLIC _menu_result
-_menu_result EQU _F2B01+0654AH
+_menu_result EQU _F2B01+064CCH
 PUBLIC _hilite_colour
-_hilite_colour EQU _F2B01+0654CH
+_hilite_colour EQU _F2B01+064CEH
 PUBLIC _line_count
-_line_count EQU _F2B01+0658EH
+_line_count EQU _F2B01+06510H
 PUBLIC _line_off
-_line_off EQU _F2B01+0654EH
+_line_off EQU _F2B01+064D0H
 PUBLIC _bios_regs
-_bios_regs EQU _F2B01+0679AH
+_bios_regs EQU _F2B01+0671CH
 PUBLIC _table1
-_table1 EQU _F2B01+067E0H
+_table1 EQU _F2B01+06762H
 PUBLIC _table2
-_table2 EQU _F2B01+067B2H
+_table2 EQU _F2B01+06734H
 PUBLIC _table3
-_table3 EQU _F2B01+067D7H
+_table3 EQU _F2B01+06759H
 PUBLIC _edit_cursor
-_edit_cursor EQU _F2B01+068CCH
+_edit_cursor EQU _F2B01+0684EH
 PUBLIC _edit_cursor_w
-_edit_cursor_w EQU _F2B01+068CEH
+_edit_cursor_w EQU _F2B01+06850H
 PUBLIC _edit_cursor_x
-_edit_cursor_x EQU _F2B01+068D0H
+_edit_cursor_x EQU _F2B01+06852H
 PUBLIC _page_string, _timer_reset, _timer_read
 PUBLIC _page_read_row
 PUBLIC _save_error
-_save_error EQU _F2B01+0681CH
+_save_error EQU _F2B01+0679EH
 PUBLIC _save_fd
-_save_fd EQU _F2B01+0681EH
+_save_fd EQU _F2B01+067A0H
 PUBLIC _save_index
-_save_index EQU _F2B01+06820H
+_save_index EQU _F2B01+067A2H
 PUBLIC _save_mode
-_save_mode EQU _F2B01+0681AH
+_save_mode EQU _F2B01+0679CH
 PUBLIC _save_player
-_save_player EQU _F2B01+06824H
+_save_player EQU _F2B01+067A6H
 PUBLIC _save_turn
-_save_turn EQU _F2B01+06822H
+_save_turn EQU _F2B01+067A4H
 PUBLIC _save_year
-_save_year EQU _F2B01+06826H
+_save_year EQU _F2B01+067A8H
 PUBLIC _selected_tile
-_selected_tile EQU _F2B01+06828H
+_selected_tile EQU _F2B01+067AAH
 PUBLIC _nearest_dist
-_nearest_dist EQU _F2B01+06812H
+_nearest_dist EQU _F2B01+06794H
 PUBLIC _replay_auto
-_replay_auto EQU _F2B01+0680EH
+_replay_auto EQU _F2B01+06790H
 PUBLIC _replay_civ
-_replay_civ EQU _F2B01+06810H
+_replay_civ EQU _F2B01+06792H
 PUBLIC _replay_file
-_replay_file EQU _F2B01+0680CH
+_replay_file EQU _F2B01+0678EH
 PUBLIC _replay_mode
-_replay_mode EQU _F2B01+0680AH
+_replay_mode EQU _F2B01+0678CH
 PUBLIC _ship_state
-_ship_state EQU _F2B01+0687AH
+_ship_state EQU _F2B01+067FCH
 PUBLIC _ship_tiles
-_ship_tiles EQU _F2B01+0682AH
+_ship_tiles EQU _F2B01+067ACH
 PUBLIC _star_on
-_star_on EQU _F2B01+06866H
+_star_on EQU _F2B01+067E8H
 PUBLIC _star_x
-_star_x EQU _F2B01+0683EH
+_star_x EQU _F2B01+067C0H
 PUBLIC _star_y
-_star_y EQU _F2B01+06852H
+_star_y EQU _F2B01+067D4H
 PUBLIC _pedia_more
-_pedia_more EQU _F2B01+06808H
+_pedia_more EQU _F2B01+0678AH
 PUBLIC _archive_index
-_archive_index EQU _F2B01+068E0H
+_archive_index EQU _F2B01+06862H
 PUBLIC _image_file
-_image_file EQU _F2B01+068DAH
+_image_file EQU _F2B01+0685CH
 PUBLIC _picture_bytes
-_picture_bytes EQU _F2B01+068E6H
+_picture_bytes EQU _F2B01+06868H
 PUBLIC _picture_height
-_picture_height EQU _F2B01+068E4H
+_picture_height EQU _F2B01+06866H
 PUBLIC _picture_width
-_picture_width EQU _F2B01+068E2H
+_picture_width EQU _F2B01+06864H
 PUBLIC _source_offset
-_source_offset EQU _F2B01+068DCH
+_source_offset EQU _F2B01+0685EH
 PUBLIC _source_segment
-_source_segment EQU _F2B01+068DEH
+_source_segment EQU _F2B01+06860H
 PUBLIC _sprite_header
-_sprite_header EQU _F2B01+068D2H
+_sprite_header EQU _F2B01+06854H
 PUBLIC _path_cache_x
-_path_cache_x EQU _F2B01+06796H
+_path_cache_x EQU _F2B01+06718H
 PUBLIC _path_cache_y
-_path_cache_y EQU _F2B01+06798H
+_path_cache_y EQU _F2B01+0671AH
 PUBLIC _path_limit
-_path_limit EQU _F2B01+06794H
+_path_limit EQU _F2B01+06716H
 PUBLIC _path_queue_x
-_path_queue_x EQU _F2B01+06594H
+_path_queue_x EQU _F2B01+06516H
 PUBLIC _path_queue_y
-_path_queue_y EQU _F2B01+06694H
+_path_queue_y EQU _F2B01+06616H
 PUBLIC _path_target_x
-_path_target_x EQU _F2B01+06590H
+_path_target_x EQU _F2B01+06512H
 PUBLIC _path_target_y
-_path_target_y EQU _F2B01+06592H
+_path_target_y EQU _F2B01+06514H
 PUBLIC _city_wonder_tiles
-_city_wonder_tiles EQU _F2B01+068A0H
+_city_wonder_tiles EQU _F2B01+06822H
 PUBLIC _pop_tiles
-_pop_tiles EQU _F2B01+06880H
+_pop_tiles EQU _F2B01+06802H
 PUBLIC _wonder_bounds
 _wonder_bounds EQU _F2767+00H
-PUBLIC _human_msg
-_human_msg EQU _F0403+0460EH
-PUBLIC _in_view
-_in_view EQU _F0403+044FAH
-PUBLIC _land_unit
-_land_unit EQU _F0403+04554H
-PUBLIC _unit_note
-_unit_note EQU _F0403+03F05H
 PUBLIC _shown_face
-_shown_face EQU _F2B01+067E8H
+_shown_face EQU _F2B01+0676AH
 PUBLIC _faces_loaded
-_faces_loaded EQU _F2B01+067EAH
+_faces_loaded EQU _F2B01+0676CH
 PUBLIC _modern_court
-_modern_court EQU _F2B01+067EEH
+_modern_court EQU _F2B01+06770H
 PUBLIC _no_portraits
-_no_portraits EQU _F2B01+067F0H
+_no_portraits EQU _F2B01+06772H
 PUBLIC _audience_civ
-_audience_civ EQU _F2B01+067F2H
+_audience_civ EQU _F2B01+06774H
 PUBLIC _anim_step
-_anim_step EQU _F2B01+067F4H
+_anim_step EQU _F2B01+06776H
 PUBLIC _talk_hold
-_talk_hold EQU _F2B01+067F6H
+_talk_hold EQU _F2B01+06778H
 PUBLIC _portrait
-_portrait EQU _F2B01+067F8H
+_portrait EQU _F2B01+0677AH
 PUBLIC _advisors_loaded
-_advisors_loaded EQU _F2B01+067FAH
+_advisors_loaded EQU _F2B01+0677CH
 PUBLIC _leader_font
-_leader_font EQU _F2B01+067ECH
-PUBLIC _excess_unhappy
-_excess_unhappy EQU _F2B01+06542H
+_leader_font EQU _F2B01+0676EH
 PUBLIC _selected_city
-_selected_city EQU _F2B01+0653EH
+_selected_city EQU _F2B01+064C2H
 PUBLIC _selected_owner
-_selected_owner EQU _F2B01+06548H
+_selected_owner EQU _F2B01+064CAH
 PUBLIC _radius_tiles
-_radius_tiles EQU _F2B01+06540H
+_radius_tiles EQU _F2B01+064C4H
 PUBLIC _units_abroad
-_units_abroad EQU _F2B01+06546H
+_units_abroad EQU _F2B01+064C8H
 PUBLIC _land_count
-_land_count EQU _F2B01+067FEH
+_land_count EQU _F2B01+06780H
 PUBLIC _story_clock
-_story_clock EQU _F2B01+06800H
+_story_clock EQU _F2B01+06782H
 PUBLIC _story_file
-_story_file EQU _F2B01+06804H
+_story_file EQU _F2B01+06786H
 PUBLIC _story_line
-_story_line EQU _F2B01+06802H
+_story_line EQU _F2B01+06784H
 PUBLIC _story_skip
-_story_skip EQU _F2B01+067FCH
+_story_skip EQU _F2B01+0677EH
 PUBLIC _story_wait
-_story_wait EQU _F2B01+06806H
+_story_wait EQU _F2B01+06788H
 PUBLIC _group_total
-_group_total EQU _F2B01+06532H
+_group_total EQU _F2B01+064B6H
 PUBLIC _selected_score
-_selected_score EQU _F2B01+06534H
+_selected_score EQU _F2B01+064B8H
 PUBLIC _selected_stack_index
-_selected_stack_index EQU _F2B01+06530H
+_selected_stack_index EQU _F2B01+064B4H
 PUBLIC _total_limit
-_total_limit EQU _F2B01+06538H
+_total_limit EQU _F2B01+064BCH
 PUBLIC _total_mode
-_total_mode EQU _F2B01+06536H
+_total_mode EQU _F2B01+064BAH
 END

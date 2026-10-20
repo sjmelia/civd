@@ -4,6 +4,7 @@
 #include "CIV.H"
 #include "AUDIENCE.H"
 #include "CAPTURE.H"
+#include "CITYMGT.H"
 #include "CONTROL.H"
 #include "CORE.H"
 #include "DRAW.H"

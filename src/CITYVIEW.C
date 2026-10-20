@@ -246,7 +246,8 @@ void city_scene(int city, int mode)
         g[2][row] = 15;
     }
     cycle_off();
-    disk_insert(1, 1L);
+    if (mode != -2)
+        disk_insert(1, 1L);
     city_load(mode, townbuf[city].owner, city);
 again:
     load_screen(1, "hill.pic");
@@ -354,7 +355,7 @@ again:
             load_palette("hill.pal", colours_area);
             install_palette(15, colours_area);
         }
-        if (vga_modes) {
+        {
             set_cycle(4, 15, 64, 79);
             start_cycle(4);
         }
@@ -377,15 +378,14 @@ again:
             ad_wait();
         else
             repaint();
-        if (vga_modes)
-            stop_cycle(4);
+        stop_cycle(4);
         disk_insert(0, 1L);
         if (vga_modes) {
             rect_fill(scrbuf, 0, 0, 320, 200, 0);
             load_player_palette();
         }
         cycle_on();
-    } else if (vga_modes)
+    } else
         stop_cycle(4);
 }
 
@@ -630,6 +630,7 @@ void riot_anim(void)
     mouse_on();
     repaint();
     free_block(tiles[0]);
+    cycle_on();
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
@@ -672,6 +673,7 @@ void love_anim(void)
     mouse_on();
     repaint();
     free_block(tiles[0]);
+    cycle_on();
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */

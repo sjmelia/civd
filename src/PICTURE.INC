@@ -255,14 +255,14 @@ pic_reset_codes:
     xor bx,bx
     mov cx,0800H
 pic_clear_prefix:
-    mov [bx-045FAH],ax
+    mov [bx-036DAH],ax
     add bx,03H
     loop SHORT pic_clear_prefix
     mov al,00H
     xor bx,bx
     mov cx,0100H
 pic_set_suffix:
-    mov [bx-045F8H],al
+    mov [bx-036D8H],al
     inc al
     add bx,03H
     loop SHORT pic_set_suffix
@@ -323,7 +323,7 @@ pic_bytes_done:
     ret
 pc_decode_next:
     pop bp
-    cmp sp,06AFBH
+    cmp sp,06A7DH
     jz SHORT pic_next_code
 pic_next_pop:
     pop ax
@@ -371,23 +371,23 @@ pic_walk_chain:
     mov bx,ax
     add bx,ax
     add bx,ax
-    mov ax,[bx-045FAH]
+    mov ax,[bx-036DAH]
     inc ax
     jz SHORT pic_chain_root
     dec ax
-    mov bl,[bx-045F8H]
+    mov bl,[bx-036D8H]
     push bx
     jmp SHORT pic_walk_chain
 pic_chain_root:
-    mov al,[bx-045F8H]
+    mov al,[bx-036D8H]
     mov DS:[f0_decode_first_byte],al
     push ax
     mov bx,dx
     add bx,dx
     add bx,dx
-    mov [bx-045F8H],al
+    mov [bx-036D8H],al
     mov ax,DS:[f0_decode_previous]
-    mov [bx-045FAH],ax
+    mov [bx-036DAH],ax
     inc dx
     cmp dx,DS:[f0_decode_mask]
     jng SHORT pic_check_limit

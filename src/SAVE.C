@@ -30,7 +30,7 @@ extern struct unit armydata[8][128];
 extern char replay_length[], block_ground_way[];
 extern char ship_success[], ai_ship_success[];
 extern char far power_history[], far war_record[];
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 extern int far advance_owners[];
 extern char far place_name[][13], far replay_log[];
 extern char far unit_losses[];
@@ -119,7 +119,7 @@ int preview;
         return save_fd != -1 ? 1 : 0;
     }
     load_save(file);
-    disk_insert(0, 1L);
+    disk_insert(1, 1L);
     scrbuf->number = 2;
     link_seas(0, 0);
     scrbuf->number = 0;
@@ -376,7 +376,7 @@ void transfer_game(void)
     transfer_near((char *) townbuf, 0xe00);
     transfer_near((char *) utypes, 0x3b8);
     transfer_near((char *) armydata, 0x3000);
-    transfer_far((char far *) map_visible_to, 0xfa0);
+    transfer_near(civ_vis_grid, 0xfa0);
     transfer_near((char *) spot_classes, 0x80);
     transfer_near((char *) ai_camp_site_weights, 0x80);
     transfer_near((char *) camp_xpos, 0x80);

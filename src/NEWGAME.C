@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "CIV.H"
 #include "CAPTURE.H"
+#include "CITYMGT.H"
 #include "CORE.H"
 #include "DIALOG.H"
 #include "DRAW.H"
@@ -32,7 +33,7 @@ extern struct city townbuf[];
 extern struct civ_type civt[];
 extern char far city_site_x[];
 extern int far advance_owners[];
-extern char far map_visible_to[][50];
+extern char civ_vis_grid[][50];
 extern signed char far adv_source[][72];
 extern int far unit_losses[][28];
 extern struct unit armydata[8][128];
@@ -106,7 +107,7 @@ void new_game(void)
     }
     for (x = 0; x < 80; x++)
         for (y = 0; y < 50; y++)
-            map_visible_to[x][y] = 0;
+            civ_vis_grid[x][y] = 0;
     debug = 0xfa;
     if (*sound_driver == 'N')
         debug &= ~0x10;
@@ -302,6 +303,12 @@ int init_civ(int civ)
                 complete_flag = leave = 1;
             return 0;
         }
+        map_refresh(civ, x, y);
+        create_unit(civ, 0, x, y);
+        x_cap[civ] = x;
+        for (i = 0; i < 128; i++)
+            if (armydata[0][i].type != -1 && map_dist(x, armydata[0][i].x, y, armydata[0][i].y) <= 8)
+                drop_u_stack(0, i);
         strcpy(leader_names[civ], civt[civ_tribe_of[civ]].leader);
         if (civ != civnow || *civ_adjectives[civ] == 0) {
             strcpy(civ_adjectives[civ], civt[civ_tribe_of[civ]].adjective);
@@ -312,12 +319,6 @@ int init_civ(int civ)
             }
             strcpy(civ_names[civ], msgtext);
         }
-        map_refresh(civ, x, y);
-        create_unit(civ, 0, x, y);
-        x_cap[civ] = x;
-        for (i = 0; i < 128; i++)
-            if (armydata[0][i].type != -1 && map_dist(x, armydata[0][i].x, y, armydata[0][i].y) <= 8)
-                drop_u_stack(0, i);
         tech_count[civ] = 1;
     }
     for (i = 0; i < 28; i++)
@@ -348,7 +349,6 @@ void kill_civ(int civ, int by)
     if (by == civnow)
         message_mode = 3;
     show_msg(msgtext, 100, 80);
-    spaceship_lost(civ);
     post_event(13, 2, civ, by);
     for (i = 0; i < 128; i++)
         if (armydata[civ][i].type != -1)
@@ -356,7 +356,7 @@ void kill_civ(int civ, int by)
     bits = ~(1 << civ);
     for (x = 0; x < 80; x++)
         for (y = 0; y < 50; y++)
-            map_visible_to[x][y] &= bits;
+            civ_vis_grid[x][y] &= bits;
     init_civ(civ);
 }
 

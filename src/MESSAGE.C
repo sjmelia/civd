@@ -155,12 +155,3 @@ void help_open(void)
         } while (p);
     }
 }
-
-void truncate_text(char *s, int width)
-{
-    while (string_width(s) > width) {
-        if (s[strlen(s) - 3] != ' ')
-            s[strlen(s) - 2] = '.';
-        s[strlen(s) - 1] = 0;
-    }
-}

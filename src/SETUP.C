@@ -50,11 +50,6 @@ void setup_main(void)
     intro_file_p = fopen("intro.txt", "rt");
     for (intro_line_p = 1; intro_line_p <= 10; intro_line_p++) {
         fscanf(intro_file_p, "%[^\n]\n", msgtext);
-        /* Replace the printed version digit in the bundled introduction. */
-        if (intro_line_p == 3) {
-            msgtext[0x36] = '5';
-            msgtext[0x37] = ' ';
-        }
         print_at(intro_line_p, 0, msgtext);
     }
     unused_ready_i = 1;

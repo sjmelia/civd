@@ -836,7 +836,6 @@ char far power_history[150][8];
 int far advance_owners[72];
 char far city_site_x[256];
 char far city_site_y[256];
-char far map_visible_to[80][50];
 char far spaceships[8][15][12];
 int far pedia_topics[100];
 signed char far adv_source[8][72];

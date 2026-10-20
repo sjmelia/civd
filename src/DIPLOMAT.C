@@ -32,7 +32,7 @@ extern struct unit armydata[8][128];
 extern struct unit_type utypes[];
 #define diplomat_improvements (improvements + 1)
 extern int debug;
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 
 extern int rand_scaled(int);
 extern void map_note();
@@ -346,7 +346,7 @@ void nuke_animation(int x, int y)
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void city_revolt(int city_id, int new_owner)
 {
-    int type, civ, c, d, min_d, best_score, new_unit, cx, score, cy, flags, m, unused_k, best;
+    int type, civ, c, d, min_d, best_score, new_unit, cx, score, cy, m, unused_k, best;
 
     civ = townbuf[city_id].owner;
     cx = townbuf[city_id].x;
@@ -375,12 +375,12 @@ void city_revolt(int city_id, int new_owner)
     if (new_owner == -1)
         return;
 
-    map_visible_to[cx * 50 + cy] |= (1 << new_owner);
+    civ_vis_grid[cx * 50 + cy] |= (1 << new_owner);
     for (m = 0; m < 20; m++)
-        map_visible_to[(radius_dx[m] + cx) * 50 + radius_dy[m] + cy] |= (1 << new_owner);
+        civ_vis_grid[(radius_dx[m] + cx) * 50 + radius_dy[m] + cy] |= (1 << new_owner);
 
     if (civ == civnow || new_owner == civnow || (treaties[civnow][civ].a & 0x40) || (treaties[civnow][new_owner].a & 0x40)) {
-        if (map_visible_to[townbuf[city_id].x * 50 + townbuf[city_id].y] & (1 << civnow))
+        if (civ_vis_grid[townbuf[city_id].x * 50 + townbuf[city_id].y] & (1 << civnow))
             reveal(civnow, townbuf[city_id].x - 8, townbuf[city_id].y - 5);
         strcpy(msgtext, civ_names[civ]);
         strcat(msgtext, new_owner == 0 ? " declare\nindependence in\n" : " rebel!\nCivil War in\n");
@@ -410,13 +410,9 @@ void city_revolt(int city_id, int new_owner)
         }
     }
 
-    flags = debug;
     incited = 1;
-    if (found_floppy <= 1)
-        debug &= ~8;
     capunit(new_owner, city_id, 1L);
     incited = 0;
-    debug = flags;
     map_refresh(new_owner, townbuf[city_id].x, townbuf[city_id].y);
 }
 

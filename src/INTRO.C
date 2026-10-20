@@ -109,8 +109,8 @@ void game_startup(void)
         else
             small_space_check = 1;
     }
-    sound_init();
     resident_init();
+    sound_init();
     initialize_random();
     rect_fill(scrbuf, 0, 0, 320, 200, 0);
     if (!vga_modes)
@@ -127,9 +127,8 @@ void game_startup(void)
     load_back("logo.pic");
     rect_fill(scrbuf, 0, 12, 320, 176, 0);
     set_cycle(1, 14, 146, 152);
-    if (vga_modes)
-        for (i = 1; i <= 3; i++)
-            start_cycle(i);
+    for (i = 1; i <= 3; i++)
+        start_cycle(i);
     debug |= 0x10;
     credits_stream = fopen("credits.txt", "rt");
     timer_reset();

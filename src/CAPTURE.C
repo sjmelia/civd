@@ -95,8 +95,17 @@ int a, b, c;
             }
         }
     }
-    if (townbuf[b].flags & 1)
-        spaceship_lost(old);
+    if (townbuf[b].flags & 1) {
+        strcpy(msgtext, civ_adjectives[old]);
+        strcat(msgtext, " spaceship\n");
+        if (game_flags & (1 << (old + 8))) {
+            strcat(msgtext, (game_flags & (1 << old)) ? "returns to Earth.\n" : "construction cancelled.\n");
+            show_msg(msgtext, 100, 80);
+        }
+        game_flags &= ~(1 << old);
+        game_flags &= ~(1 << (old + 8));
+        reset_spaceship(old);
+    }
     if (old == civnow)
         last_met_turn[a] = -1;
     val = clamp(unrest_chance(b), 0, money[old]);
@@ -192,19 +201,6 @@ int a, b, c;
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
-
-void spaceship_lost(int p)
-{
-    strcpy(msgtext, civ_adjectives[p]);
-    strcat(msgtext, " spaceship\n");
-    if (game_flags & (1 << (p + 8))) {
-        strcat(msgtext, (game_flags & (1 << p)) ? "returns to Earth.\n" : "construction cancelled.\n");
-        show_msg(msgtext, 100, 80);
-    }
-    game_flags &= ~(1 << p);
-    game_flags &= ~(1 << (p + 8));
-    reset_spaceship(p);
-}
 
 int unrest_chance(int i)
 {

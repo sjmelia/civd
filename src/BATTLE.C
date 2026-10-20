@@ -210,8 +210,8 @@ int attacker_civ_b, attacker_unit_m, defender_civ_e, defender_unit_p, flag;
                     sx = armydata[defender_civ_e][defender_unit_p].x + spiral_x[dir];
                     sy = armydata[defender_civ_e][defender_unit_p].y + spiral_y[dir];
                     def = map_stack(sx, sy);
-                    if (def != -1 && the_enemy != civnow)
-                        each_stack(the_enemy, def, kill_cb);
+                    if (def != -1 && fight_enemy != civnow)
+                        each_stack(fight_enemy, def, kill_cb);
                 }
                 if (townbuf[city].owner == civnow)
                     city_captured(city);
@@ -312,11 +312,11 @@ int atom(int pl, int x, int y)
             }
         }
         if (id != -1) {
-            n = stack_len(the_enemy, id, 2);
-            killed[pl][the_enemy] += n;
-            each_stack(the_enemy, id, drop_u_stack);
-            if (pl != the_enemy)
-                treaties[the_enemy][pl] |= 0x88;
+            n = stack_len(fight_enemy, id, 2);
+            killed[pl][fight_enemy] += n;
+            each_stack(fight_enemy, id, drop_u_stack);
+            if (pl != fight_enemy)
+                treaties[fight_enemy][pl] |= 0x88;
         }
     }
     nuke_fallout(x, y);
@@ -325,20 +325,5 @@ int atom(int pl, int x, int y)
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
-int nuke_fallout(int x, int y)
-{
-    int c, nx, ny, k;
-
-    for (k = 0; k <= 8; k++) {
-        nx = wrap_x(spiral_x[k] + x);
-        ny = spiral_y[k] + y;
-        if (map_flags(nx, ny) & 1) {
-            c = city_at(nx, ny);
-            townbuf[c].size -= townbuf[c].size / 2;
-        } else if (rand_scaled(3) && terrain_at(nx, ny) != 10)
-            add_pollution(nx, ny);
-        map_note(nx, ny);
-    }
-}
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */

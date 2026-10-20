@@ -20,7 +20,7 @@ struct city {
 
 extern struct city townbuf[];
 extern char far place_name[][13];
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 
 extern void reveal(int, int, int);
 extern void recolour_rect(), flip(int);
@@ -98,7 +98,7 @@ void goto_city(void)
     mouse_off();
     menu_begin();
     city = find_city("Where in the heck is ... (city name)");
-    if (city != -1 && (map_visible_to[50 * townbuf[city].x + townbuf[city].y] & (1 << civnow))) {
+    if (city != -1 && (civ_vis_grid[50 * townbuf[city].x + townbuf[city].y] & (1 << civnow))) {
         reveal(civnow, townbuf[city].x - 7, townbuf[city].y - 6);
     } else {
         rect_fill(scrbuf, 64, 78, 224, 10, 15);

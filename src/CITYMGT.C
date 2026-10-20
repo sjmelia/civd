@@ -45,9 +45,10 @@ extern int map_x0;
 extern int map_y0;
 extern int advisor;
 extern int rule_options;
+extern int xray_on;
 extern char msgtext[];
 
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 
 extern int abs(int);
 
@@ -61,6 +62,7 @@ extern void sound(int);
 
 extern char *strcpy(char *, char *);
 extern char *strcat(char *, char *);
+extern unsigned strlen(char *);
 extern struct unit_type utypes[];
 extern int units_abroad;
 extern int home_troops_maintained;
@@ -175,7 +177,6 @@ int mode;
     int worked_hi_e;
     int index_i;
     int scratch_i;
-    int police_e;
     int city_y_p;               /* city coordinate, later improvement-list drawing Y */
     int dead_score_h;
     int pollution_k;
@@ -229,7 +230,6 @@ int mode;
     int experts_f;
     int icon_x;
     int food_i;
-    int stack_len_m;
 
     if (townbuf[city].status == -1)
         goto label_exit;
@@ -351,7 +351,7 @@ label_render_restart:
             tile_x_l = townbuf[city].x + radius_dx[index_i];
             radius_y = townbuf[city].y + radius_dy[index_i];
             if (selected_owner == civnow) {
-                if (!(map_visible_to[tile_x_l * 50 + radius_y] & (1 << selected_owner)))
+                if (!(civ_vis_grid[tile_x_l * 50 + radius_y] & (1 << selected_owner)))
                     continue;
             }
             scratch_i = map_owner(tile_x_l, radius_y);
@@ -440,7 +440,7 @@ label_render_restart:
                     if (townbuf[city].size < ++home_troops_maintained || (civ_gov[selected_owner] > 1 && (rule_options & 2))) {
                         city_keep++;
                     }
-                    if (utypes[armydata[selected_owner][index_i].type].attack != 0 && (utypes[armydata[selected_owner][index_i].type].domain == 1 || armydata[selected_owner][index_i].x != townbuf[city].x || armydata[selected_owner][index_i].y != townbuf[city].y)) {
+                    if (armydata[selected_owner][index_i].type != 0 && (utypes[armydata[selected_owner][index_i].type].domain == 1 || armydata[selected_owner][index_i].x != townbuf[city].x || armydata[selected_owner][index_i].y != townbuf[city].y)) {
                         units_abroad++;
                     }
                 }
@@ -458,7 +458,7 @@ label_render_restart:
         tile_x_l = townbuf[city].x + radius_dx[index_i];
         radius_y = townbuf[city].y + radius_dy[index_i];
         if (selected_owner != 0) {
-            if (!(map_visible_to[tile_x_l * 50 + radius_y] & (1 << selected_owner))) {
+            if (!(civ_vis_grid[tile_x_l * 50 + radius_y] & (1 << selected_owner))) {
                 tile_taken[index_i] = 1;
             }
         }
@@ -690,7 +690,7 @@ label_governor_done:
                         }
                     }
                 }
-                if (selected_owner != civnow && unit != -1) {
+                if (selected_owner != civnow) {
                     if (townbuf[city].production == 27) {
                         ai_result_i = best_idx_o = -1;
                         for (city_index = 0; city_index < 128; city_index++) {
@@ -781,7 +781,7 @@ label_governor_done:
                         if (human_set & (1 << selected_owner))
                             show_city_display = 1;
                         else
-                            map_visible_to[townbuf[city].x * 50 + townbuf[city].y] = -1;
+                            civ_vis_grid[townbuf[city].x * 50 + townbuf[city].y] = -1;
                         msgtext[0] = 0;
                         append_place_name(city);
                         strcat(msgtext, " builds\n");
@@ -851,7 +851,7 @@ label_governor_done:
                         for (city_index = 0; city_index < 128; city_index++) {
                             if (townbuf[city_index].status != -1 && townbuf[city_index].owner != selected_owner) {
                                 townbuf[city_index].visible_size = townbuf[city_index].size;
-                                map_visible_to[townbuf[city_index].x * 50 + townbuf[city_index].y] |= 1 << selected_owner;
+                                civ_vis_grid[townbuf[city_index].x * 50 + townbuf[city_index].y] |= 1 << selected_owner;
                                 map_mark(townbuf[city_index].x, townbuf[city_index].y);
                             }
                         }
@@ -976,16 +976,9 @@ label_draw:
     learning_yield = scratch_i;
     town_happy_ones_num = 0;
     if (selected_owner == civnow) {
-        scratch_i = 14 - cur_tier * 2;
-        scratch_i = (civ_gov[selected_owner] / 2 + 2) * (scratch_i / 2);
-        unhappy_l = town_unhappy_counts = townbuf[city].size + (city % scratch_i + city_count[selected_owner] - scratch_i) / scratch_i + cur_tier - 6;
+        unhappy_l = town_unhappy_counts = townbuf[city].size + cur_tier - 6;
     } else {
         unhappy_l = town_unhappy_counts = townbuf[city].size - 3;
-    }
-    excess_unhappy = 0;
-    if (townbuf[city].size < town_unhappy_counts) {
-        excess_unhappy = town_unhappy_counts - townbuf[city].size;
-        town_unhappy_counts = townbuf[city].size;
     }
     fit_citizens(city, experts_f);
     if (mode == 1L && city_view_mode == 1) {
@@ -1038,12 +1031,16 @@ label_draw:
     /* Up to three troops suppress unrest; republic/democracy penalize troops abroad. */
     icon_x = 208;
     if (civ_gov[selected_owner] < 4) {
-        police_e = stack_len_m = 0;
+        for (unit = 0; unit < 2; unit++) {
+            if (town_unhappy_counts != 0 && townbuf[city].garrison[unit] != -1 && utypes[townbuf[city].garrison[unit] & 0x3f].attack > 0)
+                town_unhappy_counts--;
+        }
         unit = scratch_i = map_stack(city_x, city_y_p);
-        while (unit != -1 && ++stack_len_m < 32) {
-            if (utypes[armydata[selected_owner][unit].type].attack != 0) {
-                police_e++;
-                if (mode == 1L && city_view_mode == 1 && police_e <= 3) {
+        while (unit != -1) {
+            if (utypes[armydata[selected_owner][unit].type].attack > 0) {
+                if (town_unhappy_counts > 0)
+                    town_unhappy_counts--;
+                if (mode == 1L && city_view_mode == 1) {
                     label_with_style(armydata[selected_owner][unit].type + selected_owner * 32 + 64, icon_x, happy_y_g - 1);
                     icon_x -= 2;
                 }
@@ -1052,13 +1049,6 @@ label_draw:
             if (unit == scratch_i)
                 unit = -1;
         }
-        for (unit = 0; unit < 2; unit++) {
-            if (town_unhappy_counts != 0 && townbuf[city].garrison[unit] != -1 && utypes[townbuf[city].garrison[unit] & 0x3f].attack != 0)
-                police_e++;
-        }
-        if (police_e > 3)
-            police_e = 3;
-        town_unhappy_counts -= clamp(police_e, 0, town_unhappy_counts);
     } else {
         scratch_i = civ_wonder(selected_owner, 16) == 0;
         if (civ_gov[selected_owner] == 5)
@@ -1164,7 +1154,7 @@ label_support_restart:
                         scratch_i = civ_wonder(selected_owner, 16) == 0;
                         if (civ_gov[selected_owner] == 5)
                             scratch_i++;
-                        if (civ_gov[selected_owner] >= 4 && utypes[armydata[selected_owner][index_i].type].attack != 0 && scratch_i != 0 && (utypes[armydata[selected_owner][index_i].type].domain == 1 || armydata[selected_owner][index_i].x != townbuf[city].x || armydata[selected_owner][index_i].y != townbuf[city].y)) {
+                        if (civ_gov[selected_owner] >= 4 && scratch_i != 0 && (utypes[armydata[selected_owner][index_i].type].domain == 1 || armydata[selected_owner][index_i].x != townbuf[city].x || armydata[selected_owner][index_i].y != townbuf[city].y)) {
                             label_with_style(13, draw_x_l, draw_y_k + 12);
                             if (scratch_i > 1)
                                 label_with_style(13, draw_x_l + 2, draw_y_k + 12);
@@ -1368,13 +1358,12 @@ label_support_restart:
             for (index_i = 0; index_i < pollution_k; index_i++)
                 sprite_draw(scrbuf, index_i * draw_y_k + 98, (index_i & 1) + 161, village_icons);
         }
-        if (selected_owner == civnow) {
+        if (selected_owner == civnow || xray_on) {
             draw_button(284, 190, 316, 198, "EXIT", 12);
-            draw_button(231, 190, 272, 198, "RENAME", 9);
             flash_c = 0;
             if (townbuf[city].production < 0 && townbuf[city].production >= -21 && (townbuf[city].buildings & (1L << (-townbuf[city].production - 1))))
                 flash_c = 1;
-            if (townbuf[city].production < -21 && townbuf[city].production >= -24 && (game_flags & (1 << selected_owner)))
+            if (townbuf[city].production < -21 && townbuf[city].buildings >= -24L && (game_flags & (1 << selected_owner)))
                 flash_c = 1;
             if (townbuf[city].production < -24 && (marvel_site - 24)[-townbuf[city].production] != -1)
                 flash_c = 1;
@@ -1577,15 +1566,12 @@ label_after_tabs:;
             if (key_h >= '1' && key_h <= '9') {
                 index_i = key_h - '1';
                 if (index_i < experts_f) {
-                    if (townbuf[city].size >= 5) {
+                    {
                         scratch_i = get_specialist(index_i);
                         if (scratch_i < 3)
                             set_specialist(index_i, scratch_i + 1);
                         else
                             set_specialist(index_i, 1);
-                    } else {
-                        specialist_warning();
-                        goto label_render_restart;
                     }
                     town_res_sums[1] = raw_shld_m;
                     town_res_sums[2] = raw_trade_h;
@@ -1640,7 +1626,7 @@ label_after_tabs:;
                         cursor_y_k--;
                         break;
                     }
-                    if (abs(cursor_x_l) > 2 || abs(cursor_y_k) > 2 || abs(cursor_x_l) + abs(cursor_y_k) >= 4 || !(map_visible_to[(townbuf[city].x + cursor_x_l) * 50 + townbuf[city].y + cursor_y_k] & (1 << civnow))) {
+                    if (abs(cursor_x_l) > 2 || abs(cursor_y_k) > 2 || abs(cursor_x_l) + abs(cursor_y_k) >= 4 || !(civ_vis_grid[(townbuf[city].x + cursor_x_l) * 50 + townbuf[city].y + cursor_y_k] & (1 << civnow))) {
                         cursor_x_l = draw_x_l;
                         cursor_y_k = draw_y_k;
                     }
@@ -1659,13 +1645,6 @@ label_after_tabs:;
                 town_res_sums[1] = raw_shld_m;
                 town_res_sums[2] = raw_trade_h;
                 goto label_citizens_refresh;
-            }
-            if (key_h == 'r' || (mse_held == 1 && ptr_x >= 231 && ptr_y > 190 && ptr_x < 270)) {
-                repaint();
-                *(int *) ((char *) scrbuf + 0x10) = 1;
-                rename_city(city);
-                map_view_changed = 1;
-                goto label_render_restart;
             }
             if (mse_held == 1) {
                 if (ptr_x >= 288 && ptr_y < 96 && ptr_y > 88 && (bld_pages_p & 2)) {
@@ -1700,7 +1679,7 @@ label_sell:
                     }
                 }
                 if (ptr_x < 200 && ptr_y < 20) {
-                    if (townbuf[city].size >= 5) {
+                    {
                         index_i = (ptr_x - 16) / step_cost_m;
                         index_i -= townbuf[city].size - workers_d;
                         if (index_i < 0 || index_i >= experts_f)
@@ -1710,9 +1689,6 @@ label_sell:
                             set_specialist(index_i, scratch_i + 1);
                         else
                             set_specialist(index_i, 1);
-                    } else {
-                        specialist_warning();
-                        goto label_render_restart;
                     }
                     town_res_sums[1] = raw_shld_m;
                     town_res_sums[2] = raw_trade_h;
@@ -1738,7 +1714,7 @@ label_sell:
 label_tile_toggle:
                     index_i = radius_index(draw_x_l, draw_y_k);
                     if (index_i != -1 && index_i < 20) {
-                        if (map_visible_to[(townbuf[city].x + radius_dx[index_i]) * 50 + townbuf[city].y + radius_dy[index_i]] & (1 << selected_owner)) {
+                        if (civ_vis_grid[(townbuf[city].x + radius_dx[index_i]) * 50 + townbuf[city].y + radius_dy[index_i]] & (1 << selected_owner)) {
                             town_res_sums[1] = raw_shld_m;
                             town_res_sums[2] = raw_trade_h;
                             if (!(townbuf[city].workers & (1L << index_i)) && blocked_m[radius_dx[index_i] + 2][radius_dy[index_i] + 2] != 0)
@@ -1787,6 +1763,7 @@ label_tile_toggle:
                     strcat(msgtext, "! Mayor\nflees in panic.\n");
                     sound(36);
                     if ((debug & 8) && !(townbuf[city].status & 1) && human_counts == 0) {
+                        disk_insert(1, 1L);
                         city_scene(city, -2);
                         riot_anim();
                         disk_insert(0, 1L);
@@ -1857,6 +1834,7 @@ label_tile_toggle:
                         strcat(msgtext, "!\n");
                         sound(34);
                         if (debug & 8) {
+                            disk_insert(1, 1L);
                             city_scene(city, -2);
                             love_anim();
                             disk_insert(0, 1L);
@@ -1954,10 +1932,6 @@ label_tile_toggle:
                 if ((townbuf[city].buildings & (1L << item_b)) && civ_gov[selected_owner] != 0) {
                     money[selected_owner] -= improvements[item_b + 1].maintenance;
                     if (item_b == 1) {
-                        if (cur_tier >= 2)
-                            money[selected_owner]--;
-                        if (cur_tier >= 4)
-                            money[selected_owner]--;
                         if (has_tech(selected_owner, 34))
                             money[selected_owner]--;
                         if (has_tech(selected_owner, 37))
@@ -2137,6 +2111,23 @@ void add_pollution(int x, int y)
 }
 
 /* Two bits per specialist: 0 unused, 1 taxman, 2 scientist, 3 entertainer. */
+int nuke_fallout(int x, int y)
+{
+    int c, nx, ny, k;
+
+    for (k = 0; k <= 8; k++) {
+        nx = wrap_x(spiral_x[k] + x);
+        ny = spiral_y[k] + y;
+        if (map_flags(nx, ny) & 1) {
+            c = city_at(nx, ny);
+            townbuf[c].size -= townbuf[c].size / 2;
+        } else if (rand_scaled(3) && terrain_at(nx, ny) != 10)
+            add_pollution(nx, ny);
+        map_note(nx, ny);
+    }
+}
+
+
 void set_specialist(int index, int value)
 {
     if (index < 8) {
@@ -2170,19 +2161,9 @@ int count_specialists(int value)
 void fit_citizens(int city, int delta)
 {
     town_happy_ones_num = clamp(town_happy_ones_num, 0, townbuf[city].size);
-    while (excess_unhappy != 0) {
-        if (town_unhappy_counts < excess_unhappy) {
-            excess_unhappy--;
-            town_unhappy_counts++;
-        } else
-            break;
-    }
     town_unhappy_counts = clamp(town_unhappy_counts, 0, townbuf[city].size);
     while (town_happy_ones_num + town_unhappy_counts > clamp(townbuf[city].size - delta, 0, 99)) {
-        if (excess_unhappy != 0)
-            excess_unhappy--;
-        else
-            town_happy_ones_num = clamp(--town_happy_ones_num, 0, townbuf[city].size);
+        town_happy_ones_num = clamp(--town_happy_ones_num, 0, townbuf[city].size);
         town_unhappy_counts = clamp(--town_unhappy_counts, 0, townbuf[city].size);
     }
 }
@@ -2222,8 +2203,6 @@ int draw_city_view(int city, int x, int y, int special, int width)
         x += 2;
     for (citizen_k = 0; citizen_k < town_unhappy_counts; citizen_k++) {
         sprite_draw(scrbuf, x, y, city_angry_images[citizen_k & 1]);
-        if (citizen_k < excess_unhappy)
-            recolour_rect(scrbuf, x, y, 12, 14, 5, 12);
         x += citizen_step_p;
     }
     x += 4;
@@ -2314,7 +2293,7 @@ void draw_minimap(void)
         for (column_c = 0; column_c < 80; column_c++) {
             map_x_l = wrap_x(x_cap[civnow] + column_c - 40);
             map_y_k = row_i;
-            if (!(map_visible_to[map_x_l * 50 + map_y_k] & (1 << civnow)))
+            if (!(civ_vis_grid[map_x_l * 50 + map_y_k] & (1 << civnow)) && !xray_on)
                 continue;
             pixel_part_i = ((row_i & 1) << 1) + (column_c & 1);
             screen_x_j = column_c / 2 * 3 + mini_x[pixel_part_i] + 101;
@@ -2335,8 +2314,11 @@ void minimap_dot(int x, int y, int colour)
     }
 }
 
-void specialist_warning(void)
+void truncate_text(char *s, int width)
 {
-    strcpy(msgtext, "A City must have five\npopulation units to support\ntaxmen or scientists.\n");
-    menu_dialog(msgtext, 32, 32);
+    while (string_width(s) > width) {
+        if (s[strlen(s) - 3] != ' ')
+            s[strlen(s) - 2] = '.';
+        s[strlen(s) - 1] = 0;
+    }
 }

@@ -88,7 +88,7 @@ void garrison_in(int city)
 
 extern struct unit armydata[][128];
 extern struct terrain_type terrains[];
-extern char far map_visible_to[];
+extern char civ_vis_grid[80][50];
 extern int terrain_at(int, int), wrap_x(int);
 extern void map_mark(int, int);
 extern struct city townbuf[];
@@ -116,7 +116,7 @@ int x, y, owner, index, redraw;
             if (e >= 9 && (!(utypes[armydata[owner][index].type].sight & 2) || (utypes[armydata[owner][index].type].domain == 2 && terrain_at(h, i) != 10)))
                 goto next_radius;
             if (map_in_bounds(h, i)) {
-                map_visible_to[h * 50 + i] |= (char) (1 << owner);
+                civ_vis_grid[h][i] |= (char) (1 << owner);
                 map_mark(h, i);
             }
 next_radius:
@@ -130,7 +130,7 @@ next_radius:
         if (!map_in_bounds(h, i))
             continue;
         if (owner != 0)
-            map_visible_to[h * 50 + i] |= (char) (1 << owner);
+            civ_vis_grid[h][i] |= (char) (1 << owner);
         k = map_flags(h, i);
         if ((k & 1) && map_city(h, i) != owner) {
             j = map_city(h, i);
@@ -147,32 +147,32 @@ next_radius:
             }
         }
         a = map_stack(h, i);
-        if (a != -1 && owner != the_enemy) {
+        if (a != -1 && owner != fight_enemy) {
             if (!(g & 1))
-                armydata[owner][index].visibility |= 1 << the_enemy;
-            each_stack(the_enemy, a, validate_record);
+                armydata[owner][index].visibility |= 1 << fight_enemy;
+            each_stack(fight_enemy, a, validate_record);
             if (terrain_at(h, i) == 10 || f != 10)
-                armydata[the_enemy][a].goto_x = -1;
+                armydata[fight_enemy][a].goto_x = -1;
             if (!(terrain_at(h, i) == 10 && f != 10 && utypes[armydata[owner][index].type].domain != 1))
                 armydata[owner][index].goto_x = -1;
             if (!(k & 1))
-                armydata[the_enemy][a].visibility |= 1 << owner;
-            if (utypes[armydata[owner][index].type].domain == 0 && terrain_at(x, y) != 10 && terrain_at(h, i) != 10 && utypes[armydata[the_enemy][a].type].domain != 1) {
-                diplomacy_event(owner, the_enemy, x, y);
-                if (!(treaties[owner][the_enemy].a & 2)) {
+                armydata[fight_enemy][a].visibility |= 1 << owner;
+            if (utypes[armydata[owner][index].type].domain == 0 && terrain_at(x, y) != 10 && terrain_at(h, i) != 10 && utypes[armydata[fight_enemy][a].type].domain != 1) {
+                diplomacy_event(owner, fight_enemy, x, y);
+                if (!(treaties[owner][fight_enemy].a & 2)) {
                     c = 1;
-                    if (the_enemy != 0 && armydata[the_enemy][a].type != 26 && (!(armydata[the_enemy][a].status & 8) || utypes[armydata[the_enemy][a].type].role != 2))
+                    if (fight_enemy != 0 && armydata[fight_enemy][a].type != 26 && (!(armydata[fight_enemy][a].status & 8) || utypes[armydata[fight_enemy][a].type].role != 2))
                         c = 3;
                     add_target(owner, h, i, 1, c);
                 }
                 if (armydata[owner][index].type != 26) {
                     if (owner != 0)
-                        add_target(the_enemy, x, y, 2, 2);
+                        add_target(fight_enemy, x, y, 2, 2);
                     else
-                        add_target(the_enemy, x, y, 2, 1);
+                        add_target(fight_enemy, x, y, 2, 1);
                 }
             }
-            if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaties[owner][the_enemy].a & 2))
+            if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaties[owner][fight_enemy].a & 2))
                 add_target(owner, h, i, 3, 2);
         }
         if (redraw && (owner == civnow || xray_on)) {
@@ -189,11 +189,11 @@ next_radius:
         k = map_flags(h, i);
         if ((utypes[armydata[owner][index].type].sight & 2) && (utypes[armydata[owner][index].type].domain != 2 || terrain_at(h, i) == 10)) {
             if (owner != 0)
-                map_visible_to[h * 50 + i] |= (char) (1 << owner);
-            if (a != -1 && owner != the_enemy && armydata[the_enemy][a].type != 22) {
+                civ_vis_grid[h][i] |= (char) (1 << owner);
+            if (a != -1 && owner != fight_enemy && armydata[fight_enemy][a].type != 22) {
                 if (!(k & 1))
-                    armydata[the_enemy][a].visibility |= 1 << owner;
-                if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaties[owner][the_enemy].a & 2))
+                    armydata[fight_enemy][a].visibility |= 1 << owner;
+                if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaties[owner][fight_enemy].a & 2))
                     add_target(owner, h, i, 3, 2);
             }
             if (redraw && (owner == civnow || xray_on)) {
@@ -201,35 +201,35 @@ next_radius:
                 map_claim(h + 240, i, help_probe(2, h, i) == 1 ? 1 : 2, 2);
             }
         }
-        if (a != -1 && owner != the_enemy && armydata[owner][index].type != 22) {
-            b = armydata[the_enemy][a].type;
+        if (a != -1 && owner != fight_enemy && armydata[owner][index].type != 22) {
+            b = armydata[fight_enemy][a].type;
             if ((utypes[b].sight & 2) && (utypes[b].domain != 2 || terrain_at(x, y) == 10)) {
-                armydata[the_enemy][a].status &= 0xfe;
-                armydata[the_enemy][a].goto_x = -1;
+                armydata[fight_enemy][a].status &= 0xfe;
+                armydata[fight_enemy][a].goto_x = -1;
                 if (!(g & 1))
-                    armydata[owner][index].visibility |= 1 << the_enemy;
-                if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaties[owner][the_enemy].a & 2))
-                    add_target(the_enemy, x, y, 3, 2);
-            } else if (the_enemy == civnow && (map_flags(h, i) & 1) && (map_visible_to[x * 50 + y] & (1 << civnow))) {
-                armydata[owner][index].visibility |= 1 << the_enemy;
+                    armydata[owner][index].visibility |= 1 << fight_enemy;
+                if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaties[owner][fight_enemy].a & 2))
+                    add_target(fight_enemy, x, y, 3, 2);
+            } else if (fight_enemy == civnow && (map_flags(h, i) & 1) && (civ_vis_grid[x][y] & (1 << civnow))) {
+                armydata[owner][index].visibility |= 1 << fight_enemy;
                 map_note(x, y);
             }
         }
-        if ((k & 1) && map_city(h, i) == civnow && (map_visible_to[x * 50 + y] & (1 << civnow))) {
+        if ((k & 1) && map_city(h, i) == civnow && (civ_vis_grid[x][y] & (1 << civnow))) {
             armydata[owner][index].visibility |= 1 << civnow;
             map_note(x, y);
         }
     }
     if (owner == civnow && redraw) {
         map_note(x, y);
-        e = 9;
-        do {
+        for (e = 9; e < 49; e++) {
             h = wrap_x(x + spiral_x[e]);
             i = y + spiral_y[e];
-            if (map_in_bounds(h, i) && (map_visible_to[h * 50 + i] & (1 << owner)))
+            if (!map_in_bounds(h, i))
+                continue;
+            if (civ_vis_grid[h][i] & (1 << owner))
                 map_note(h, i);
-            e++;
-        } while (e < 49);
+        }
     }
 }
 
@@ -291,7 +291,7 @@ void blink_unit(int owner, int index, int x, int y)
 
 extern struct unit armydata[][128];
 extern struct city townbuf[];
-extern char far map_visible_to[];
+extern char civ_vis_grid[80][50];
 
 extern void map_note(int, int, int);
 extern void unit_sight();
@@ -307,7 +307,7 @@ int create_unit(int owner, int type, int x, int y)
             map_refresh(owner, x, y);
             put_unit(owner, index, x, y);
             bit = 1 << owner;
-            map_visible_to[x * 50 + y] |= bit;
+            civ_vis_grid[x][y] |= bit;
             armydata[owner][index].status = 0;
             armydata[owner][index].x = x;
             armydata[owner][index].y = y;
@@ -636,14 +636,14 @@ int unit_blocked(int group, int x, int y)
             record_index = map_stack(candidate_x, candidate_y);
             if (!(armydata[found_group][record_index].visibility & (1 << civnow))) {
                 armydata[found_group][record_index].visibility |= visibility_bit = 1 << civnow;
-                map_visible_to[candidate_x * 50 + candidate_y] |= visibility_bit;
+                civ_vis_grid[candidate_x][candidate_y] |= visibility_bit;
                 map_note(candidate_x, candidate_y);
             }
             if (map_flags(candidate_x, candidate_y) & 1) {
                 unit_index = city_at(candidate_x, candidate_y);
                 townbuf[unit_index].visible_size = townbuf[unit_index].size;
                 map_mark(candidate_x, candidate_y);
-                map_visible_to[candidate_x * 50 + candidate_y] |= 1 << civnow;
+                civ_vis_grid[candidate_x][candidate_y] |= 1 << civnow;
                 map_note(candidate_x, candidate_y);
             }
         }
@@ -1030,7 +1030,10 @@ void menu_end(void)
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 int help_probe(int a, int b, int c)
 {
-    return pixel_at(a, b, c);
+    if (draw_large_text)
+        pixel_at(a, b * 2, c);
+    else
+        pixel_at(a, b, c);
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */

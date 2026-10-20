@@ -259,7 +259,7 @@ int cycling = 0;
 
 void cycle_on(void)
 {
-    if (!cycling && vga_modes) {
+    if (!cycling) {
         start_cycle(1);
         start_cycle(2);
         start_cycle(3);
@@ -269,7 +269,7 @@ void cycle_on(void)
 
 void cycle_off(void)
 {
-    if (cycling && vga_modes) {
+    if (cycling) {
         stop_cycle(1);
         stop_cycle(2);
         stop_cycle(3);
@@ -280,13 +280,11 @@ void cycle_off(void)
 void set_dac(int reg, int red, int green, int blue)
 {
     union REGS r;
-    if (vga_modes) {
-        r.h.ah = 0x10;
-        r.h.al = 0x10;
-        r.x.bx = reg;
-        r.h.dh = red;
-        r.h.ch = green;
-        r.h.cl = blue;
-        int86(0x10, &r, &r);
-    }
+    r.h.ah = 0x10;
+    r.h.al = 0x10;
+    r.x.bx = reg;
+    r.h.dh = red;
+    r.h.ch = green;
+    r.h.cl = blue;
+    int86(0x10, &r, &r);
 }

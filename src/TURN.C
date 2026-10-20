@@ -86,7 +86,8 @@ extern struct record_state armydata[];
 extern struct unit_type utypes[];
 extern struct relation treaties[8][8];
 extern struct civ_type civt[];
-extern char far advance_owners[], far map_visible_to[], far power_history[];
+extern char far advance_owners[], far power_history[];
+extern char civ_vis_grid[];
 extern char far war_record[];
 
 /* functions in other segments */
@@ -426,7 +427,7 @@ void uprising(void)
     } while (++dx < 99 && (w < 6 || unit_blocked(p, x, y) || terrain_at(x, y) == 10 || map_owner(x, y) != -1 || region_key(x, y) != region_key((unsigned char) units[i].x, (unsigned char) units[i].y)));
     if (dx >= 99)
         return;
-    if (units[i].owner == civnow && (map_visible_to[50 * x + y] & (1 << civnow))) {
+    if (units[i].owner == civnow && (civ_vis_grid[50 * x + y] & (1 << civnow))) {
         reveal(civnow, (unsigned char) units[i].x - 8, (unsigned char) units[i].y - 6);
         strcpy(msgtext, "Travellers report:\n");
         strcat(msgtext, advance_owners[0x46] & 7 ? "Guerrilla uprising\nnear " : advance_owners[0x44] & 7 ? "Native unrest\nnear " : "Barbarian uprising\nnear ");
@@ -443,7 +444,7 @@ void uprising(void)
             t = (k & 4) ? 10 : 6;
         if (k == count)
             t = 26;
-        armydata[create_unit(0, t, x, y)].mark |= map_visible_to[50 * x + y];
+        armydata[create_unit(0, t, x, y)].mark |= civ_vis_grid[50 * x + y];
         if (units[i].owner == civnow)
             map_note(x, y);
     }

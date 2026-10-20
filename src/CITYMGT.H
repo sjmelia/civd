@@ -22,3 +22,5 @@ extern void minimap_dot(int, int, int);
 extern void specialist_warning(void);
 extern void add_pollution(int, int);
 extern int draw_city_view(int, int, int, int, int);
+extern void truncate_text(char *, int);
+extern int nuke_fallout(int, int);

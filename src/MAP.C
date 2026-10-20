@@ -6,6 +6,7 @@
 #include "TURN.H"
 #include "BATTLE.H"
 #include "CAPTURE.H"
+#include "CITYMGT.H"
 #include "CORE.H"
 #include "DIALOG.H"
 #include "DRAW.H"
@@ -21,7 +22,7 @@
 extern struct city townbuf[];
 extern struct unit armydata[4][128];
 extern struct unit_type utypes[];
-extern char far map_visible_to[];
+extern char civ_vis_grid[];
 
 extern int wrap_x(int x);
 
@@ -81,7 +82,7 @@ void reveal(int player, int x, int y)
         cx_c = r1 & 0xf;
         ty = r1 >> 4;
         if (ty < 12 && cx_c < 15) {
-            if (xray_on != 0 || (map_visible_to[wrap_x(cx_c + map_x0) * 50 + ty + map_y0] & player)) {
+            if (xray_on != 0 || (civ_vis_grid[wrap_x(cx_c + map_x0) * 50 + ty + map_y0] & player)) {
                 map_note(wrap_x(cx_c + map_x0), ty + map_y0);
             } else {
                 rect_fill(scrbuf, (cx_c << 4) + 80, (ty << 4) + 8, 16, 16, 0);
@@ -290,7 +291,7 @@ int seen_map(int x, int y)
         label_with_style(30, sx, y2);
     if (xray_on == 0) {
         for (k = 1; k <= 8; k += 2) {
-            if (!((1 << civnow) & map_visible_to[wrap_x(spiral_x[k] + x) * 50 + spiral_y[k] + y]))
+            if (!((1 << civnow) & civ_vis_grid[wrap_x(spiral_x[k] + x) * 50 + spiral_y[k] + y]))
                 sprite_draw(scrbuf, sx, y2, marks_pics[k / 2]);
         }
     }
@@ -490,7 +491,7 @@ int map_stack(int x, int y)
         return -1;
     for (i = 0; i < 128; i++) {
         if (armydata[civ][i].type != -1 && armydata[civ][i].x == x && armydata[civ][i].y == y) {
-            the_enemy = civ;
+            fight_enemy = civ;
             stk_plr = civ;
             return i;
         }
@@ -570,7 +571,7 @@ int get_city(int x, int y)
     v = map_city(x, y);
     for (i = 0; i < 128; i++) {
         if (townbuf[i].status != -1 && townbuf[i].x == x && townbuf[i].y == y) {
-            the_enemy = v;
+            fight_enemy = v;
             stk_plr = v;
             return i;
         }
@@ -617,7 +618,7 @@ int patterned_cell(int unused, int x, int y)
 int has_hut(int a, int x, int y)
 {
     int seed;
-    if (a == 10 || (map_visible_to[x * 50 + y] & 1) || y <= 1 || y >= 48)
+    if (a == 10 || (civ_vis_grid[x * 50 + y] & 1) || y <= 1 || y >= 48)
         return 0;
     seed = (x >> 2) * 13 + (y >> 2) * 11 + map_rng_state + 8;
     if ((x & 3) * 4 + (y & 3) == ((unsigned char) seed & 31) && !(map_flags(x, y) & 1))

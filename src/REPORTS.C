@@ -20,7 +20,7 @@
 
 extern struct unit armydata[][128];
 extern struct city townbuf[];
-extern char far map_visible_to[][50];
+extern char civ_vis_grid[][50];
 
 extern unsigned char far power_history[][8];
 
@@ -90,7 +90,7 @@ int mode;
     }
 
     for (i = 0; i < 80; i++) {
-        if ((map_visible_to[i][0] & m) || (map_visible_to[i][49] & m)) {
+        if ((civ_vis_grid[i][0] & m) || (civ_vis_grid[i][49] & m)) {
             min_y = 0;
             max_y = 49;
         }
@@ -101,7 +101,7 @@ int mode;
 draw_loop:
     for (y = 0; y < 50; y++) {
         for (x = 0; x < 80; x++) {
-            if (!(map_visible_to[x][y] & m) || !map_in_bounds(0, y + oy)) {
+            if (!(civ_vis_grid[x][y] & m) || !map_in_bounds(0, y + oy)) {
                 if (!xray_on)
                     continue;
             }

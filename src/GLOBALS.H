@@ -29,7 +29,7 @@ extern int liftoff_when[8];
 extern int palace_remote;       /* distance to nearest own palace */
 extern int main_option_result;
 extern unsigned char intro_kept_pal[48];
-extern int map_view_changed;    /* city view replaced the screen */
+extern int marvel_points;       /* score from wonders, 20 each */
 extern int city_count[8];       /* cities per civ */
 extern int best_camp_far;
 extern int players;
@@ -75,7 +75,7 @@ extern union REGS bios_call_reg_block_io;       /* registers for BIOS calls */
 #endif
 extern int saved_found;
 extern int marked_mask;
-extern int the_enemy;
+extern int map_view_changed;    /* city view replaced the screen */
 extern int floors_palace[12];
 extern int (*pic_reader)();
 extern int mse_held;
@@ -143,8 +143,8 @@ extern int city_keep;           /* shields spent on unit support */
 extern int map_x0;
 extern int cmd_code;
 extern int terrain_coast_sprites[32];
-extern int small_space_check;
 extern int civ_research_tally[8];       /* research accumulated toward the next advance */
+extern int small_space_check;
 extern int map_label_xorg[32];
 extern int defenders_island[8][16];     /* defence strength per civ and continent */
 extern int history_rating[8];
@@ -161,12 +161,20 @@ extern int village_icons;
 extern int map_rail_shapes[16]; /* railroad tiles by direction */
 extern int map_paths_icon[16];  /* road tiles by direction */
 extern int civnow;
+extern int fight_enemy;
 extern char spot_classes[8][16];        /* AI site kind per civ and slot (-1 free) */
 extern int setting_value;
 extern int beginner_help;
 extern struct _iobuf *credits_stream;
 extern int merit_people;        /* score from happy and content citizens */
-extern int marvel_points;       /* score from wonders, 20 each */
+extern int gangmode;
+#ifdef GLOBALS_STORAGE
+extern char civ_vis_grid[80][50];       /* per-civ visibility bits by map square */
+#endif
+extern int civ_settlers_n[8];   /* settlers per civ */
+extern int need_ok_key;
+extern int icons_council[4][3]; /* advisor bodies [i][0] and heads [i][1..2] */
+extern int max_rating;
 extern int egamode;             /* EGA driver loaded */
 extern int ai_zone_places[16];
 extern int entry_first;
@@ -178,11 +186,6 @@ extern int learning_yield;      /* city science output */
 extern int town_unhappy_counts; /* unhappy citizens */
 extern int town_happy_ones_num; /* happy citizens */
 extern int town_res_sums[4];
-extern int gangmode;
-extern int civ_settlers_n[8];   /* settlers per civ */
-extern int need_ok_key;
-extern int icons_council[4][3]; /* advisor bodies [i][0] and heads [i][1..2] */
-extern int max_rating;
 extern int still;
 extern int dialog_dim;
 extern int extra_3;
