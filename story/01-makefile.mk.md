@@ -21,9 +21,9 @@ the build that reproduces the executable.
 
 ## Compiler memory conditions
 
-The compiler rules for `CONTROL.C` and `CITYMGT.C` use `loadfix -192` to
-limit available memory. Microsoft C 5.1 emits different code for these
-large modules when memory is scarce. This build condition reproduces the
+The compiler rule for `CITYMGT.C` uses `loadfix -192` to
+limit available memory. (`CONTROL.C` is compiled without it on this branch.)
+Microsoft C 5.1 emits different code for large modules when memory is scarce. This build condition reproduces the
 executable; the original machine configuration is unknown.
 
 The following rules also distinguish C modules from assembly modules. MASM
@@ -32,7 +32,7 @@ segment names beginning with `O` for the overlays. An overlay occupies a
 shared loading area when needed, allowing code that is not needed together to
 use the same memory.
 
-{{#include src/MAKEFILE | "#\tReconstructed low-memory MSC condition for CONTROL and CITYMGT;"}}
+{{#include src/MAKEFILE | "#\tReconstructed low-memory MSC condition for CITYMGT; CONTROL is"}}
 
 ## Linking and the startup correction
 
