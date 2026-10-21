@@ -1,13 +1,15 @@
 # Civilization 474.01 and 474.05
 
-The `release/474.01` branch and `v474.01` tag rebuild the earlier executable byte for byte.
-`main` and the `v474.05` tag retain the later reconstruction.
+Each version has its own branch. `release/474.01` rebuilds the earlier
+executable byte for byte; `main` is the 474.05 reconstruction. This file lives
+on `main` and is merged into the release branches, so every branch carries
+the same comparison.
 
-Compare the two versions with:
+Compare the versions with:
 
 ```sh
-git diff v474.01 v474.05 -- src/
-git diff --stat v474.01 v474.05 -- src/
+git diff release/474.01 main -- src/
+git diff --stat release/474.01 main -- src/
 ```
 
 The direction above shows changes from 474.01 to 474.05. Names and C source
@@ -51,7 +53,7 @@ compiler condition to `UNITAI.C`, preserving its unoptimized `ai_order()`.
 Historical compiler memory, identifier spelling and exact original source
 forms remain unknown.
 
-Run `just verify` after checking out the desired version. Each checkout pins
+Run `just verify` after checking out the desired branch. Each checkout pins
 its own complete raw LINK output and final executable in `civ.sha256`.
 The graphics, sound and MISC executables are identical between these versions.
 The build rejects compiler/linker errors even if period MAKE leaves an output.

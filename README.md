@@ -16,8 +16,8 @@ sound driver and `MISC.EXE` against pinned hashes. The build applies a checked
 four-byte startup correction, described in the
 [build notes](book/src/architecture/toolchain_clues.md).
 
-The `v474.05` tag and `main` retain the later version. See
-[version differences](VERSIONS.md) for the comparison and Git commands.
+`main` holds the 474.05 reconstruction; other releases are on `release/*`
+branches. See [version differences](VERSIONS.md).
 
 See also: [reciv](https://github.com/sjmelia/reciv) which rebuilds the game
 for modern platforms.

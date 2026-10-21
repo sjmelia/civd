@@ -2,7 +2,7 @@
 
 This book describes the MS-DOS version of *Sid Meier's Civilization*,
 version 474.05, against which the narrative was written. This branch builds
-474.01; [the version comparison](https://github.com/sjmelia/civd/blob/v474.01/VERSIONS.md)
+474.01; [the version comparison](https://github.com/sjmelia/civd/blob/main/VERSIONS.md)
 records the differences. The book follows the C and assembly in `src/`, from DOS drivers
 and map storage to city simulation, unit movement and diplomacy.
 
