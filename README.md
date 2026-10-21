@@ -16,6 +16,9 @@ checks the raw linker output, MCGA graphics driver, AdLib sound driver and
 four-byte startup correction, described in the
 [build notes](book/src/architecture/toolchain_clues.md).
 
+Other releases are kept on `release/*` branches; see
+[version differences](VERSIONS.md).
+
 See also: [reciv](https://github.com/sjmelia/reciv) which rebuilds the game
 for modern platforms.
 
