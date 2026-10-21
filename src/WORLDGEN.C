@@ -440,7 +440,6 @@ void number_regions(void)
         continent_span[pass_j][15] = 1;
     }
     story_step();
-    blit(scrbuf, 0, 0, 320, 200, tile_page, 0, 0);
     link_land(1L);
     link_seas(1L);
     story_step();
@@ -509,25 +508,27 @@ void score_sites(void)
         }
 }
 
+extern int terrain_at(int, int);
+
 void link_land(int show)
 {
     int spare26_n, ty_d, spare22_b, tx_e, spare1e_p, target_y_b, cy_e, cid, target_x_c, cx_f, spare12_c, unused_m, nid_f, oy_i, dir_b, ox_j, spare6_p, y_h, x_i;
     memset(block_ground_way, 0, 260);
-    for (cx_f = 0; cx_f < 20; cx_f++)
+    for (cx_f = 0; cx_f < 20; cx_f++) {
         for (cy_e = 0; cy_e < 13; cy_e++) {
             ox_j = cx_f * 4 + 1;
             oy_i = cy_e * 4 + 1;
             cid = -1;
             /* Share the selected Y coordinate between neighbouring-cell tests. */
-            if (gen_terrain_at(ox_j, oy_i) != 10) {
+            if (terrain_at(ox_j, oy_i) != 10) {
                 cid = region_key(ox_j, oy_i);
                 tx_e = ox_j;
 set_y1:        ty_d = oy_i;
-            } else if (gen_terrain_at(ox_j + 1, oy_i) != 10) {
+            } else if (terrain_at(ox_j + 1, oy_i) != 10) {
                 cid = region_key(ox_j + 1, oy_i);
                 tx_e = ox_j + 1;
                 goto set_y1;
-            } else if (gen_terrain_at(ox_j, oy_i + 1) != 10) {
+            } else if (terrain_at(ox_j, oy_i + 1) != 10) {
                 cid = region_key(ox_j, oy_i + 1);
                 tx_e = ox_j;
                 ty_d = oy_i + 1;
@@ -537,7 +538,7 @@ join0:     ;
             if (cid == -1)
                 continue;
             goto skip_src;
-extra0:    if (gen_terrain_at(ox_j + 1, oy_i + 1) != 10) {
+extra0:    if (terrain_at(ox_j + 1, oy_i + 1) != 10) {
                 cid = region_key(ox_j + 1, oy_i + 1);
                 tx_e = ox_j + 1;
                 ty_d = oy_i + 1;
@@ -548,15 +549,15 @@ skip_src:  ;
                 x_i = ox_j + spiral_x[dir_b] * 4;
                 y_h = oy_i + spiral_y[dir_b] * 4;
                 nid_f = -1;
-                if (gen_terrain_at(x_i, y_h) != 10) {
+                if (terrain_at(x_i, y_h) != 10) {
                     nid_f = region_key(x_i, y_h);
                     target_x_c = x_i;
 set_y2:            target_y_b = y_h;
-                } else if (gen_terrain_at(x_i + 1, y_h) != 10) {
+                } else if (terrain_at(x_i + 1, y_h) != 10) {
                     nid_f = region_key(x_i + 1, y_h);
                     target_x_c = x_i + 1;
                     goto set_y2;
-                } else if (gen_terrain_at(x_i, y_h + 1) != 10) {
+                } else if (terrain_at(x_i, y_h + 1) != 10) {
                     nid_f = region_key(x_i, y_h + 1);
                     target_x_c = x_i;
                     target_y_b = y_h + 1;
@@ -564,7 +565,7 @@ set_y2:            target_y_b = y_h;
                     goto extra1;
 join1:         ;
                 goto skip_extra;
-extra1:        if (gen_terrain_at(x_i + 1, y_h + 1) != 10) {
+extra1:        if (terrain_at(x_i + 1, y_h + 1) != 10) {
                     nid_f = region_key(x_i + 1, y_h + 1);
                     target_x_c = x_i + 1;
                     target_y_b = y_h + 1;
@@ -577,12 +578,12 @@ skip_extra:    ;
                 if (unused_m == -1 || unused_m >= 20)
                     continue;
                 block_ground_way[cx_f][cy_e] |= 1 << (dir_b - 1);
-                x_i = cx_f + spiral_x[dir_b];
-                y_h = cy_e + spiral_y[dir_b];
-                if (x_i >= 0 && x_i < 20 && y_h >= 0 && y_h < 13)
-                    block_ground_way[x_i][y_h] |= 1 << ((dir_b + 3) & 7);
+                block_ground_way[spiral_x[dir_b] + cx_f][spiral_y[dir_b] + cy_e] |= 1 << ((dir_b + 3) & 7);
             }
         }
+        if (show)
+            story_step();
+    }
 }
 
 extern unsigned char coarse_ocean_map[20][13];

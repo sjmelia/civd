@@ -94,9 +94,8 @@ extern void disk_insert(), select_page(), cycle_off();
 
 extern int in_view(int, int);
 #define U armydata[civ][jf]
-/* ai_turn is too large for the post-optimizer (C4063); its exact code depends
-   on the compiler memory taken by identifiers it references. Keep its labels,
-   locals and the globals it names short, and verify after any rename. */
+/* In 474.03 ai_turn is post-optimized, unlike in 474.05 where it exceeds the
+   post-optimizer limit (C4063). */
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void ai_turn(int civ)
 {

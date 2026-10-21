@@ -132,7 +132,7 @@ verify: clean compile
     # startup edit is the only change between it and CIV.EXE.
     cd "{{out}}"
     if sha256sum --quiet -c "{{justfile_directory()}}/civ.sha256"; then
-        echo 'PASS: CIV.EXE (474.05), MGRAPHIC.EXE, ASOUND.CVL and MISC.EXE match the originals.'
+        echo 'PASS: CIV.EXE (474.03), MGRAPHIC.EXE, ASOUND.CVL and MISC.EXE match the originals.'
     else
         echo 'FAIL: output differs from the original.' >&2
         exit 1

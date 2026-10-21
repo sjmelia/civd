@@ -13,8 +13,9 @@ the compiled layout unchanged.
 
 ## Compiler memory
 
-The rules for `CONTROL.C` and `CITYMGT.C` use `loadfix -192` to limit the
-memory available to the compiler. Available memory can affect the code
+The rule for `CITYMGT.C` uses `loadfix -192` to limit the
+memory available to the compiler. (`CONTROL.C` is compiled without it on this
+branch: the 474.03 `ai_turn` is post-optimized.) Available memory can affect the code
 Microsoft C 5.1 emits for these large modules. The checked build includes
 that condition; the original developers' machine configuration is unknown.
 
@@ -26,11 +27,11 @@ four bytes different in `CIV.EXE`.
 
 | | Call destination | Function |
 | --- | --- | --- |
-| Raw LINK output | `2045:0442` | Runtime environment initialization, `__setenvp` |
+| Raw LINK output | `1fc3:0448` | Runtime environment initialization, `__setenvp` |
 | Final executable | `01a8:01c1` | `empty_hook`, which immediately returns |
 
-The call opcode is at file offset `0x204c9`; its four destination bytes
-occupy `0x204ca–0x204cd`. The editor checks length, CRC and expected bytes
+The call opcode is at file offset `0x1fcaf`; its four destination bytes
+occupy `0x1fcb0–0x1fcb3`. The editor checks length, CRC and expected bytes
 before making the change, then checks the result. The reason the original
 executable bypasses environment initialization is unknown.
 

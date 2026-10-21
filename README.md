@@ -9,15 +9,15 @@ Reverse-engineered source code for the MS-DOS version of the 1991 game "Sid Meie
 > and some type declarations are inferred. An exact executable match does not
 > prove that these match the original source. 
 
-The sources build with Microsoft C 5.1, MASM 5.10 and LINK 5.01. The
-resulting `CIV.EXE` matches version 474.05 byte for byte. Verification also
-checks the raw linker output, MCGA graphics driver, AdLib sound driver and
-`MISC.EXE` against pinned hashes. The build applies a checked
+The sources build with Microsoft C 5.1, MASM 5.10 and LINK 5.01. On this
+branch the resulting `CIV.EXE` matches version 474.03 byte for byte.
+Verification also checks the raw linker output, MCGA graphics driver, AdLib
+sound driver and `MISC.EXE` against pinned hashes. The build applies a checked
 four-byte startup correction, described in the
 [build notes](book/src/architecture/toolchain_clues.md).
 
-Other releases are kept on `release/*` branches; see
-[version differences](VERSIONS.md).
+`main` holds the 474.05 reconstruction; other releases are on `release/*`
+branches. See [version differences](VERSIONS.md).
 
 See also: [reciv](https://github.com/sjmelia/reciv) which rebuilds the game
 for modern platforms.

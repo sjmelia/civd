@@ -318,7 +318,7 @@ int find_slot(int civ, int city)
         for (i = 1; i < ncand; i++) {
             what = cand[i];
             if (what < 0 || what >= 26) {
-                rank = 999;
+                rank = 99;
                 military_build_c = 0;
                 switch (-what) {
                 case 4:
@@ -392,7 +392,7 @@ int find_slot(int civ, int city)
                             rank = 3;
                     }
                     if (civ == civnow && (townbuf[city].status & 0x10))
-                        rank = 999;
+                        rank = 99;
                     break;
                 case -26:
                     if (civnow <= 0)
@@ -409,11 +409,8 @@ int find_slot(int civ, int city)
                     rank = clamp(tech_count[civ] - tech_count[civnow] + 10, 5, 10);
                     break;
                 }
-                if (rank < 400) {
-                    rank *= (military_area_m != military_build_c) ? 20 : 10;
-                    rank = 3 * rank / (civt[civ_tribe_of[civ]].f2 + 3);
-                } else
-                    rank = 0x3fff;
+                rank *= (military_area_m != military_build_c) ? 20 : 10;
+                rank = 3 * rank / (civt[civ_tribe_of[civ]].f2 + 3);
                 if (townbuf[city].buildings & 2)
                     rank += rank / 4;
             } else {
@@ -498,31 +495,31 @@ int find_slot(int civ, int city)
         }
         if ((debug & 1) && !warned) {
             scrbuf->font = 2;
+            rank = cand[best_u2];
+            if (rank >= 0)
+                strcpy(choice_text_l + 1, utypes[rank].name);
+            else
+                strcpy(choice_text_l + 1, improvements[-rank].name);
+            strcpy(msgtext, "Military Advisor:\n");
+            news_name("produce.txt", choice_text_l);
+            strcpy(message_slot, choice_text_l + 1);
+            help_open();
+            news_wrap(50);
             if (best_u2 != -1) {
-                rank = cand[best_u2];
-                if (rank >= 0)
-                    strcpy(choice_text_l + 1, utypes[rank].name);
-                else
-                    strcpy(choice_text_l + 1, improvements[-rank].name);
-                strcpy(msgtext, "Military Advisor:\n");
-                news_name("produce.txt", choice_text_l);
-                strcpy(message_slot, choice_text_l + 1);
-                help_open();
-                news_wrap(50);
                 abort_flag = 1;
                 show_menu(msgtext, 8, 160);
             }
+            rank = cand[best_i];
+            if (rank >= 0)
+                strcpy(choice_text_l + 1, utypes[rank].name);
+            else
+                strcpy(choice_text_l + 1, improvements[-rank].name);
+            strcpy(msgtext, "Domestic Advisor:\n");
+            news_name("produce.txt", choice_text_l);
+            strcpy(message_slot, choice_text_l + 1);
+            help_open();
+            news_wrap(50);
             if (best_i != -1) {
-                rank = cand[best_i];
-                if (rank >= 0)
-                    strcpy(choice_text_l + 1, utypes[rank].name);
-                else
-                    strcpy(choice_text_l + 1, improvements[-rank].name);
-                strcpy(msgtext, "Domestic Advisor:\n");
-                news_name("produce.txt", choice_text_l);
-                strcpy(message_slot, choice_text_l + 1);
-                help_open();
-                news_wrap(50);
                 abort_flag = 1;
                 show_menu(msgtext, 164, 160);
             }

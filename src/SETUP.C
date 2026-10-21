@@ -52,7 +52,7 @@ void setup_main(void)
         fscanf(intro_file_p, "%[^\n]\n", msgtext);
         /* Replace the printed version digit in the bundled introduction. */
         if (intro_line_p == 3) {
-            msgtext[0x36] = '5';
+            msgtext[0x36] = '3';
             msgtext[0x37] = ' ';
         }
         print_at(intro_line_p, 0, msgtext);
