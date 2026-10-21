@@ -100,6 +100,12 @@ compile:
         -c 'mount d "{{justfile_directory()}}/{{out}}"' \
         -c 'd:' -c 'set PATH=C:\BIN;Z:\' -c 'set INCLUDE=C:\INCLUDE' \
         -c 'make MAKEFILE >MAKE.LOG' -c exit >build/dosbox.log 2>&1
+    # Period MAKE can continue after a failed compiler or LINK invocation.
+    # Reject diagnostics even if an older object produced an executable.
+    if grep -E '(fatal error|error) [A-Z][0-9]{4}:|There were [1-9][0-9]* errors detected' "{{out}}"/*.LOG; then
+        echo 'FAIL: compiler or linker errors; see build logs.' >&2
+        exit 1
+    fi
     rebuilt=$(grep -c -E '^ +(loadfix -[0-9]+ )?(cl|masm) ' "{{out}}/MAKE.LOG" || true)
     if [ ! -f "{{out}}/CIV.EXE" ]; then
         echo "FAIL: build failed; see {{out}}/MAKE.LOG, MSC.LOG, MASM.LOG, LINK.LOG." >&2
