@@ -1,4 +1,4 @@
-# 6. Resolving combat
+# 7. Resolving combat
 
 Complete file:
 [`src/BATTLE.C`](https://github.com/sjmelia/civd/blob/main/src/BATTLE.C).

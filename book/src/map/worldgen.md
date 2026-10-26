@@ -53,3 +53,7 @@ The result is reduced to a small value stored at x+80 in the working page.
 
 This supplies later settlement decisions. It does not directly choose and
 found eight starting cities.
+
+[Starting conditions](starting_conditions.md) follows how `init_civ()` uses
+these scores to place Settlers and how `rate_starts()` awards extra units
+and technologies.

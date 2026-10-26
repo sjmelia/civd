@@ -1,4 +1,4 @@
-# 7. Saving and loading state
+# 8. Saving and loading state
 
 Complete file:
 [`src/SAVE.C`](https://github.com/sjmelia/civd/blob/main/src/SAVE.C).

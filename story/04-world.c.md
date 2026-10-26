@@ -102,4 +102,4 @@ activity.
 
 {{#include src/WORLDGEN.C | "void global_warming(int severity)"}}
 
-[← Previous](03-game.c.html) · [Contents](00-opening.c.html) · [Next →](05-turn.c.html)
+[← Previous](03-game.c.html) · [Contents](00-opening.c.html) · [Next →](04-world_starting.c.html)
