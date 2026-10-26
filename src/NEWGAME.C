@@ -21,16 +21,9 @@
 #include "MESSAGE.H"
 #include "NEWGAME.H"
 
-struct civ_type {
-    char leader[16], plural[16], adjective[16];
-    int f0, f1, f2, f3, f4;
-};
-
 extern int debug;
 extern char sound_driver[];
 extern struct city townbuf[];
-extern struct civ_type civt[];
-extern char far city_site_x[];
 extern int far advance_owners[];
 extern char far map_visible_to[][50];
 extern signed char far adv_source[][72];
@@ -39,14 +32,9 @@ extern struct unit armydata[8][128];
 
 extern int treaties[8][8];
 
-extern void sound();
 
-extern int rand_scaled(int);
 
-extern int terrain_at(int, int);
 
-extern void disk_insert(), LOAD_SPRITES();
-extern void recolour_rect();
 extern char far spaceships[][15][12];
 
 signed char start_pos[16][2] = {
@@ -195,7 +183,7 @@ void new_game(void)
         }
     }
     strcat(msgtext, "and Roads.\n");
-    sound(civt[civ_tribe_of[civnow]].f4, 3);
+    sound(civt[civ_tribe_of[civnow]].anthem, 3);
     mouse_off();
     rect_fill(scrbuf, 0, 0, 320, 200, 15);
     menu_clear();
@@ -292,7 +280,7 @@ int init_civ(int civ)
                 trial = 2000;
         }
         if (civ != civnow) {
-            sci[civ] = civt[civ_tribe_of[civ]].f2 + 3;
+            sci[civ] = civt[civ_tribe_of[civ]].civilized + 3;
             civ_toll[civ] = 9 - sci[civ];
         }
         if ((350 - cur_tier * 50 < turn_tick || trial >= 2000) && civ != civnow) {

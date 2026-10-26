@@ -6,3 +6,5 @@ extern int fame_slot;
 extern void fame_header(int, int);
 extern void top_five(void);
 extern int show_fame(int);
+/* Calls use differing argument counts; retain the unprototyped interface. */
+extern int fame_insert();

@@ -25,6 +25,7 @@
 - [Terrain tables](map/terrains.md)
 - [Tile yields and improvements](map/tile_yields.md)
 - [World generation](map/worldgen.md)
+- [Starting conditions](map/starting_conditions.md)
 - [Exploration and visibility](map/fog_of_war.md)
 
 # Units and combat

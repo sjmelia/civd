@@ -26,11 +26,8 @@
 #include "SPACESHP.H"
 #include "UNITAI.H"
 #include "UNITS.H"
-
-struct civ_type {
-    char strings[48];
-    int f0, f1, f2, f3, f4;
-};
+#include "PATH.H"
+#include "FADE.H"
 
 #define CITY_SCI(i) (townbuf[i].shield_box)
 
@@ -38,7 +35,6 @@ extern int debug;
 
 extern int treaties[8][8];
 
-extern struct civ_type civt[];
 extern struct unit armydata[][128];
 extern struct city townbuf[];
 extern struct unit_type utypes[];
@@ -46,22 +42,11 @@ extern int far advance_owners[];
 extern char far adv_source[];
 extern char far map_visible_to[];
 
-extern int city_process();
 
-extern int map_stack(int, int);
-extern int rand_scaled(int);
 
-extern void map_mark(int, int);
 
-extern void each_stack();
-extern int wrap_x(int);
 
-extern void cycle_off(void);
-extern void sound(int);
-extern int disk_insert(int, long);
 
-extern void load_palette(char *, char *);
-extern void install_palette(int, char *);
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void civ_economy(int civ)
@@ -96,7 +81,7 @@ void civ_economy(int civ)
         if (!(turn_tick & 3) && flags == 0 && civ_toll[civ] + sci[civ] < 8)
             rate--;
         rate = clamp(rate, 0, 4);
-        sci[civ] = civt[civ_tribe_of[civ]].f2 + (10 - rate) / 2;
+        sci[civ] = civt[civ_tribe_of[civ]].civilized + (10 - rate) / 2;
         if (money[civ] > turn_tick + 100)
             sci[civ]++;
         if (has_tech(civ, 63))
@@ -410,7 +395,7 @@ int find_slot(int civ, int city)
                     break;
                 }
                 rank *= (military_area_m != military_build_c) ? 20 : 10;
-                rank = 3 * rank / (civt[civ_tribe_of[civ]].f2 + 3);
+                rank = 3 * rank / (civt[civ_tribe_of[civ]].civilized + 3);
                 if (townbuf[city].buildings & 2)
                     rank += rank / 4;
             } else {
@@ -456,7 +441,7 @@ int find_slot(int civ, int city)
                         continue;
                     rank = 3 * rank / 2;
                 }
-                rank = (what == 0 ? ((townbuf[city].buildings & 4) ? 4 : 6) - civt[civ_tribe_of[civ]].f2 : 16) * (utypes[what].cost + 2) * rank / ((utypes[what].attack + utypes[what].defense) * (utypes[what].moves + 1));
+                rank = (what == 0 ? ((townbuf[city].buildings & 4) ? 4 : 6) - civt[civ_tribe_of[civ]].civilized : 16) * (utypes[what].cost + 2) * rank / ((utypes[what].attack + utypes[what].defense) * (utypes[what].moves + 1));
                 if (utypes[what].role == 3)
                     rank *= military_area_m ? 4 : 2;
                 if (utypes[what].domain == 1)
@@ -636,7 +621,7 @@ retry:
             strcat(msgtext, itoa(++advances_future, nstr, 10));
         }
         strcat(msgtext, "!\n");
-        sound(civt[civ_tribe_of[civ]].f3);
+        sound(civt[civ_tribe_of[civ]].motif);
         if (gfx) {
             if (!nopt)
                 scrbuf->font = 6;
@@ -900,5 +885,5 @@ int has_tech(int civ, int adv)
 
 int advance_value(int civ, int adv)
 {
-    return (signed char) advance_attrs[adv].a + civt[civ_tribe_of[civ]].f2 * advance_attrs[adv].b;
+    return (signed char) advance_attrs[adv].a + civt[civ_tribe_of[civ]].civilized * advance_attrs[adv].b;
 }

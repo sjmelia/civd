@@ -1,4 +1,4 @@
-# 5. Processing a turn
+# 6. Processing a turn
 
 Complete file:
 [`src/TURN.C`](https://github.com/sjmelia/civd/blob/main/src/TURN.C).
@@ -89,4 +89,4 @@ turn with the display presented to the player.
 
 {{#include src/TURN.C | "void ai_event(void)"}}
 
-[← Previous](04-world.c.html) · [Contents](00-opening.c.html) · [Next →](06-battle.c.html)
+[← Previous](04-world_starting.c.html) · [Contents](00-opening.c.html) · [Next →](06-battle.c.html)

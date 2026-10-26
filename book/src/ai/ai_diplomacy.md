@@ -40,7 +40,7 @@ to fight `b`:
    continents where both have units:
 
    ```text
-   wc   = a's other wars + (1 if a and b are at peace) - a's aggression f0
+   wc   = a's other wars + (1 if a and b are at peace) - a's aggression aggressive
    x    = sum of a's attack on continents where b has defenders
    den  = 1 + sum of (b's attack / 2 + b's defence) on those continents
    pass = x * 4 / den >= wc + 4, or a has no towns on those continents

@@ -128,7 +128,7 @@ improves terrain when the rule option allows (always, in practice):
   least two shields (one if it already has a road).
 
 A settler on polluted land cleans it (`'p'`). Next comes the expansion
-test from the leader's `f1` trait (see
+test from the leader's `expansionist` trait (see
 [Leaders and Personalities](leader_personalities.md#where-the-traits-are-read)):
 a settler with a destination keeps going while the continent has room.
 

@@ -12,22 +12,12 @@
 #include "CORE.H"
 #include "TURN.H"
 
-struct civ_type {
-    char leader[16], plural[16], adjective[16];
-    int f0, f1, f2, f3, f4;
-};
-
-extern struct civ_type civt[];
 extern struct city townbuf[];
 extern struct unit armydata[8][128];
 extern struct {
     char a, b;
 } treaties[8][8];
 
-extern int rand_scaled(int);
-extern int map_flags(int, int);
-extern int city_at(int, int);
-extern void reveal(int, int, int);
 
 int civil_war(int old)
 {

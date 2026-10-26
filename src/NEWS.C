@@ -9,12 +9,12 @@
 #include "NEWS.H"
 #include "TURN.H"
 #include "CAPTURE.H"
+#include "CORE.H"
+#include "DRIVER.H"
 
 extern struct city townbuf[];
 
-extern int rand_scaled(int n);
 
-extern void sprite_draw_clipped(struct page *, int, int, int);
 
 void news_box(int city)
 {                               /* newsflash panel */

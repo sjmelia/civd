@@ -36,6 +36,9 @@
 #include "DRAW.H"
 #include "PATH.H"
 #include "GLOBALS.H"
+#include "DRIVER.H"
+#include "PALACE.H"
+#include "MOUSE.H"
 
 extern int debug;
 
@@ -44,8 +47,6 @@ extern struct unit_type utypes[];
 extern struct city townbuf[];
 extern char far map_visible_to[];
 
-extern int map_flags(int, int), city_at(int, int), adj_grp();
-extern int terrain_at(int, int), wrap_x(int);
 extern int abs(int);
 
 struct terrain_work_rule {
@@ -58,41 +59,19 @@ struct terrain_control {
 };
 extern struct terrain_work_rule work_rules[];
 extern struct terrain_control terrains[];
-extern int unit_redraw(int, int);
-extern void capunit();
-struct civ_type {
-    char leader[16], plural[16], adjective[16];
-    int f0, f1, f2, f3, f4;
-};
-extern struct civ_type civt[];
 
-extern void spy_rpt();
 
-extern void civ_score(), world_map();
 
-extern void init_mouse(void), set_page(int);
 extern int getch(void);
 extern int treaties[8][8];
-extern int rand_scaled(int), pixel_at();
-extern void seen_map(int, int), lift_unit(int, int, int, int);
 
-extern int battle(), map_owner(int, int);
 
-extern void sound();
 
-extern int each_stack();
 
-extern void map_mark(int, int);
 
-extern int map_stack(int, int);
-extern void map_note();         /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
-extern void palpic();
-extern void unit_sight(), flip(int), reveal(int, int, int);
-extern void set_mousecur(int, int, int);
 extern void unit_remove(), unit_icon();
-extern void disk_insert(), select_page(), cycle_off();
+extern void select_page();
 
-extern int in_view(int, int);
 #define U armydata[civ][jf]
 /* In 474.03 ai_turn is post-optimized, unlike in 474.05 where it exceeds the
    post-optimizer limit (C4063). */
@@ -1177,9 +1156,9 @@ sc:                            /* scroll map */
                     break;
                 case 0x1300:
                     for (hh = 0; hh < 16; hh++) {
-                        civt[hh].f0 = rand_scaled(3) - 1;
-                        civt[hh].f1 = rand_scaled(3) - 1;
-                        civt[hh].f2 = rand_scaled(3) - 1;
+                        civt[hh].aggressive = rand_scaled(3) - 1;
+                        civt[hh].expansionist = rand_scaled(3) - 1;
+                        civt[hh].civilized = rand_scaled(3) - 1;
                     }
                     show_msg("Leaders randomized.\n", 100, 80);
                     break;
@@ -1315,8 +1294,6 @@ extern struct unit_type utypes[];
 extern char far map_visible_to[];
 extern struct unit armydata[4][128];
 
-extern int map_flags(int, int), terrain_at(int, int);
-extern void map_note(int, int);
 
 void note_map(int x, int y)
 {
@@ -1371,7 +1348,6 @@ int build_ok(int x, int y)
 extern struct terrain_control terrains[];
 extern struct city townbuf[];
 
-extern int city_at(int, int);
 
 void uinit(int player, int unit)
 {

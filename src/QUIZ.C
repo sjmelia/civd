@@ -21,13 +21,9 @@ extern struct unit armydata[8][128];
 
 extern char far advance_pages[];
 
-extern void cycle_off(void);
 
-extern void disk_insert(int, long);
 
-extern void restore_palette(char *);
 
-extern int rand_scaled(int);
 
 extern int quiz();              /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 

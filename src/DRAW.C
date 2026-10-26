@@ -2,12 +2,9 @@
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "DRAW.H"
+#include "DRIVER.H"
+#include "RASTER.H"
 
-extern void page_line(struct page *, int, int, int, int, int);
-extern void page_string(struct page *, int, int, char *);
-extern int char_width(int, int);
-extern void timer_reset(void);
-extern int timer_read(void);
 
 void draw_line(int x1, int y1, int x2, int y2, int colour)
 {

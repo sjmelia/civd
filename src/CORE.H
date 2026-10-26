@@ -1,6 +1,9 @@
 /* CORE.H: shared declarations of symbols defined in CORE.C. */
 
 extern void initialize_random(void);
+extern int rand_scaled(int);
+extern void label_with_style(int, int, int);
+extern int city_at(int, int);
 extern int clamp(int, int, int);
 extern int near_city(int, int);
 extern int nearest_record(int, int, int, int);
