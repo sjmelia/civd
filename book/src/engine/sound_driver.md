@@ -35,8 +35,8 @@ slot 103 asks for it.
 | 2 | Nonzero while any channel plays |
 | 3 | Title and intro music |
 | 4 | World creation |
-| 5–18 | Civilization anthems (`civt[].f4`): American, Aztec, Egyptian, Zulu, French, Roman, Russian, Greek, English, Babylonian, Chinese, Mongol, Indian, German. The second argument (0–3) chooses how many parts play; 3 is the full arrangement |
-| 19–32 | Short motifs for the same civilizations, in the same order (`civt[].f3`) |
+| 5–18 | Civilization anthems (`civt[].anthem`): American, Aztec, Egyptian, Zulu, French, Roman, Russian, Greek, English, Babylonian, Chinese, Mongol, Indian, German. The second argument (0–3) chooses how many parts play; 3 is the full arrangement |
+| 19–32 | Short motifs for the same civilizations, in the same order (`civt[].motif`) |
 | 33 | Audience interlude: pause the channels, play one of seven phrases in turn, then resume |
 | 34 | Celebration (We Love the King Day, Hall of Fame) |
 | 35 | City grows in rapture (two tunes, alternately) |

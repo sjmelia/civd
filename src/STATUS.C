@@ -21,7 +21,6 @@ extern struct unit_type utypes[];
 extern unsigned char far advance_owners[][2];
 extern int treaties[8][8];
 
-extern void label_with_style(int, int, int);
 
 void civ_info(int p)
 {                               /* civilization profile (debug) */

@@ -17,38 +17,28 @@
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
+#include "PATH.H"
+#include "DRIVER.H"
+#include "RASTER.H"
 
 extern struct city townbuf[];
 extern struct unit armydata[4][128];
 extern struct unit_type utypes[];
 extern char far map_visible_to[];
 
-extern int wrap_x(int x);
 
-extern int rand_scaled(int max_val);
 
-extern int recolour_rect(int handle, int x, int y, int w, int h, int a, int b);
 
-extern int label_with_style(int style, int x, int y);
-extern int city_at(int x, int y);
 
-extern int world_draw(int *mode, int x, int y, int val);
 
         /* city labels queued on the map view */
 
  /* grassland shield overlay */
 
-int map_note(int x, int y);
 
-int map_flags(int x, int y);
 
-int terrain_at(int x, int y);
-int map_stack(int x, int y);
 
-int seen_map(int x, int y);
-int map_owner(int x, int y);
 
-int map_mark(int x, int y);
 
 void reveal(int player, int x, int y)
 {

@@ -20,10 +20,7 @@
 #include "WORLDGEN.H"
 #include "DIALOG.H"
 
-extern int terrain_at(int, int);
-extern void flip(int), sound();
 
-extern void map_note();
 
 #pragma pack(1)
 struct story_data_type {
@@ -37,9 +34,7 @@ extern unsigned int far story_delays[45];
 extern char far map_visible_to[][50];
 
     /* land mass, temperature, climate, age */
-extern void disk_insert();
-extern void world_draw(int *mode, int x, int y, int val);
-extern int rand_scaled(int), abs(int);
+extern int abs(int);
      /* good city sites per continent; tiles per land [0] and sea [1] region */
 extern unsigned char block_ground_way[20][13];
 struct terrain_signed {
@@ -52,7 +47,6 @@ struct work_rules {
 extern struct terrain_signed terrains[];
 extern struct work_rules work_rules[];
 
-void link_land(), link_seas();  /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 void page_zero(void)
 {

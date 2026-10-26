@@ -9,6 +9,7 @@
 #include "UNITS.H"
 #include "NAMES.H"
 #include "DIALOG.H"
+#include "MAP.H"
 
 struct city {
     unsigned long flags;
@@ -22,8 +23,6 @@ extern struct city townbuf[];
 extern char far place_name[][13];
 extern char far map_visible_to[];
 
-extern void reveal(int, int, int);
-extern void recolour_rect(), flip(int);
 extern int kbhit(void), getch(void);
 extern int strlen(), strnicmp();
 extern char *strcpy(char *, char *);

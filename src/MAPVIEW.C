@@ -15,7 +15,6 @@ extern struct unit_type utypes[];
 extern struct unit armydata[8][128];
 extern int row_flag[8][16];
 
-extern int terrain_at(int, int), map_owner(int, int), map_flags(int, int);
 
 extern int getch(void);
 extern char *itoa(int, char *, int), *strcpy(char *, char *), *strcat(char *, char *);

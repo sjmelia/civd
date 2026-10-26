@@ -16,6 +16,7 @@
 #include "RESIDENT.H"
 #include "TURN.H"
 #include "SPACESHP.H"
+#include "RASTER.H"
 
 struct ship_part {
     char name[16];
@@ -29,14 +30,9 @@ extern int debug;
 extern char far ship_layout[][3];
 extern char far spaceships[][15][12];
 
-extern void disk_insert();
-extern void LOAD_SPRITES();
-extern int rand_scaled(int);
 
-extern void flip(int), world_draw(int *mode, int x, int y, int val);
 extern int kbhit(void);
 
-int spaceship_view();           /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 struct ship_part ship_parts[10] = {
     { "Structure1", 1, 0, 16, 16, 16 },

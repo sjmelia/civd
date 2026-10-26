@@ -8,19 +8,16 @@
 #include "CORE.H"
 #include "DIALOG.H"
 #include "DRAW.H"
+#include "DRIVER.H"
 
 extern int strlen(), abs(int);
 extern char *strcpy(char *, char *), *strcat(char *, char *);
 
 extern int debug;
 
-extern int font_height(int), char_width(int, int), pixel_at(int, int, int);
-extern int read_key(void), kbhit(void);
-extern void recolour_rect(struct page *, int, int, int, int, int, int);
+extern int kbhit(void);
 
-extern void flip(int);
 
-extern void sound();
 
 /* initialised data */
 int busy_flag = 0;

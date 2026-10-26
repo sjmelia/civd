@@ -1,12 +1,10 @@
 /* Screen-image run-length encoding. */
 #include "GLOBALS.H"
 #include "RESIDENT.H"
+#include "DRIVER.H"
+#include "PICTURE.H"
 
 struct page;
-extern int image_begin(char *, int, int);
-extern int image_finish(void);
-extern void image_byte(int);
-extern void page_read_row(unsigned char *, struct page *, int, int, int);
 int image_rect(struct page *, int, int, int, int, char *);
 void image_run(unsigned int, unsigned char);
 

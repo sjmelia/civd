@@ -29,6 +29,8 @@
 #include "TURN.H"
 #include "UNITAI.H"
 #include "WORLDGEN.H"
+#include "DRIVER.H"
+#include "FADE.H"
 
 struct unit_record {
     char x, y, type, size;
@@ -61,10 +63,6 @@ struct unit_type {
 struct relation {
     char a, b;
 };
-struct civ_type {
-    char strings[48];
-    int f0, f1, f2, f3, f4;
-};
 
 #define wonders (improvements + 24)
 
@@ -85,33 +83,20 @@ extern struct unit_flag townbuf[];
 extern struct record_state armydata[];
 extern struct unit_type utypes[];
 extern struct relation treaties[8][8];
-extern struct civ_type civt[];
 extern char far advance_owners[], far map_visible_to[], far power_history[];
 extern char far war_record[];
 
 /* functions in other segments */
 
-extern void sound();
 
-extern void disk_insert(int, long);
 
-extern void load_palette(char *, char *);
-extern void set_palette(int, int, int, int);
-extern void install_palette(int, char *);
 
-extern int rand_scaled(int);
-extern int free_paragraphs(void);
 
-extern int terrain_at(int, int), map_owner(int, int);
 
-extern void reveal(int, int, int), map_note(int, int);
 
-extern void fame_insert(int);
 
-extern int civ_score(int, long);
 
 /* functions of this unit */
-void show_hall_of_fame();       /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 int show_menu(char *a, int b, int c)
 {
@@ -330,7 +315,7 @@ void game_turn(void)
     if (-(20 * cur_tier - 0x834) == year) {
         strcpy(msgtext, leader_names[civnow]);
         strcat(msgtext, " dynasty\nends after glorious\n6000 year reign!\n");
-        sound(civt[civ_tribe_of[civnow]].f4, 3);
+        sound(civt[civ_tribe_of[civnow]].anthem, 3);
         news_box(-1);
         sound(1);
     }
@@ -714,7 +699,7 @@ void ai_event(void)
             strcat(msgtext, ".\n");
             money[enemy] -= clamp(money[enemy] / 3, 0, 10 * wonders[leader].cost - units[unit].progress);
             if (still != 1) {
-                sound(civt[civ_tribe_of[enemy]].f3);
+                sound(civt[civ_tribe_of[enemy]].motif);
                 message_mode = (treaties[civnow][enemy].a & 64) ? 5 : 2;
                 show_msg(msgtext, 100, 80);
                 pedia_show(leader + 24, 1);

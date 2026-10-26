@@ -41,3 +41,4 @@ extern void unit_reset(int, int);
 extern void drop_u_stack(int, int);
 extern void kill_cb(int, int);
 extern void map_center(int, int, int);
+extern void each_stack(int, int, void (far *) (int, int));

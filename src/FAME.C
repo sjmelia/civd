@@ -14,6 +14,7 @@
 #include "FAME.H"
 #include "UNITS.H"
 #include "DIALOG.H"
+#include "DRIVER.H"
 
 struct fame {
     int score, level, f4, year, f8, f10, f12;
@@ -28,11 +29,8 @@ extern char far hall_text[][25];
 extern int open();
 extern int read(), write(), close();
 
-extern void sound(int);
 
-extern void recolour_rect(struct page *, int, int, int, int, int, int);
 
-extern void city_process(int, int);
 
 void clear_fame_records(void)
 {

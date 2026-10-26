@@ -1,10 +1,21 @@
 /* MAP.H: shared declarations of symbols defined in MAP.C. */
 
 extern int terrain_map[];
+extern int seen_map(int, int);
+extern int unit_redraw(int, int);
+/* Calls use differing argument counts; retain the unprototyped interface. */
+extern int map_note();
+extern int lift_unit(int, int, int, int);
+extern int map_mark(int, int);
+extern void reveal(int, int, int);
 extern int redraw_stack(int, int);
 extern int map_in_bounds(int, int);
+extern int terrain_at(int, int);
 extern int map_city(int, int);
+extern int map_stack(int, int);
+extern int map_owner(int, int);
 extern int has_road(int, int);
+extern int map_flags(int, int);
 extern int known_flags(int, int);
 extern int get_city(int, int);
 extern int map_random(int);

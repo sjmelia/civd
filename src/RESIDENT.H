@@ -97,3 +97,4 @@ extern int total_mode;
 /* Graphics driver gateways defined by RESIDENT.ASM. */
 extern void blit(struct page *, int, int, int, int, struct page *, int, int);
 extern void sprite_draw(struct page *, int, int, int);
+extern int in_view(int, int);

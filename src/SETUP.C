@@ -6,12 +6,11 @@
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "SETUP.H"
+#include "DRIVER.H"
+#include "STRBIOS.H"
 
 extern union REGS bios_regs;
-extern void print_at(int row, int col, char *str);
 
-extern void dos_print(char *str);
-extern int key_echo(void);
 
 extern char graphics_driver;
 extern char sound_driver;

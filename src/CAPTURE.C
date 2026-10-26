@@ -17,6 +17,8 @@
 #include "UNITAI.H"
 #include "UNITS.H"
 #include "CAPTURE.H"
+#include "PATH.H"
+#include "CITYMGT.H"
 
 struct unit {
     unsigned long flags;
@@ -43,10 +45,6 @@ struct unit_type {
 struct relation {
     char a, b;
 };
-struct civ_type {
-    char strings[48];
-    int f0, f1, f2, f3, f4;
-};
 
 extern int debug;
 extern char far place_name[][13];
@@ -55,15 +53,9 @@ extern char armydata[];
 #define unit_tab ((struct group (*)[128]) (armydata + 1))       /* units from x */
 extern struct unit_type utypes[];
 extern struct relation treaties[8][8];
-extern struct civ_type civt[];
 
-extern int rand_scaled(int);
-extern int map_stack(int, int), wrap_x(int);
 
-extern void sound(), disk_insert();
-extern void map_mark(int, int), seen_map(int, int);
 extern void unit_notify(), unit_defect();
-extern void city_process();
 extern void unit_home();
 extern int kbhit(void), getch(void);
 extern char *itoa(int, char *, int);
@@ -140,7 +132,7 @@ int a, b, c;
         strcat(msgtext, ". ");
         strcat(msgtext, itoa(val, nstr, 10));
         strcat(msgtext, " gold\npieces plundered.\n");
-        sound(civt[civ_tribe_of[a]].f3);
+        sound(civt[civ_tribe_of[a]].motif);
         if (debug & 8) {
             mouse_off();
             city_scene(b, -2);

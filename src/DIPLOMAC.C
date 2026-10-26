@@ -21,16 +21,10 @@ struct unit_record {
     char owner;
     char rest[16];
 };
-struct civ_type {
-    char strings[48];
-    int f0, f1, f2, f3, f4;
-};
 
 extern int treaties[8][8];
-extern struct civ_type civt[];
 extern struct unit_record townbuf[];
 
-extern int rand_scaled(int);
 
 void city_phase(int civ)
 {
@@ -308,7 +302,7 @@ int alliance_ok(int a, int b)
             wc++;
     if (treaties[a][b] & 2)
         wc++;
-    wc -= civt[civ_tribe_of[a]].f0;
+    wc -= civt[civ_tribe_of[a]].aggressive;
     x = t = 0;
     den = 1;
     for (j = 1; j < 15; j++) {

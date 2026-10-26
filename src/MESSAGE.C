@@ -5,8 +5,8 @@
 #include "RESIDENT.H"
 #include "DRAW.H"
 #include "MESSAGE.H"
+#include "DRIVER.H"
 
-extern int font_height(int), char_width(int, int);
 
 void news_wrap(int columns)
 {

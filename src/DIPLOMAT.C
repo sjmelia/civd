@@ -23,6 +23,7 @@
 #include "UNITS.H"
 #include "DIPLOMAT.H"
 #include "MAP.H"
+#include "PATH.H"
 
 extern struct {
     char a, b;
@@ -34,18 +35,9 @@ extern struct unit_type utypes[];
 extern int debug;
 extern char far map_visible_to[];
 
-extern int rand_scaled(int);
-extern void map_note();
 
-extern void reveal(int, int, int);
 
-extern void flip(int);
-extern int disk_insert();
-extern int wrap_x(int);
-extern void sound();
 
-extern void city_process();
-extern int map_flags(int, int);
 
 extern int kbhit(void);
 

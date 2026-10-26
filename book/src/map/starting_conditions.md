@@ -102,14 +102,22 @@ requires nothing. Each eligible advance gets this random rating:
 
 ```text
 weight = (signed char) advance_attrs[id].a
-         + civt[civ_tribe_of[civ]].f2 * advance_attrs[id].b
+         + civt[civ_tribe_of[civ]].civilized * advance_attrs[id].b
 rating = rand_scaled(weight * 4)
 ```
 
 The greatest rating wins; ties keep the earlier ID because replacement uses
 strict `>`. This is a competition between random ratings, not a uniform draw
-or a probability proportional to the weight. Civilization personality affects
-the weight through `f2`; it does not supply a fixed list of starting advances.
+or a probability proportional to the weight.
+
+Only one personality trait takes part: the tribe's `civilized` value (1
+Civilized, 0 neither, −1 Militaristic; see
+[Leaders and Personalities](../ai/leader_personalities.md)) changes
+the weights, and so which advances are likely, for the human's tribe as well
+as the AI's. It does not change how many advances a civilization receives,
+which depends only on the site comparison above, and it does not supply a
+fixed list of starting advances. The Aggressive and Expansionistic traits
+play no part.
 `selected_index` is set to -1 before setup, so the human's research-target
 exclusion does not remove any candidate here.
 

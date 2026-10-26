@@ -18,30 +18,19 @@
 #include "SETUP.H"
 #include "TURN.H"
 #include "WORLDGEN.H"
+#include "DRAW.H"
+#include "DRIVER.H"
+#include "FADE.H"
+#include "FCHECK.H"
+#include "LOADER.H"
+#include "LOADTAIL.H"
+#include "MOUSE.H"
 
 extern union REGS bios_call_reg_block_io;
-extern void (interrupt far * orig_break_isr) ();
-extern void (interrupt far * int_23) ();
 
-extern int load_program(char *, int);
-extern void run_program(int);
-extern int free_paragraphs(void);
 
-extern void set_page(int);
-extern int page_ready(int);
-extern void flip(int);
-extern void set_palette(int, int, int, int);
-extern void set_text_pos(int, int);
 
-extern void sprite_arena_init(void), sprite_arena_release(void);
-extern void sound_shutdown(void), restore_timer(void);
 
-extern int init_mouse(void), mouse_poll(void);
-extern void set_mousecur(int, int, int), mouse_close(void);
-extern void mouse_show(void), mouse_hide(void);
-extern int file_exists(char *, int);
-extern int sound_quiet_ticks(void);
-extern void sound_command(int, int);
 
 extern void (interrupt far * _dos_getvect(int)) ();
 extern void _dos_setvect(int, void (interrupt far *) ());
@@ -315,14 +304,7 @@ struct unit_type {
     char name[12];
     int obsolete_by;
     int domain;
-    int w2, w3, w4, w5, w6, w7, w8, w9, w10;
-};
-
-struct civ_type {
-    char leader[16];
-    char plural[16];
-    char adjective[16];
-    int f0, f1, f2, f3, f4;
+    int moves, fuel, attack, defense, cost, sight, capacity, role, prereq;
 };
 
 struct unit_type utypes[28] = {
