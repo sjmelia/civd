@@ -19,11 +19,8 @@
 #include "UNITS.H"
 #include "DIALOG.H"
 #include "DRAW.H"
-
-struct civ_type {
-    char leader[16], plural[16], adjective[16];
-    int f0, f1, f2, f3, f4;
-};
+#include "MAP.H"
+#include "DRIVER.H"
 
 extern char far leader_fonts[16];
 extern int far portrait_size[14][2];
@@ -35,34 +32,20 @@ extern struct unit armydata[][128];
 extern struct city townbuf[];
 
 extern int treaties[8][8];
-extern struct civ_type civt[];
 
 extern int debug;
 
-extern void map_mark(int, int);
-extern void map_note(int, int);
 
-extern void reveal(int, int, int);
 extern char *strcpy(char *, char *);
 extern char *strcat(char *, char *);
 extern char *itoa(int, char *, int);
-extern void sound();
 
-extern int rand_scaled(int);
 
-extern void flip(int);
-extern int disk_insert(int, long);
 
-extern void sprite_arena_init(void);
 
-extern int cut_tile(int, int, int, int, int);
-extern void sprite_arena_release(void);
 
-extern void load_palette(char *, unsigned char *);
 
-extern void apply_palette(unsigned char *);
 
-void leader_audience();         /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void leader_audience(civ, x0, y0, mode)
@@ -215,7 +198,7 @@ int mode;
             }
         }
     }
-    j -= civt[civ_tribe_of[civ]].f0;
+    j -= civt[civ_tribe_of[civ]].aggressive;
     if (military_table[civnow] < military_table[civ]) {
         j--;
     }
@@ -704,7 +687,7 @@ reload_text:
         if (treaties[civnow][civ] & 0x40) {
             strcat(msgtext, " Check Intelligence\n");
         }
-        sound(civt[civ_tribe_of[civ]].f3, 3);
+        sound(civt[civ_tribe_of[civ]].motif, 3);
         mouse_force_on();
         mouse_mode = -show_msg(msgtext, 100, 80);
         mouse_restore();
@@ -718,7 +701,7 @@ reload_text:
 
     mouse_off();
     load_leader(civ, 5, 1L);
-    sound(civt[civ_tribe_of[civ]].f4, 3);
+    sound(civt[civ_tribe_of[civ]].anthem, 3);
     mouse_on();
     leader_font = (int) leader_fonts[civ_tribe_of[civ]] + 8;
     if (leader_font == 10)

@@ -23,27 +23,18 @@
 #include "MESSAGE.H"
 #include "NAMES.H"
 #include "NOTES.H"
+#include "PATH.H"
 
 extern struct city townbuf[];
-extern char far city_site_x[];
-extern char far city_site_y[];
 extern char far place_name[][13];
 extern char civ_vis_grid[];
 extern int work_rules[][6];
 extern int debug;
 
-extern int terrain_at(int, int);
 
-extern int map_flags(int, int);
-extern int map_mark(int, int);
-extern int wrap_x(int);
-extern int disk_insert();
 
 /* Unit event declarations */
 
-extern int rand_scaled(int);
-extern void city_process();
-extern void reveal(int, int, int);
 
 /* Score declarations */
 

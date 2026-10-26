@@ -17,6 +17,7 @@
 #include "ECONOMY.H"
 #include "MAP.H"
 #include "MESSAGE.H"
+#include "PATH.H"
 
 extern struct unit armydata[][128];
 extern struct city townbuf[];
@@ -28,26 +29,16 @@ extern int treaties[8][8];
 
     /* historian ranking points; [0] counts reports */
 
-extern void label_with_style(int, int, int);
 
 extern int abs(int);
 extern char *itoa(int, char *, int);
 extern char *strcat(char *, char *);
 extern char *strcpy(char *, char *);
-extern int map_flags(int, int);
-extern int city_at(int, int);
 
-extern int map_owner(int, int);
-extern int map_stack(int, int);
 
-extern int wrap_x(int);
-extern int terrain_at(int, int);
 
-extern int rand_scaled(int);
 
-extern int city_process(int, int);
 
-extern void flip(int);
 
 /* Function 1: [0000, 03AC) - World Map View (F10) */
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */

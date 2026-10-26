@@ -6,9 +6,12 @@ extern int free_paragraphs(void);
 extern int cut_tile(int, int, int, int, int);
 extern int char_width(int, int);
 extern void sprite_draw_clipped();
+/* Callers pass either a page pointer or a page handle. */
+extern void recolour_rect();
 extern void sprite_arena_release(void);
 extern void page_dissolve();
 extern int font_height(int);
+extern char far *font_address();
 extern void page_read_row(unsigned char *, struct page *, int, int, int);
 extern int pixel_at();
 extern int page_ready(int);

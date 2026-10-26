@@ -23,7 +23,7 @@ human has an embassy. Intelligence opens the dossier and asks again.
 Refusing does not end the decisions: the AI still makes them, and a
 declaration of war is still shown as a plain message.
 
-Once the emissary is received, the portrait loads, `f4` plays and
+Once the emissary is received, the portrait loads, `anthem` plays and
 `leader_greeting()` chooses one of four greetings. A ruler with a grievance
 begins "O most untrustworthy leader of the infidels, hear now…", and one
 with nuclear weapons adds "Our words are backed with NUCLEAR WEAPONS!"
@@ -68,7 +68,7 @@ The values are then adjusted:
 Next, the AI counts reasons to be conciliatory. It starts at −2 with a
 grievance, adds one for each war in which it is not overwhelmingly
 stronger and one for each war against a stronger rival, subtracts its
-aggression trait `f0`, and subtracts one if the human is weaker than it.
+aggression trait `aggressive`, and subtracts one if the human is weaker than it.
 If the count exceeds 0 (at peace) or 1 (otherwise), and the leader is not
 the target, the AI drops its hostility, and half the time its tribute.
 

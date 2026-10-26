@@ -35,10 +35,7 @@ extern int far advance_owners[];
 extern char far place_name[][13], far replay_log[];
 extern char far unit_losses[];
 extern char far adv_source[], far spaceships[];
-extern char far city_site_x[];
-extern char far city_site_y[];
 extern unsigned int drive_choice;
-extern void disk_insert();
 
 extern int image_screen(), open(), read(), write(), close();
 extern long lseek();

@@ -37,10 +37,7 @@ extern int far topic_class[];
 extern signed char far adv_source[][72];
 extern signed char far pedia_icons[];
 
-extern int disk_insert();
-extern void recolour_rect();
 
-extern void label_with_style(int, int, int);
 extern int kbhit(void);
 extern char *strupr(char *);
 

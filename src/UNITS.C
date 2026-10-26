@@ -19,6 +19,7 @@
 #include "CAPTURE.H"
 #include "DRAW.H"
 #include "TURN.H"
+#include "PATH.H"
 
 extern struct unit_type utypes[];
 
@@ -89,18 +90,12 @@ void garrison_in(int city)
 extern struct unit armydata[][128];
 extern struct terrain_type terrains[];
 extern char civ_vis_grid[80][50];
-extern int terrain_at(int, int), wrap_x(int);
-extern void map_mark(int, int);
 extern struct city townbuf[];
 extern struct {
     char a, b;
 } treaties[8][8];
-extern int map_flags(int, int), city_at(int, int);
-extern int map_stack(int, int);
 
-extern void map_note();         /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
-extern void each_stack(int, int, void (far *) (int, int));
 
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void unit_sight(x, y, owner, index, redraw)     /* reveal and make contact around a unit */
@@ -238,12 +233,9 @@ next_radius:
 /* Unit/end-turn blink, 0866:[0AD6,0CF5); isolated diagnostic. */
 
 extern struct unit armydata[][128];
-extern int wrap_x(int), kbhit(void), terrain_at(int, int);
+extern int kbhit(void);
 
-extern int seen_map(int, int);
 
-extern void flip(int);
-extern void unit_redraw(int, int);
 
 void blink_unit(int owner, int index, int x, int y)
 {
@@ -293,8 +285,6 @@ extern struct unit armydata[][128];
 extern struct city townbuf[];
 extern char civ_vis_grid[80][50];
 
-extern void map_note(int, int, int);
-extern void unit_sight();
 
 int create_unit(int owner, int type, int x, int y)
 {
@@ -349,10 +339,6 @@ int create_unit(int owner, int type, int x, int y)
 extern struct unit armydata[][128];
 extern int far unit_losses[][28];
 
-extern int far terrain_at(int x, int y);
-extern void far lift_unit(int group, int index, int x, int y);
-extern void far map_note(int x, int y, int group);
-void each_stack(int group, int index, void (far * callback) (int, int));
 
 void drop_u_stack(int group, int index)
 {
@@ -375,8 +361,6 @@ void drop_u_stack(int group, int index)
 }
 
 extern struct unit armydata[][128];
-extern int far terrain_at(int value_a, int value_b);
-void each_stack(int group, int index, void (far * callback) (int, int));
 
 int select_location_record(int group, int index)
 {
@@ -423,7 +407,6 @@ void score_group_record(int group, int index)
 }
 
 extern struct unit armydata[][128];
-void each_stack(int group, int index, void (far * callback) (int, int));
 
 int stack_len(int group, int index, int mode)
 {
@@ -456,8 +439,6 @@ void add_group_value(int group, int index)
 }
 
 extern struct unit armydata[][128];
-extern int far terrain_at(int value_a, int value_b);
-void each_stack(int group, int index, void (far * callback) (int, int));
 
 int count_u(int group, int index, int value)
 {
@@ -540,7 +521,6 @@ void unit_reset(int group, int index)
 }
 
 extern struct unit armydata[][128];
-extern void unit_redraw(int group, int index);
 
 void reset_state(int group, int index)
 {
@@ -581,17 +561,7 @@ void remove_reset_kind_one(int group, int index)
 }
 
 extern struct unit armydata[][128];
-extern int far wrap_x(int value);
-extern void far reveal(int group, int x, int y);
-extern int far map_flags(int x, int y);
-extern int far terrain_at(int x, int y);
-extern int far map_owner(int x, int y);
-extern int far map_stack(int x, int y);
-extern int far city_at(int x, int y);
-extern void far map_mark(int x, int y);
-extern void far map_note(int x, int y);
 
-int adj_grp(int group, int x, int y);
 void map_center(int group, int x, int y)
 {
     int refresh = 0;
@@ -687,12 +657,8 @@ int adj_grp(int group, int x, int y)
 extern struct unit armydata[][128];
 extern struct city townbuf[];
 extern struct terrain_type terrains[];
-extern int rand_scaled(int);
 
-extern int map_owner(int, int), map_flags(int, int);
-extern int terrain_at(int, int);
 
-extern void map_note();         /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 void enter_hut(int owner, int index)
 {
@@ -778,14 +744,7 @@ mercenaries:
 
 extern struct unit armydata[][128];
 
-extern int far seen_map(int x, int y);
-extern int far in_view(int x, int y);
-extern int far terrain_at(int x, int y);
-extern void far unit_redraw(int group, int index);
 
-extern int far wrap_x(int value);
-extern void far label_with_style(int, int, int);
-extern void far flip(int ticks);
 
 void anim_unit(int group, int index, int direction)
 {
@@ -846,7 +805,6 @@ extern struct unit armydata[][128];
 
 extern int kbhit(void);
 
-extern void recolour_rect(int, int, int, int, int, int, int);
 int pick_unit(int owner, int index)
 {                               /* choose a unit from a stack */
     int a, b[12], c, d, e, f, g, h, i;
@@ -1038,7 +996,6 @@ int help_probe(int a, int b, int c)
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
 
-extern int far rand_scaled(int limit);
 
 void menu_clear(void)
 {

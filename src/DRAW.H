@@ -7,3 +7,4 @@ extern int string_width(char *);
 extern void fill_box(int, int, int, int, int);
 extern void draw_shadowed(char *, int, int, int);
 extern void draw_string(char *, int, int, int);
+extern void flip(int);

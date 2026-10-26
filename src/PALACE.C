@@ -17,24 +17,11 @@
 #include "MESSAGE.H"
 #include "PALACE.H"
 
-struct civ_type {
-    char strings[48];
-    int f0, f1, f2, f3, f4;
-};
 
-extern struct civ_type civt[];
-
-extern void disk_insert();
-
-extern void sound();
 
 extern int kbhit(void);
-extern void LOAD_PIC();
 
-void palpic();                  /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
-void calc_section_type();       /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
-void load_castle_tiles();       /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 int centre_width = 48;
 int wing_width = 24;
@@ -67,7 +54,7 @@ void palace_view(int count)
     scrbuf->number = 0;
     rect_fill(scrbuf, 0, 0, 320, 200, 0);
     cycle_off();
-    sound(civt[civ_tribe_of[civnow]].f4, 3);
+    sound(civt[civ_tribe_of[civnow]].anthem, 3);
     load_back("cback.pic");
     blit(back_page, 0, 0, 320, 200, scrbuf, 0, 0);
     menu_dialog(message_buf_p, 20, 16);
@@ -231,7 +218,6 @@ finish:
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
 
-
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void palpic(flag, b)
 int flag, b;
@@ -366,7 +352,6 @@ int flag, b;
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
-
 
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void calc_section_type(section, flag)

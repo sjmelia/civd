@@ -2,3 +2,4 @@
 #include "GRAPHICS.H"
 
 extern void page_line(struct page *, int, int, int, int, int);
+extern void world_draw(int *, int, int, int);

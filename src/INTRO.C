@@ -27,29 +27,20 @@
 #include "TIMER.H"
 #include "TURN.H"
 #include "INTRO.H"
-
-struct civ_type {
-    char strings[48];
-    int f0, f1, f2, f3, f4;
-};
+#include "PATH.H"
+#include "RASTER.H"
 
 extern char graphics_driver[], sound_driver[];
 extern int debug;
-extern char *news_values[];
 
 extern struct terrain_type terrains[];
-extern struct civ_type civt[];
 
 extern FILE *credits_stream;
 
-extern int disk_insert();
 extern int kbhit(void);
 extern int getch(void);
 
-extern void sound(), world_draw(int *mode, int x, int y, int val);
-extern void flip(int);
 
-extern int wrap_x(int), terrain_at(int, int);
 
 static void show_label(int, int, int, int);
 static void next_credit(char *);
@@ -536,7 +527,7 @@ void civ_destroyed(void)
         }
     } while (pos < len);
     sound(1);
-    sound(civt[civ_tribe_of[civnow]].f3);
+    sound(civt[civ_tribe_of[civnow]].motif);
     flip(300);
     sound(1);
     rect_fill(scrbuf, 0, 0, 320, 200, 0);

@@ -7,6 +7,7 @@
 #include "DRAW.H"
 #include "GAME.H"
 #include "GLOBALS.H"
+#include "MAP.H"
 #include "MESSAGE.H"
 #include "RESIDENT.H"
 #include "UNITS.H"
@@ -34,9 +35,8 @@ extern int civ_state[][28];
 extern char debug;
 
 extern char *strupr(char *);
-extern int terrain_at(int, int), map_flags(int, int), map_near();
+extern int map_near();
 
-extern void reveal(int, int, int);
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void show_help(int civ)

@@ -17,6 +17,8 @@
 #include "REPORTS.H"
 #include "TURN.H"
 #include "UNITS.H"
+#include "CITY.H"
+#include "STATUS.H"
 
 struct unit12 {
     unsigned char x, y;
@@ -30,7 +32,7 @@ struct terr_fx {
 };
 struct unit_type {
     char name[12];
-    int obsolete_by, domain, w2, w3, w4, w5, w6, w7, w8, w9, w10;
+    int obsolete_by, domain, moves, fuel, attack, defense, cost, sight, capacity, role, prereq;
 };
 struct terrain_rec {
     char name[12];
@@ -44,13 +46,8 @@ extern struct terr_fx work_rules[];
 extern struct unit_type utypes[];
 extern struct terrain_rec terrains[];
 
-extern int map_flags(int, int), terrain_at(int, int);
 
-extern void unit_table(int);
-extern void spy_rpt(int);
 
-extern void world_map(long);
-extern void civ_score(int, long);
 
 void cmd_menu(int x, int y, int sel)
 {
@@ -226,7 +223,7 @@ void unit_orders_menu(int p, int u)
         keybuf[pos++] = 'h';
     }
     ty = unit_tab[p][u].type;
-    if (utypes[ty].w9 == 5 || ty == 0x17) {
+    if (utypes[ty].role == 5 || ty == 0x17) {
         if (unit_tab[p][u].cargo != -1) {
             strcat(msgtext, " Unload \217u\n");
             keybuf[pos++] = 'u';

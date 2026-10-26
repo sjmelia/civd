@@ -16,10 +16,10 @@
 #include "UNITS.H"
 #include "ECONOMY.H"
 #include "MESSAGE.H"
+#include "MOUSE.H"
 
 extern unsigned char far advance_owners[][2];
 
-extern void label_with_style(int, int, int);
 
 void advisor_open(char *title, int mode)
 {
@@ -198,7 +198,6 @@ void military_losses(int civ)
 
 extern struct city townbuf[];
 
-extern int city_process(int, int);
 
 void trade_rpt(int civ)
 {                               /* trade report */
@@ -315,13 +314,7 @@ void trade_rpt(int civ)
 }
 
 extern int treaties[8][8];
-struct civ_type {
-    char leader[16], plural[16], adjective[16];
-    int f0, f1, f2, f3, f4;
-};
-extern struct civ_type civt[];
 extern int kbhit(void);
-extern void set_text_pos(int, int);
 
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void spy_rpt(civ_arg)           /* intelligence report */
@@ -460,27 +453,27 @@ void civ_dossier(int civ)
     draw_string(msgtext, 16, y, 9);
     y += 8;
 
-    if (civt[civ_tribe_of[civ]].f0 == 1) {
+    if (civt[civ_tribe_of[civ]].aggressive == 1) {
         draw_string("Aggressive", 24, y, 7);
         y += 8;
     }
-    if (civt[civ_tribe_of[civ]].f0 == -1) {
+    if (civt[civ_tribe_of[civ]].aggressive == -1) {
         draw_string("Friendly", 24, y, 7);
         y += 8;
     }
-    if (civt[civ_tribe_of[civ]].f1 == 1) {
+    if (civt[civ_tribe_of[civ]].expansionist == 1) {
         draw_string("Expansionistic", 24, y, 7);
         y += 8;
     }
-    if (civt[civ_tribe_of[civ]].f1 == -1) {
+    if (civt[civ_tribe_of[civ]].expansionist == -1) {
         draw_string("Perfectionist", 24, y, 7);
         y += 8;
     }
-    if (civt[civ_tribe_of[civ]].f2 == 1) {
+    if (civt[civ_tribe_of[civ]].civilized == 1) {
         draw_string("Civilized", 24, y, 7);
         y += 8;
     }
-    if (civt[civ_tribe_of[civ]].f2 == -1) {
+    if (civt[civ_tribe_of[civ]].civilized == -1) {
         draw_string("Militaristic", 24, y, 7);
         y += 8;
     }

@@ -18,13 +18,9 @@ struct archive_entry {
 struct sprite_header {
     unsigned char left, right, planes, flags, height, reserved, extra, spare;
 };
-extern int (*pic_reader)();
 extern struct sprite_header sprite_header;
-extern char far *font_address();
 
-void load_palette();            /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
-int archive_find(char *, struct archive_entry *);
 
 int resource_open(char *name, int mode)
 {

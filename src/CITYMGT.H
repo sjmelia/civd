@@ -2,6 +2,8 @@
 
 extern int working_tiles;
 extern int city_view_mode;
+/* Callers pass long arguments to int parameters; preserve their stack layout. */
+extern int city_process();
 extern int radius_dx[21];
 extern int radius_dy[21];
 extern int radius_index(int, int);

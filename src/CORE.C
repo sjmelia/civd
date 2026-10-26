@@ -9,6 +9,9 @@
 #include "CORE.H"
 #include "DRAW.H"
 #include "TURN.H"
+#include "DRIVER.H"
+#include "FILEIO.H"
+#include "PALETTE.H"
 
 struct unit_record {
     char x, y, type, size;
@@ -30,12 +33,7 @@ extern char armydata[];
 #define group_records ((struct group_record (*)[128]) (armydata - 4))
 extern union REGS bios_call_reg_block_io;
 
-extern void load_palette(int, unsigned char *);
-extern void apply_palette(unsigned char *);
-extern int free_paragraphs(void);
 
-extern void set_cycle(int, int, int, int);
-extern void start_cycle(int), stop_cycle(int);
 
 void bios_request_13(void)
 {

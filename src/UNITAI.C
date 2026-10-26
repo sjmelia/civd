@@ -21,10 +21,9 @@
 #include "GLOBALS.H"
 #include "NEWGAME.H"
 #include "RESIDENT.H"
+#include "BATTLE.H"
+#include "DRIVER.H"
 
-extern int terrain_at(int x, int y);
-extern int map_flags(int x, int y);
-extern int map_stack(int x, int y);
 
 extern int treaties[8][8];
 extern struct unit armydata[8][128];
@@ -41,31 +40,17 @@ struct terr {
     char shields;
     char rest[3];
 };
-struct civ_type {
-    char leader[16];
-    char plural[16];
-    char adjective[16];
-    int f0, f1, f2, f3, f4;
-};
-extern int map_owner(int x, int y);
 
-extern int lift_unit(int player, int unit, int x, int y);
 
-extern int wrap_x(int x);
-extern int rand_scaled(int v);
 
-extern int adj_grp(int player, int x, int y);
 
-extern int battle();
 
 extern int work_rules[][6];
 extern struct terr terrains[];
-extern struct civ_type civt[];
 int ai_watch_player = -1;
 int ai_watch_unit = -1;
 int near_human = 0;             /* mask: civ shares a continent with the human's cities */
 
-extern int pixel_at(int a, int x, int y);
 extern int treaties[8][8];
 
 void unit_phase(int player)
@@ -710,7 +695,7 @@ int ai_order(int player, int unit)
             }
             if (map_flags(uxk, uyk) & 0x40)
                 return 0x70;
-            if ((unsigned char) armydata[player][unit].goto_x != 0xff && (civt[civ_tribe_of[player]].f1 + 1) * ai_zone_places[region]
+            if ((unsigned char) armydata[player][unit].goto_x != 0xff && (civt[civ_tribe_of[player]].expansionist + 1) * ai_zone_places[region]
                 > ai_continent_towns[player][region] << 4)
                 return 0;
             if (city_distj <= 1 && townbuf[home].owner == player && (rule_options & 2)) {

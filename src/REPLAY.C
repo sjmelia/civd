@@ -20,17 +20,10 @@
 #include "REPLAY.H"
 #include "MESSAGE.H"
 
-struct civ_type {
-    char leader[16], plural[16], adjective[16];
-    int f0, f1, f2, f3, f4;
-};
-
-extern struct civ_type civt[];
 extern struct unit_type utypes[];
 
 extern int far replay_cities[3][128];
 extern unsigned char far replay_log[];
-extern char far city_site_x[], far city_site_y[];
 extern char far place_name[][13];
 extern char far fame_ranks[];
 extern int far portrait_size[][2], far portrait_offset[][2];
@@ -38,12 +31,8 @@ extern int far portrait_size[][2], far portrait_offset[][2];
 extern int open();
 extern int write(), close();
 
-extern int terrain_at(int, int), map_flags(int, int);
 
-extern void flip(int);
 extern int getch(void);
-extern void sound();
-extern void disk_insert();
 
 int replay_length = 0;          /* bytes used in replay_log */
 
@@ -427,7 +416,7 @@ void conquest_replay(void)
     rect_fill(scrbuf, 0, 0, 320, 200, 0);
     scrbuf->font = 6;
     replay();
-    sound(civt[civ_tribe_of[civnow]].f4, 3);
+    sound(civt[civ_tribe_of[civnow]].anthem, 3);
     rect_fill(scrbuf, 18, 150, 284, 32, vga_modes ? 34 : 7);
     strcpy(msgtext, "The entire world hails");
     draw_text(msgtext, 160, 152, 20);
@@ -501,7 +490,7 @@ void conquest_scene(int civ, int year)
     y -= portrait_offset[ki][1];
     sprite_draw(scrbuf, 90, 0, head);
     sprite_draw(scrbuf, x, y - 2, img_c);
-    sound(civt[civ_tribe_of[civ]].f4, 3);
+    sound(civt[civ_tribe_of[civ]].anthem, 3);
     if (vga_modes) {
         strcpy(name + 7, "pal");
         load_palette(name, pic_colours_data);
@@ -546,7 +535,7 @@ void conquest_scene(int civ, int year)
     free_block(head);
     sound(1);
     flip(60);
-    sound(civt[civ_tribe_of[civnow]].f4, 3);
+    sound(civt[civ_tribe_of[civnow]].anthem, 3);
     page_dissolve(1, 30);
     blit(back_page, 0, 0, 320, 200, scrbuf, 0, 0);
     set_page(0);

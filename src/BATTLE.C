@@ -10,11 +10,14 @@
 #include "TURN.H"
 
 #include "CIV.H"
+#include "CORE.H"
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "MAP.H"
 #include "RESIDENT.H"
 #include "UNITS.H"
+#include "PATH.H"
+#include "DRAW.H"
 
 extern struct unit armydata[][128];
 extern struct unit_type utypes[];
@@ -22,12 +25,7 @@ extern struct city townbuf[];
 extern struct terrain_type terrains[];
 extern int treaties[8][8];
 
-extern int terrain_at(int, int), map_flags(int, int), seen_map(int, int), map_note();
-extern int map_stack(int, int), wrap_x(int), city_at(int, int), rand_scaled(int);
-extern int each_stack();
-extern int unit_redraw(int, int);
 
-extern int label_with_style(int, int, int), flip(int), sound();
 
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 int battle(attacker_civ_b, attacker_unit_m, defender_civ_e, defender_unit_p, flag)

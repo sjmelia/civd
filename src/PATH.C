@@ -21,14 +21,10 @@ extern struct unit armydata[8][128];
 #define path_probe_domain armydata[0][127].type
 extern struct unit_type utypes[28];
 extern struct path_terrain terrains[];
-extern int map_flags(int, int), terrain_at(int, int);
-extern int map_stack(int, int);
 
-int wrap_x(int);
 
 extern char coarse_ocean_map[20][13], block_ground_way[20][13];
 
-extern int map_owner(int, int);
 
 int unit_goal(int player, int unit)
 {

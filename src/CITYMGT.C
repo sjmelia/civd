@@ -23,16 +23,12 @@
 #include "DIPLOMAC.H"
 #include "MESSAGE.H"
 #include "UNITAI.H"
+#include "PATH.H"
+#include "DRIVER.H"
 
 /* Keep the local data list: GLOBALS.H exhausts MSC 5.1 heap with LOADFIX. */
 extern struct city townbuf[];
 extern struct unit armydata[][128];
-extern int radius_dx[];
-extern int radius_dy[];
-extern int city_view_mode;
-extern int selected_city;
-extern int radius_tiles;
-extern int selected_owner;
 extern int palace_remote;
 extern int pop_smog_advances;
 extern int year;
@@ -43,7 +39,6 @@ extern int nation_ratings[];
 extern int civ_gov[];
 extern int map_x0;
 extern int map_y0;
-extern int advisor;
 extern int rule_options;
 extern int xray_on;
 extern char msgtext[];
@@ -54,17 +49,12 @@ extern int abs(int);
 
 extern char *strupr(char *);
 
-extern int seen_map(int, int);
-extern int map_owner(int, int);
-extern void map_note(int, int);
 
-extern void sound(int);
 
 extern char *strcpy(char *, char *);
 extern char *strcat(char *, char *);
 extern unsigned strlen(char *);
 extern struct unit_type utypes[];
-extern int units_abroad;
 extern int home_troops_maintained;
 extern int city_keep;
 extern int colonist_homed;
@@ -77,64 +67,47 @@ extern int show_city_display;
 
 extern int plant_waste_divisor;
 
-extern void post_event(int, int, int, int);
 extern int far advance_owners[];
 extern int city_count[];
 
 extern int town_gap;
-extern int rand_scaled(int);
-extern int terrain_at(int, int);
 extern int treaties[8][8];
 extern int forces_present[8][28];
 extern int last_met_turn[];
 
 extern int marvel_site[];
 extern int debug;
-extern int disk_insert(int, long);
 
 extern int civ_units_ordered[8][28];
 extern int game_flags, ai_ship_success, spaceship_arrive_dates[], money[], players;
 
 extern int x_cap[];
 
-extern int map_mark(int, int);
 extern int civ_area_plan[8][16];
 
-extern void recolour_rect(struct page *, int, int, int, int, int, int);
 extern int city_leak;
 extern int sci[], civ_toll[];
 extern int taxes, learning_yield;
 
 extern int town_happy_ones_num, town_unhappy_counts, excess_unhappy;
 
-extern void label_with_style(int, int, int);
-extern int map_stack(int, int), unused_support;
+extern int unused_support;
 
 extern int gangmode, tech_count[], margin_democracy;
 extern int troop_over, civ_tribe_of[];
-struct civ_type {
-    char strings[48];
-    int f0, f1, f2, f3, f4;
-};
-extern struct civ_type civt[];
 
 extern char *itoa(int, char *, int);
 extern char nstr[];
 
 extern int village_icons;
 extern int troops_total[], mse_held, ptr_x, ptr_y;
-extern void flip(int);
 extern int kbhit(void);
 extern int map_view_changed;
 
 extern int human_counts;
 
-extern char *leader_titles[];
 extern int selected_index, civ_research_tally[], cost_penalty, civ_ratings[];
-extern int map_flags(int, int);
-extern void reveal(int, int, int);
 
-extern int adj_grp(int, int);
 
 int working_tiles = 0;
 int city_view_mode = 0;
@@ -1191,7 +1164,7 @@ label_support_restart:
         if (town_res_sums[1] < home_troops_maintained)
             troop_over += (home_troops_maintained - town_res_sums[1]) * 5;
         troop_over += clamp(home_troops_maintained, 0, townbuf[city].size);
-        margin_democracy -= (((townbuf[city].buildings & 0x10) ? 5 : 7) - civt[civ_tribe_of[selected_owner]].f2) * units_abroad;
+        margin_democracy -= (((townbuf[city].buildings & 0x10) ? 5 : 7) - civt[civ_tribe_of[selected_owner]].civilized) * units_abroad;
     }
     if (mode == 1L) {
         *(int *) ((char *) scrbuf + 0x10) = 2;
@@ -1966,8 +1939,6 @@ label_exit:;
 extern struct city townbuf[];
 extern int improvement_words[], marvel_site[];
 extern int selected_city, excess_unhappy, town_happy_ones_num, town_unhappy_counts, polluted;
-extern int map_flags(int, int);
-extern int map_mark(int, int);
 #define CITY_STATE (townbuf[selected_city].specialists)
 
 struct terrains {
@@ -1983,11 +1954,7 @@ extern struct terrains terrains[];
 extern struct work_rule work_rules[];
 extern int rule_options, selected_owner, civ_gov[], working_tiles, town_res_sums[];
 extern int troop_over, margin_democracy;
-extern int terrain_at(int, int);
 
-extern int radius_dx[], radius_dy[];
-extern int seen_map(int, int);
-extern void label_with_style(int, int, int);
 
 /* yield_sum_f is only initialized in drawing mode. The original still reads it
    first in the final && test when mode differs; keep that observed ordering.
@@ -2179,7 +2146,6 @@ extern int city_glad_glyphs[];
 #define city_angry_images (city_glad_glyphs + 4)
 #define specialist_people (city_glad_glyphs + 5)
 
-extern void recolour_rect(struct page *, int, int, int, int, int, int);
 int draw_city_view(int city, int x, int y, int special, int width)
 {
     signed char population_f;
@@ -2281,7 +2247,6 @@ void draw_button(int x1, int y1, int x2, int y2, char *label, int color)
 extern int civnow, x_cap[], city_view_mode;
 extern char msgtext[];
 
-extern int terrain_at(int, int), wrap_x(int);
 extern char *strcpy(char *, char *);
 signed char mini_x[4] = { 0, 2, 0, 1 }, mini_y[4] = { -1, 0, 1, 2 };
 

@@ -30,12 +30,9 @@ extern struct rect far wonder_bounds[];
 extern int strlen();
 extern char *strcpy(char *, char *);
 extern void srand();
-extern int rand_scaled(int);
-extern int disk_insert(), kbhit(void);
+extern int kbhit(void);
 
-extern void sound();
 
-extern void flip(int);
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void city_scene(int city, int mode)
