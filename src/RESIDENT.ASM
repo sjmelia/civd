@@ -236,12 +236,12 @@ PUBLIC _line_off
 _line_off EQU _F2B01+0654EH
 PUBLIC _bios_regs
 _bios_regs EQU _F2B01+0679AH
-PUBLIC _table1
-_table1 EQU _F2B01+067E0H
-PUBLIC _table2
-_table2 EQU _F2B01+067B2H
-PUBLIC _table3
-_table3 EQU _F2B01+067D7H
+PUBLIC _gfx_choices
+_gfx_choices EQU _F2B01+067E0H
+PUBLIC _sound_choices
+_sound_choices EQU _F2B01+067B2H
+PUBLIC _custom_sounds
+_custom_sounds EQU _F2B01+067D7H
 PUBLIC _edit_cursor
 _edit_cursor EQU _F2B01+068CCH
 PUBLIC _edit_cursor_w

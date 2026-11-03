@@ -1126,7 +1126,7 @@ int unit_ai_move(int player, int unit)
     int best_value3;
     int tx1;
     int st6;
-    int rec3;
+    int closest;
     int pad44;
     int pad35;
     int pad26;
@@ -1248,10 +1248,10 @@ int unit_ai_move(int player, int unit)
             return 0x20;
         dist29 = town_gap;
         if (land != 10) {
-            rec3 = nearest_unit(player, unit, armydata[player][unit].x, armydata[player][unit].y);
-            if (town_gap <= 3 && armydata[player][rec3].type != 0x1a) {
-                armydata[player][unit].goto_x = armydata[player][rec3].x;
-                armydata[player][unit].goto_y = armydata[player][rec3].y;
+            closest = nearest_unit(player, unit, armydata[player][unit].x, armydata[player][unit].y);
+            if (town_gap <= 3 && armydata[player][closest].type != 0x1a) {
+                armydata[player][unit].goto_x = armydata[player][closest].x;
+                armydata[player][unit].goto_y = armydata[player][closest].y;
                 return 0;
             }
             if ((turn_tick & 7) + 4 <= dist29) {
