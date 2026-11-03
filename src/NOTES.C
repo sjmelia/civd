@@ -14,12 +14,12 @@
 
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
-void show_help(int civ)
+void show_help(char *topic)
 {
     char buf[24];
 
     strcpy(buf, "*");
-    strcat(buf, strupr(civ));
+    strcat(buf, strupr(topic));
     msgtext[0] = 0;
     if (news_name("help.txt", buf)) {
         mouse_off();

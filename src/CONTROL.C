@@ -42,9 +42,6 @@
 
 
 
-extern void unit_remove(), unit_icon();
-extern void select_page();
-
 #define U armydata[civ][jf]
 /* In 474.03 ai_turn is post-optimized, unlike in 474.05 where it exceeds the
    post-optimizer limit (C4063). */

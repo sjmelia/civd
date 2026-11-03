@@ -31,10 +31,6 @@ extern int save_player;
 extern int save_turn;
 extern int save_year;
 
-extern char filename[];
-
-extern unsigned int drive_choice;
-
 extern int image_screen();
 int read_save_header();         /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 

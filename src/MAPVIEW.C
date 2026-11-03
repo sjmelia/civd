@@ -12,8 +12,6 @@
 #include "MAP.H"
 #include "TURN.H"
 
-extern int row_flag[8][16];
-
 
 void view_army(void)
 {

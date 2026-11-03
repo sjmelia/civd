@@ -22,9 +22,6 @@
 #include "PATH.H"
 #include "CITYMGT.H"
 
-extern void unit_notify(), unit_defect();
-extern void unit_home();
-
 int incited = 0;                /* city taken by a diplomat: capture, never destroy */
 
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
