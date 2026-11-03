@@ -11,9 +11,6 @@
 #include "CORE.H"
 #include "DRIVER.H"
 
-
-
-
 void news_box(int city)
 {                               /* newsflash panel */
     int idx;

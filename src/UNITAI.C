@@ -23,17 +23,9 @@
 #include "BATTLE.H"
 #include "DRIVER.H"
 
-
-
-
-
-
-
-
 int ai_watch_player = -1;
 int ai_watch_unit = -1;
 int near_human = 0;             /* mask: civ shares a continent with the human's cities */
-
 
 void unit_phase(int player)
 {

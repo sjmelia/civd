@@ -11,7 +11,6 @@
 
 extern int row_flag[8][16];
 
-
 extern int getch(void);
 extern char *itoa(int, char *, int), *strcpy(char *, char *), *strcat(char *, char *);
 extern int strlen();

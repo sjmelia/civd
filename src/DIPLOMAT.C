@@ -26,10 +26,6 @@
 
 #define diplomat_improvements (improvements + 1)
 
-
-
-
-
 extern int kbhit(void);
 
 #define tech unused_n

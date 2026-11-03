@@ -20,10 +20,6 @@
 #include "PATH.H"
 #include "CITYMGT.H"
 
-
-extern char far place_name[][13];
-
-
 extern void unit_notify(), unit_defect();
 extern void unit_home();
 extern int kbhit(void), getch(void);

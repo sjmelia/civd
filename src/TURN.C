@@ -32,7 +32,6 @@
 #include "DRIVER.H"
 #include "FADE.H"
 
-
 #define wonders (improvements + 24)
 
 /* initialised data */
@@ -44,17 +43,7 @@ int player_screen_flag = 0;
 
 /* DGROUP variables */
 
-
-
 /* functions in other segments */
-
-
-
-
-
-
-
-
 
 /* functions of this unit */
 

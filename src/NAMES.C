@@ -16,8 +16,6 @@ extern int edit_cursor;
 extern int edit_cursor_w;
 extern int edit_cursor_x;
 
-extern char far place_name[][13];
-
 extern int kbhit(void), getch(void);
 extern int strlen(), strnicmp();
 extern char *strcpy(char *, char *);

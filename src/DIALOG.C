@@ -18,10 +18,7 @@ extern int line_off[];
 extern int strlen(), abs(int);
 extern char *strcpy(char *, char *), *strcat(char *, char *);
 
-
 extern int kbhit(void);
-
-
 
 /* initialised data */
 int busy_flag = 0;

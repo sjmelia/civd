@@ -13,9 +13,6 @@
 #include "FILEIO.H"
 #include "PALETTE.H"
 
-
-
-
 void bios_request_13(void)
 {
     bios_call_reg_block_io.h.ah = 0;

@@ -16,9 +16,6 @@ extern char table3[];
 
 extern union REGS bios_regs;
 
-
-extern char graphics_driver[], sound_driver[];
-
 char *gfx_names[4] = { ") VGA (256 color)", ") MCGA (256 color)", ") EGA (16 color)", ") Tandy 1000 (16 color)" };
 char *sound_names[6] = { ") No sounds please", ") IBM sounds", ") Tandy sounds", ") AdLib/Sound Blaster", ") Roland MT-32 MIDI board", ") Custom sound driver" };
 char sound_codes[6] = { 'N', 'I', 'T', 'A', 'R', 'X' };

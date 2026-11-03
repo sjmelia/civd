@@ -29,8 +29,6 @@ struct sprite_header {
 };
 extern struct sprite_header sprite_header;
 
-
-
 int resource_open(char *name, int mode)
 {
     struct archive_entry entry;

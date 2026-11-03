@@ -4,6 +4,7 @@
 #include "DIPLOMAC.H"
 #include "DRIVER.H"
 #include "GAME.H"
+#include "REPLAY.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "UNITAI.H"
@@ -19,7 +20,6 @@
 #include "DRAW.H"
 #include "TURN.H"
 #include "PATH.H"
-
 
 int quiz_busy = 0;
 /* City garrison transfer. Letter suffixes preserve MSC stack-slot ordering. */
@@ -90,9 +90,6 @@ void garrison_in(int city)
 }
 
 /* Exploration and contact around a unit. */
-
-
-
 
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void unit_sight(x, y, owner, index, redraw)     /* reveal and make contact around a unit */
@@ -231,8 +228,6 @@ next_radius:
 
 extern int kbhit(void);
 
-
-
 void blink_unit(int owner, int index, int x, int y)
 {
     int a, b, c, d, e, f, g;
@@ -276,8 +271,6 @@ void blink_unit(int owner, int index, int x, int y)
 
 /* Genuine unit-creation body, 0866:[0CF5,0F10).
  * Isolated diagnostics only: its 01DC same-TU call needs the full unit. */
-
-
 
 int create_unit(int owner, int type, int x, int y)
 {
@@ -329,8 +322,6 @@ int create_unit(int owner, int type, int x, int y)
     return -1;
 }
 
-
-
 void drop_u_stack(int group, int index)
 {
 #define record_type armydata[group][index].type
@@ -350,7 +341,6 @@ void drop_u_stack(int group, int index)
                 map_note(armydata[group][index].x, armydata[group][index].y, group);
 #undef record_type
 }
-
 
 int select_location_record(int group, int index)
 {
@@ -396,7 +386,6 @@ void score_group_record(int group, int index)
     }
 }
 
-
 int stack_len(int group, int index, int mode)
 {
     group_total = 0;
@@ -426,7 +415,6 @@ void add_group_value(int group, int index)
             ++group_total;
     }
 }
-
 
 int count_u(int group, int index, int value)
 {
@@ -507,7 +495,6 @@ void unit_reset(int group, int index)
     armydata[group][index].goto_x = armydata[group][index].f8 = -1;
 }
 
-
 void reset_state(int group, int index)
 {
     if (utypes[armydata[group][index].type].domain == 2)
@@ -526,7 +513,6 @@ void kill_cb(int group, int index)
         unit_redraw(group, index);
 }
 
-
 void remove_reset_kind_zero(int group, int index)
 {
     if (utypes[armydata[group][index].type].domain == 0)
@@ -544,7 +530,6 @@ void remove_reset_kind_one(int group, int index)
     if (utypes[armydata[group][index].type].domain == 1)
         drop_u_stack(group, index);
 }
-
 
 void map_center(int group, int x, int y)
 {
@@ -638,9 +623,6 @@ int adj_grp(int group, int x, int y)
 /* Hut rewards and Barbarian encounters. */
 #include <string.h>
 
-
-
-
 void enter_hut(int owner, int index)
 {
     int a, b, c, d, e, f, g, h, i;
@@ -722,9 +704,6 @@ mercenaries:
 /* Exact animation [1D55,1F69). The SI local is reused for group,
  * record and direction offsets; inner direction_offset spills at BP-12.
  * Refresh computes its group offset inside the argument expression. */
-
-
-
 
 void anim_unit(int group, int index, int direction)
 {
@@ -868,7 +847,6 @@ activate:
 /* Nearest city/transport direction, 0866:[226D,250E). */
 #include <stdlib.h>
 
-
 int near_base(int owner, int index)
 {                               /* nearest city or carrier for a unit */
     int a, b, c, d, e, f, g, h, i, j, k;
@@ -932,7 +910,6 @@ unit_next:
 }
 
 /* Event stream append, 0866:[250E,25B6). */
-extern int replay_length;
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void post_event(type, count, arg1, arg2, arg3, arg4)
 int type, count, arg1, arg2, arg3, arg4;
@@ -971,7 +948,6 @@ int help_probe(int a, int b, int c)
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
-
 
 void menu_clear(void)
 {

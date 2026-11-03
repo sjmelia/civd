@@ -16,12 +16,7 @@
 #include "QUIZ.H"
 #include "TURN.H"
 
-
 extern char far advance_pages[];
-
-
-
-
 
 extern int quiz();              /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 

@@ -20,13 +20,6 @@
 #include "MESSAGE.H"
 #include "NEWGAME.H"
 
-extern char sound_driver[];
-
-
-
-
-
-
 signed char start_pos[16][2] = {
     0, 0, 36, 19, 45, 22, 38, 15, 41, 24, 12, 18, 39, 18, 57, 24,
     0, 0, 44, 12, 42, 42, 33, 16, 5, 23, 66, 19, 31, 14, 49, 19

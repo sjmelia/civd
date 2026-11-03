@@ -34,8 +34,6 @@ extern char *strcpy(char *, char *);
 extern void srand();
 extern int kbhit(void);
 
-
-
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void city_scene(int city, int mode)
 {

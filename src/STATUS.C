@@ -12,8 +12,6 @@
 #include "UNITS.H"
 #include "ECONOMY.H"
 
-
-
 void civ_info(int p)
 {                               /* civilization profile (debug) */
     int i, y, j, z, k;

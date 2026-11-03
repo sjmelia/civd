@@ -9,6 +9,8 @@
 #include "FAME.H"
 #include "FILEIO.H"
 #include "GAME.H"
+#include "CAPTURE.H"
+#include "REPLAY.H"
 #include "GLOBALS.H"
 #include "INTRO.H"
 #include "RESIDENT.H"
@@ -30,9 +32,6 @@ extern int save_year;
 
 extern char filename[];
 
-extern char replay_length[];
-extern char ship_success[], ai_ship_success[];
-extern char far place_name[][13];
 extern unsigned int drive_choice;
 
 extern int image_screen(), open(), read(), write(), close();
@@ -379,7 +378,7 @@ void transfer_game(void)
     transfer_far((char far *) advance_owners, 0x90);
     transfer_near((char *) killed, 0x80);
     transfer_far((char far *) place_name, 0xd00);
-    transfer_near((char *) replay_length, 0x2);
+    transfer_near((char *) &replay_length, 0x2);
     transfer_far((char far *) replay_log, 0x1000);
     transfer_near((char *) marvel_site, 0x2c);
     transfer_far((char far *) unit_losses, 0x1c0);
@@ -397,8 +396,8 @@ void transfer_game(void)
     transfer_near((char *) history_rating, 0x10);
     transfer_far((char far *) spaceships, 0x5a0);
     transfer_near((char *) &game_flags, 0x2);
-    transfer_near((char *) ship_success, 0x2);
-    transfer_near((char *) ai_ship_success, 0x2);
+    transfer_near((char *) &ship_success, 0x2);
+    transfer_near((char *) &ai_ship_success, 0x2);
     transfer_near((char *) spaceship_arrive_dates, 0x10);
     transfer_near((char *) floors_palace, 0x18);
     transfer_near((char *) section_grades, 0x18);

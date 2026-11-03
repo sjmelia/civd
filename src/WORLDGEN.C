@@ -26,8 +26,6 @@ extern int story_line;
 extern int story_skip;
 extern int story_wait;
 
-
-
 #pragma pack(1)
 struct story_data_type {
     unsigned char cycles[131];
@@ -37,11 +35,7 @@ struct story_data_type {
 extern unsigned char far story_cycles[131];
 extern unsigned int far story_delays[45];
 
-
-    /* land mass, temperature, climate, age */
 extern int abs(int);
-     /* good city sites per continent; tiles per land [0] and sea [1] region */
-
 
 void page_zero(void)
 {
@@ -573,7 +567,6 @@ skip_extra:    ;
             }
         }
 }
-
 
 void link_seas(int show)
 {

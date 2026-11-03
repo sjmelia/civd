@@ -12,13 +12,7 @@
 #include "UNITS.H"
 #include "NOTES.H"
 
-
-
-extern int civ_state[][28];
-
 extern char *strupr(char *);
-extern int map_near();
-
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void show_help(int civ)

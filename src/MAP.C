@@ -20,21 +20,6 @@
 #include "DRIVER.H"
 #include "RASTER.H"
 
-
-
-
-
-
-
-        /* city labels queued on the map view */
-
- /* grassland shield overlay */
-
-
-
-
-
-
 void reveal(int player, int x, int y)
 {
     int r1;

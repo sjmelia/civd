@@ -30,15 +30,6 @@
 
 #define CITY_SCI(i) (townbuf[i].shield_box)
 
-
-
-
-
-
-
-
-
-
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void civ_economy(int civ)
 {

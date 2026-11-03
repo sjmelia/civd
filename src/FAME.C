@@ -27,9 +27,6 @@ extern char far hall_text[][25];
 extern int open();
 extern int read(), write(), close();
 
-
-
-
 void clear_fame_records(void)
 {
     int i, n;

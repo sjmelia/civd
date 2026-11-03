@@ -23,9 +23,6 @@ extern int path_target_y;
 #define path_probe_y armydata[0][127].y
 #define path_probe_domain armydata[0][127].type
 
-
-
-
 int unit_goal(int player, int unit)
 {
     int best_cost_j, tile_owner_g, ty, tx, blocked_origin, terrain_f, i, new_distance_e, best_direction_k, ny, nx, failed, on_road_c, old_distance_k, move_cost_d, turn_angle_c, remaining_y_o, remaining_x_p;

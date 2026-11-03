@@ -14,8 +14,6 @@
 #include "TURN.H"
 #include "CORE.H"
 
-
-
 void city_phase(int civ)
 {
     int cost, i;

@@ -24,16 +24,10 @@
 #include "NOTES.H"
 #include "PATH.H"
 
-extern char far place_name[][13];
-
-
-
 /* Unit event declarations */
-
 
 /* Score declarations */
 
-extern int ship_success;
 extern int icon_row_step;
 
 /* --- Function 1: [0000, 0540) create_city --- */

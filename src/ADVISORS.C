@@ -17,8 +17,6 @@
 #include "MESSAGE.H"
 #include "MOUSE.H"
 
-
-
 void advisor_open(char *title, int mode)
 {
     mouse_off();
@@ -110,7 +108,6 @@ void sci_rpt(int civ)
     advisor_close();
 }
 
-
 void mil_rpt(int civ)
 {                               /* military status report */
     int type, y, n;
@@ -191,8 +188,6 @@ void military_losses(int civ)
     draw_box(100, 25, 18, y - 25, civ_colours[civnow]);
     advisor_close();
 }
-
-
 
 void trade_rpt(int civ)
 {                               /* trade report */

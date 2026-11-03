@@ -1,5 +1,6 @@
 /* AUDIENCE.H: shared declarations of symbols defined in AUDIENCE.C. */
 
+extern int far portrait_size[][2], far portrait_offset[][2];
 /* Calls use differing argument counts; retain the unprototyped interface. */
 extern void leader_audience();
 extern int mouse_mode;

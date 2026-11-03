@@ -18,9 +18,6 @@
 #include "PATH.H"
 #include "DRAW.H"
 
-
-
-
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 int battle(attacker_civ_b, attacker_unit_m, defender_civ_e, defender_unit_p, flag)
 int attacker_civ_b, attacker_unit_m, defender_civ_e, defender_unit_p, flag;

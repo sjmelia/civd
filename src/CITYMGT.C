@@ -1,6 +1,7 @@
 /* City turn processing, worker assignment and the interactive city screen. */
 #include "RESIDENT.H"
 #include "GAME.H"
+#include "GLOBALS.H"
 #include "BATTLE.H"
 #include "CAPTURE.H"
 #include "CITYMGT.H"
@@ -23,93 +24,29 @@
 #include "MESSAGE.H"
 #include "UNITAI.H"
 #include "PATH.H"
-#include "DRIVER.H"
 
 /* Module state, stored in RESIDENT.ASM. */
-extern int excess_unhappy;      /* unhappy citizens beyond city size */
+extern int excess_unhappy;
 extern int selected_city;
 extern int selected_owner;
-extern int radius_tiles;        /* tiles in a city radius (21) */
-extern int units_abroad;        /* military units away, causing unhappiness */
+extern int radius_tiles;
+extern int units_abroad;
 
 #define special_resources (terrains + 12)
 
-/* Keep the local data list: GLOBALS.H exhausts MSC 5.1 heap with LOADFIX. */
-extern struct city townbuf[];
-extern struct unit armydata[][128];
-extern int palace_remote;
-extern int pop_smog_advances;
-extern int year;
-extern int city_experts_num;
-extern int civnow;
-extern int cur_tier;
-extern int nation_ratings[];
-extern int civ_gov[];
-extern int map_x0;
-extern int map_y0;
-extern int rule_options;
-extern char msgtext[];
-
+/* DRIVER.H would exhaust MSC 5.1 heap under LOADFIX, and only this is used. */
+extern void recolour_rect();
 
 extern int abs(int);
 
 extern char *strupr(char *);
 
-
-
 extern char *strcpy(char *, char *);
 extern char *strcat(char *, char *);
-extern int home_troops_maintained;
-extern int city_keep;
-extern int colonist_homed;
-extern int town_human_unit_near;
-extern int town_res_sums[];     /* city food, shields, trade and luxury */
-#define city_revel_sums (town_res_sums[3])
-extern int human_set;
-extern int turn_tick;
-extern int show_city_display;
-
-extern int plant_waste_divisor;
-
-extern int city_count[];
-
-extern int town_gap;
-extern int treaties[8][8];
-extern int forces_present[8][28];
-extern int last_met_turn[];
-
-extern int marvel_site[];
-
-extern int civ_units_ordered[8][28];
-extern int game_flags, ai_ship_success, spaceship_arrive_dates[], money[], players;
-
-extern int x_cap[];
-
-extern int civ_area_plan[8][16];
-
-extern int city_leak;
-extern int sci[], civ_toll[];
-extern int taxes, learning_yield;
-
-extern int town_happy_ones_num, town_unhappy_counts, excess_unhappy;
-
-extern int unused_support;
-
-extern int gangmode, tech_count[], margin_democracy;
-extern int troop_over, civ_tribe_of[];
 
 extern char *itoa(int, char *, int);
-extern char nstr[];
 
-extern int village_icons;
-extern int troops_total[], mse_held, ptr_x, ptr_y;
 extern int kbhit(void);
-extern int map_view_changed;
-
-extern int human_counts;
-
-extern int selected_index, civ_research_tally[], cost_penalty, civ_ratings[];
-
 
 int working_tiles = 0;
 int city_view_mode = 0;
@@ -1966,14 +1903,7 @@ label_exit:;
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
 
-extern struct city townbuf[];
-extern int improvement_words[], marvel_site[];
-extern int selected_city, excess_unhappy, town_happy_ones_num, town_unhappy_counts, polluted;
 #define CITY_STATE (townbuf[selected_city].specialists)
-
-extern int rule_options, selected_owner, civ_gov[], working_tiles, town_res_sums[];
-extern int troop_over, margin_democracy;
-
 
 /* yield_sum_f is only initialized in drawing mode. The original still reads it
    first in the final && test when mode differs; keep that observed ordering.
@@ -2150,13 +2080,9 @@ void fit_citizens(int city, int delta)
 /* Original reads unknown_gap_j before assigning it; preserve that observed quirk.
    unused_word_b reserves the other unused word in the ten-byte frame. */
 
-extern int city_glad_glyphs[];
 /* city_glad_glyphs is the nine citizen icons: 0-1 happy, 2-3 content, 4-5
  * unhappy, 6-8 the specialists, indexed by kind 1-3 from
  * specialist_people. */
-#define quiet_persons (city_glad_glyphs + 2)
-#define city_angry_images (city_glad_glyphs + 4)
-#define specialist_people (city_glad_glyphs + 5)
 
 int draw_city_view(int city, int x, int y, int special, int width)
 {
@@ -2194,8 +2120,6 @@ int draw_city_view(int city, int x, int y, int special, int width)
 }
 
 /* City-screen panels and improvement icons. */
-
-extern int vga_modes;
 
 void draw_icon(int icon, int x, int y)
 {
@@ -2258,10 +2182,6 @@ void draw_button(int x1, int y1, int x2, int y2, char *label, int color)
 
 /* City-screen minimap, centred horizontally on the human capital. */
 
-extern int civnow, x_cap[], city_view_mode;
-extern char msgtext[];
-
-extern char *strcpy(char *, char *);
 signed char mini_x[4] = { 0, 2, 0, 1 }, mini_y[4] = { -1, 0, 1, 2 };
 
 void draw_minimap(void)

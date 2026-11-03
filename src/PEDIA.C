@@ -25,7 +25,6 @@ extern int far pedia_topics[];
 extern int far topic_class[];
 extern signed char far pedia_icons[];
 
-
 extern int kbhit(void);
 extern char *strupr(char *);
 

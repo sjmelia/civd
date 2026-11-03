@@ -39,18 +39,9 @@
 #include "PALACE.H"
 #include "MOUSE.H"
 
-
-
 extern int abs(int);
 
-
-
-
 extern int getch(void);
-
-
-
-
 
 extern void unit_remove(), unit_icon();
 extern void select_page();
@@ -1273,9 +1264,6 @@ fn:                            /* end of turn */
 
 #undef U
 
-
-
-
 void note_map(int x, int y)
 {
     if ((map_visible_to[x][y] & (1 << civnow)) || xray_on)
@@ -1325,8 +1313,6 @@ int build_ok(int x, int y)
 
 #include <string.h>
 #include <stdlib.h>
-
-
 
 void uinit(int player, int unit)
 {

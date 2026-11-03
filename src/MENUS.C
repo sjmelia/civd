@@ -23,11 +23,6 @@
 /* Module state, stored in RESIDENT.ASM. */
 extern int menu_result;
 
-
-
-
-
-
 void cmd_menu(int x, int y, int sel)
 {
     cmd_code = -1;

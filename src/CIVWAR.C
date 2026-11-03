@@ -11,8 +11,6 @@
 #include "CORE.H"
 #include "TURN.H"
 
-
-
 int civil_war(int old)
 {
     int rsz[16];
