@@ -24,7 +24,6 @@ extern int path_target_y;
 #define path_probe_domain armydata[0][127].type
 
 
-extern char coarse_ocean_map[20][13], block_ground_way[20][13];
 
 
 int unit_goal(int player, int unit)
@@ -156,7 +155,7 @@ int path_coarse(int player, int unit)
         cost_j = block_steps[x39][y2];
         tail_g++;
         tail_g = (unsigned char) tail_g;
-        mask_h = sea_m ? coarse_ocean_map[x39][y2] : block_ground_way[x39][y2];
+        mask_h = sea_m ? (char) coarse_ocean_map[x39][y2] : (char) block_ground_way[x39][y2];
         for (i3 = 1; i3 <= 8; i3++) {
             if ((1 << (i3 - 1)) & mask_h) {
                 nx_g = x39 + spiral_x[i3];
@@ -179,7 +178,7 @@ int path_coarse(int player, int unit)
     if (found_g) {
         nearest_p = 99;
         best_f = -1;
-        mask_h = utypes[armydata[player][unit].type].domain == 2 ? coarse_ocean_map[cx_d][cy_d] : block_ground_way[cx_d][cy_d];
+        mask_h = utypes[armydata[player][unit].type].domain == 2 ? (char) coarse_ocean_map[cx_d][cy_d] : (char) block_ground_way[cx_d][cy_d];
         for (i3 = 1; i3 <= 8; i3++) {
             if ((1 << (i3 - 1)) & mask_h) {
                 nx_g = cx_d + spiral_x[i3];

@@ -30,7 +30,6 @@
 extern int mouse_hide_limit;
 extern void restore_timer(void);
 
-extern union REGS bios_call_reg_block_io;
 
 
 

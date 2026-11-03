@@ -20,13 +20,9 @@
 #include "PATH.H"
 #include "CITYMGT.H"
 
-struct relation {
-    char a, b;
-};
 
 extern int debug;
 extern char far place_name[][13];
-extern struct relation treaties[8][8];
 
 
 extern void unit_notify(), unit_defect();
@@ -119,8 +115,8 @@ int a, b, c;
             news_box(b);
         sound(1);
         townbuf[b].visible_size = (a == civnow) ? 0 : townbuf[b].size;
-    } else if ((treaties[civnow][a].a & 0x40)
-               || (treaties[civnow][old].a & 0x40)) {
+    } else if ((treaty_low(civnow, a) & 0x40)
+               || (treaty_low(civnow, old) & 0x40)) {
         message_mode = 0;
         strcpy(msgtext, "Spies report:\n");
         strcat(msgtext, civ_names[a]);

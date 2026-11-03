@@ -24,7 +24,7 @@ The 28 unit types are 34-byte records in `utypes[28]` (`GAME.C`, DGROUP
 the same positions. The table, in ID order:
 
 ```c
-{{#include ../../../src/GAME.C:292:321}}
+{{#include ../../../src/GAME.C:291:320}}
 ```
 
 ## Building a type

@@ -32,9 +32,6 @@
 #include "DRIVER.H"
 #include "FADE.H"
 
-struct relation {
-    char a, b;
-};
 
 #define wonders (improvements + 24)
 
@@ -49,7 +46,6 @@ int player_screen_flag = 0;
 
 extern int debug;
 
-extern struct relation treaties[8][8];
 extern char far advance_owners[], far map_visible_to[], far power_history[];
 extern char far war_record[];
 
@@ -418,7 +414,7 @@ void rate_civs(void)
             power_history[turn_tick / 4 % 150 * 8 + i] = clamp(rate[i] / 8, 0, 255);
         mask = 0;
         for (j = 0; j < 8; j++)
-            if ((treaties[i][j].a & 3) == 1)
+            if ((treaty_low(i, j) & 3) == 1)
                 mask |= 1 << j;
         if (turn_tick < 600)
             war_record[turn_tick / 4 % 150 * 8 + i] = (char) mask;
@@ -444,13 +440,13 @@ void rate_civs(void)
             if (city_count[j] <= 1)
                 continue;
             {
-                register struct relation *p = &treaties[j][civnow];
-                if (p->a & 2) {
-                    p->b |= 1;
+                register char *p = (char *) &treaties[j][civnow];
+                if (p[0] & 2) {
+                    p[1] |= 1;
                     continue;
                 }
             }
-            treaties[j][civnow].a |= 1;
+            treaty_low(j, civnow) |= 1;
         }
     }
 }
@@ -641,7 +637,7 @@ void ai_event(void)
         if (townbuf[unit].status == -1)
             continue;
         enemy = townbuf[unit].owner;
-        if (treaties[enemy][0].a & 4)
+        if (treaty_low(enemy, 0) & 4)
             continue;
         if (leader == 17 && !has_tech(enemy, 46))
             continue;
@@ -667,7 +663,7 @@ void ai_event(void)
             money[enemy] -= clamp(money[enemy] / 3, 0, 10 * wonders[leader].cost - townbuf[unit].shield_box);
             if (still != 1) {
                 sound(civt[civ_tribe_of[enemy]].motif);
-                message_mode = (treaties[civnow][enemy].a & 64) ? 5 : 2;
+                message_mode = (treaty_low(civnow, enemy) & 64) ? 5 : 2;
                 show_msg(msgtext, 100, 80);
                 pedia_show(leader + 24, 1);
                 sel_player();

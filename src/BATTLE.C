@@ -18,7 +18,6 @@
 #include "PATH.H"
 #include "DRAW.H"
 
-extern int treaties[8][8];
 
 
 

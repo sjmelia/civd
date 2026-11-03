@@ -24,9 +24,6 @@
 #include "MAP.H"
 #include "PATH.H"
 
-extern struct {
-    char a, b;
-} treaties[8][8];
 #define diplomat_improvements (improvements + 1)
 extern int debug;
 extern char far map_visible_to[];
@@ -70,7 +67,7 @@ void dip_menu(int city_id, int player, int unit_id)
     strcat(msgtext, "...\n Establish Embassy\n Investigate City\n Steal Technology\n Industrial Sabotage\n Incite a Revolt\n Meet with King\n");
 
     if (player == civnow) {
-        if ((treaties[civnow][target_civ].a & 0x40) || target_civ == 0)
+        if ((treaty_low(civnow, target_civ) & 0x40) || target_civ == 0)
             dialog_dim = 1;
         if (townbuf[city_id].status & 0x20)
             dialog_dim |= 4;
@@ -81,7 +78,7 @@ void dip_menu(int city_id, int player, int unit_id)
         choice = show_msg(msgtext, 80, 80);
     } else {
         choice = 2;
-        if (target_civ == civnow && (treaties[civnow][player].a & 2)) {
+        if (target_civ == civnow && (treaty_low(civnow, player) & 2)) {
             drop_u_stack(player, unit_id);
             return;
         }
@@ -94,7 +91,7 @@ void dip_menu(int city_id, int player, int unit_id)
         goto diplomat_done;
 
     case 0:
-        treaties[civnow][target_civ].a |= 0x40;
+        treaty_low(civnow, target_civ) |= 0x40;
         drop_u_stack(player, unit_id);
         civ_dossier(target_civ);
         return;
@@ -186,7 +183,7 @@ sabotage:
         strcat(msgtext, ".\n");
         if (cost <= money[player]) {
             strcat(msgtext, " Forget it.\n Incite revolt\n");
-            if (cost * 2 <= money[player] && (treaties[player][target_civ].a & 2)) {
+            if (cost * 2 <= money[player] && (treaty_low(player, target_civ) & 2)) {
                 strcat(msgtext, " Subvert city ($x2)\n");
             }
         }
@@ -195,9 +192,9 @@ sabotage:
         if (choice < 1)
             return;
         if (choice == 1) {
-            if (treaties[target_civ][player].a & 2) {
+            if (treaty_low(target_civ, player) & 2) {
                 accord(target_civ, player, 2);
-                treaties[target_civ][player].a |= 8;
+                treaty_low(target_civ, player) |= 8;
             }
         }
         money[player] -= cost * choice;
@@ -367,7 +364,7 @@ void city_revolt(int city_id, int new_owner)
     for (m = 0; m < 20; m++)
         map_visible_to[(radius_dx[m] + cx) * 50 + radius_dy[m] + cy] |= (1 << new_owner);
 
-    if (civ == civnow || new_owner == civnow || (treaties[civnow][civ].a & 0x40) || (treaties[civnow][new_owner].a & 0x40)) {
+    if (civ == civnow || new_owner == civnow || (treaty_low(civnow, civ) & 0x40) || (treaty_low(civnow, new_owner) & 0x40)) {
         if (map_visible_to[townbuf[city_id].x * 50 + townbuf[city_id].y] & (1 << civnow))
             reveal(civnow, townbuf[city_id].x - 8, townbuf[city_id].y - 5);
         strcpy(msgtext, civ_names[civ]);

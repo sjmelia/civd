@@ -24,7 +24,6 @@
 #include "DRIVER.H"
 
 
-extern int treaties[8][8];
 extern char far map_visible_to[];
 extern char far fog_map[];
 
@@ -37,7 +36,6 @@ int ai_watch_player = -1;
 int ai_watch_unit = -1;
 int near_human = 0;             /* mask: civ shares a continent with the human's cities */
 
-extern int treaties[8][8];
 
 void unit_phase(int player)
 {

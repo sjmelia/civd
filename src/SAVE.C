@@ -31,8 +31,7 @@ extern int save_year;
 extern char filename[];
 extern int debug;
 
-extern int treaties[8][8];
-extern char replay_length[], block_ground_way[];
+extern char replay_length[];
 extern char ship_success[], ai_ship_success[];
 extern char far power_history[], far war_record[];
 extern char far map_visible_to[];

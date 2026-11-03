@@ -13,7 +13,6 @@
 #include "FILEIO.H"
 #include "PALETTE.H"
 
-extern union REGS bios_call_reg_block_io;
 
 
 

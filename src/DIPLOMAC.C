@@ -14,7 +14,6 @@
 #include "TURN.H"
 #include "CORE.H"
 
-extern int treaties[8][8];
 
 
 void city_phase(int civ)

@@ -40,7 +40,6 @@ extern int far portrait_coords[7][4][2];
 extern int far portrait_origins[7][4][2];
 
 
-extern int treaties[8][8];
 
 extern int debug;
 

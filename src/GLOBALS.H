@@ -5,6 +5,7 @@
 #include "CIV.H"
 
 struct _iobuf;
+union REGS;
 
 extern int warming;
 extern int ptr_x;
@@ -70,9 +71,7 @@ extern int civ_tribe_of[8];
 extern int audience_active;     /* audience under way; blocks re-entry */
 extern char block_steps[20][13];
 extern unsigned char diskbuffer[512];
-#ifdef GLOBALS_STORAGE
 extern union REGS bios_call_reg_block_io;       /* registers for BIOS calls */
-#endif
 extern int saved_found;
 extern int marked_mask;
 extern int the_enemy;
@@ -93,9 +92,7 @@ extern int civ_gov[8];
 extern char nstr[12];
 extern int player_peace_run;
 extern int xray_on;
-#ifdef GLOBALS_STORAGE
 extern unsigned char block_ground_way[20][13];  /* land connectivity per coarse map cell */
-#endif
 extern int margin_democracy;    /* drops with units abroad; >=0 lets AI pick democracy */
 extern int int_unused_dd;
 extern int home_troops_maintained;      /* units homed in the city */
@@ -123,9 +120,7 @@ extern struct city townbuf[128];        /* city records */
 extern int portrait_sprites[14][2];     /* leader eye [0] and mouth [1] tiles per frame */
 extern int custom_params[4];
 extern int nation_ratings[8];
-#ifdef GLOBALS_STORAGE
 extern unsigned char coarse_ocean_map[20][13];  /* sea connectivity per coarse map cell */
-#endif
 extern int colour_shield_tiles;
 extern char walk_cost[16][16];
 extern int cleared[8];          /* per-civ word, only ever cleared */
@@ -194,9 +189,7 @@ extern int complete_flag;
 extern int civ_area_plan[8][16];        /* AI continent policy: 0 none, 1 attack, 2 defend, 5 transport */
 extern char civ_targets_x[8][32];
 extern char ai_camp_site_weights[8][16];
-#ifdef GLOBALS_STORAGE
 extern int treaties[8][8];      /* diplomatic state per civ pair */
-#endif
 extern int killed[8][8];
 extern int human_counts;
 extern int civ_id;
@@ -206,6 +199,9 @@ extern int map_label_yorg[32];
 
 /* Views into the tables above. Not communals: keep them after the
  * declarations, whose order sets LINK's tie order. */
+
+/* A treaty word's low byte, which some readers test and set alone. */
+#define treaty_low(a, b) (*(char *) &treaties[a][b])
 
 /* statuspics is one table of sprite handles, drawn by number with
  * label_with_style: 0-5 status icons, 6 pollution, 7 title cursor, 8-15

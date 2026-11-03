@@ -49,7 +49,6 @@ extern int abs(int);
 
 
 extern int getch(void);
-extern int treaties[8][8];
 
 
 

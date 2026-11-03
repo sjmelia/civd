@@ -13,7 +13,6 @@
 #include "ECONOMY.H"
 
 extern unsigned char far advance_owners[][2];
-extern int treaties[8][8];
 
 
 void civ_info(int p)

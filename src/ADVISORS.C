@@ -310,7 +310,6 @@ void trade_rpt(int civ)
     advisor_close();
 }
 
-extern int treaties[8][8];
 extern int kbhit(void);
 
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */

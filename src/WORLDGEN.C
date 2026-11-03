@@ -42,7 +42,6 @@ extern char far map_visible_to[][50];
     /* land mass, temperature, climate, age */
 extern int abs(int);
      /* good city sites per continent; tiles per land [0] and sea [1] region */
-extern unsigned char block_ground_way[20][13];
 
 
 void page_zero(void)
@@ -576,7 +575,6 @@ skip_extra:    ;
         }
 }
 
-extern unsigned char coarse_ocean_map[20][13];
 
 void link_seas(int show)
 {

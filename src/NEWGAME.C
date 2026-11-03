@@ -27,7 +27,6 @@ extern char far map_visible_to[][50];
 extern signed char far adv_source[][72];
 extern int far unit_losses[][28];
 
-extern int treaties[8][8];
 
 
 

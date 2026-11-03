@@ -32,7 +32,6 @@
 
 extern int debug;
 
-extern int treaties[8][8];
 
 extern int far advance_owners[];
 extern char far adv_source[];

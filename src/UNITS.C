@@ -92,9 +92,6 @@ void garrison_in(int city)
 /* Exploration and contact around a unit. */
 
 extern char far map_visible_to[];
-extern struct {
-    char a, b;
-} treaties[8][8];
 
 
 
@@ -136,7 +133,7 @@ next_radius:
                 townbuf[d].visible_size = townbuf[d].size;
             if (utypes[armydata[owner][index].type].domain == 0) {
                 armydata[owner][index].visibility |= 1 << j;
-                if (!(treaties[owner][j].a & 2)) {
+                if (!(treaty_low(owner, j) & 2)) {
                     add_target(j, h, i, 1, 4);
                     add_target(j, h, i, 2, 2);
                 }
@@ -155,7 +152,7 @@ next_radius:
                 armydata[the_enemy][a].visibility |= 1 << owner;
             if (utypes[armydata[owner][index].type].domain == 0 && terrain_at(x, y) != 10 && terrain_at(h, i) != 10 && utypes[armydata[the_enemy][a].type].domain != 1) {
                 diplomacy_event(owner, the_enemy, x, y);
-                if (!(treaties[owner][the_enemy].a & 2)) {
+                if (!(treaty_low(owner, the_enemy) & 2)) {
                     c = 1;
                     if (the_enemy != 0 && armydata[the_enemy][a].type != 26 && (!(armydata[the_enemy][a].status & 8) || utypes[armydata[the_enemy][a].type].role != 2))
                         c = 3;
@@ -168,7 +165,7 @@ next_radius:
                         add_target(the_enemy, x, y, 2, 1);
                 }
             }
-            if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaties[owner][the_enemy].a & 2))
+            if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaty_low(owner, the_enemy) & 2))
                 add_target(owner, h, i, 3, 2);
         }
         if (redraw && (owner == civnow || xray_on)) {
@@ -189,7 +186,7 @@ next_radius:
             if (a != -1 && owner != the_enemy && armydata[the_enemy][a].type != 22) {
                 if (!(k & 1))
                     armydata[the_enemy][a].visibility |= 1 << owner;
-                if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaties[owner][the_enemy].a & 2))
+                if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaty_low(owner, the_enemy) & 2))
                     add_target(owner, h, i, 3, 2);
             }
             if (redraw && (owner == civnow || xray_on)) {
@@ -204,7 +201,7 @@ next_radius:
                 armydata[the_enemy][a].goto_x = -1;
                 if (!(g & 1))
                     armydata[owner][index].visibility |= 1 << the_enemy;
-                if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaties[owner][the_enemy].a & 2))
+                if (terrain_at(h, i) == 10 && the_enemy != 0 && !(treaty_low(owner, the_enemy) & 2))
                     add_target(the_enemy, x, y, 3, 2);
             } else if (the_enemy == civnow && (map_flags(h, i) & 1) && (map_visible_to[x * 50 + y] & (1 << civnow))) {
                 armydata[owner][index].visibility |= 1 << the_enemy;

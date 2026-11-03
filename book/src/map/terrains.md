@@ -9,7 +9,7 @@ replacement yield, rather than a bonus to add to the base terrain.
 ```
 
 ```c
-{{#include ../../../src/GAME.C:45:70}}
+{{#include ../../../src/GAME.C:44:69}}
 ```
 
 The fields after the name are movement cost, defence in halves, food,
