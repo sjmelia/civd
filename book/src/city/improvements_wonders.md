@@ -22,7 +22,7 @@ obsoleting technology.
 ## Production table
 
 ```c
-{{#include ../../../src/GAME.C:231:278}}
+{{#include ../../../src/GAME.C:227:274}}
 ```
 
 ## Obsolescence table
@@ -30,5 +30,5 @@ obsoleting technology.
 Values are technology IDs; see the [technology table](../reference/enum_tech.md).
 
 ```c
-{{#include ../../../src/GAME.C:280:282}}
+{{#include ../../../src/GAME.C:276:278}}
 ```

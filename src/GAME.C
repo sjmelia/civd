@@ -25,12 +25,11 @@
 #include "LOADER.H"
 #include "LOADTAIL.H"
 #include "MOUSE.H"
+#include "NOTES.H"
+#include "TIMER.H"
 
 /* Module state, stored in RESIDENT.ASM. */
 extern int mouse_hide_limit;
-extern void restore_timer(void);
-
-extern void show_help(char *);
 
 /* 0-11 the terrain types, 12-23 the same with their special resource. */
 struct terrain_type terrains[24] = {

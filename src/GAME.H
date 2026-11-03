@@ -19,6 +19,8 @@ extern char far war_record[][8];
 extern char far fog_map[][13];
 extern int far unit_losses[][28];
 extern unsigned char far replay_log[];
+extern int far pedia_topics[];
+extern int far topic_class[];
 extern int debug;
 extern char graphics_driver[], sound_driver[];
 struct advance {

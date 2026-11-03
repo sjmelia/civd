@@ -26,6 +26,7 @@ extern int story_clock;
 extern int story_line;
 extern int story_skip;
 extern int story_wait;
+extern FILE *story_file;
 
 extern unsigned char far story_cycles[131];
 extern unsigned int far story_delays[45];
@@ -698,7 +699,6 @@ int story_step(void)
         return 0;
     }
     if (story_mode == 0) {
-        extern FILE *story_file;
         story_file = fopen("story.txt", "rt");
         story_mode = 1;
         story_clock = story_wait = 0;
@@ -716,10 +716,7 @@ int story_step(void)
         draw_text(msgtext, 160, 160, 3);
         flip(5);
     }
-    {
-        extern FILE *story_file;
-        read_result_g = fscanf(story_file, "%[^\n]\n", msgtext);
-    }
+    read_result_g = fscanf(story_file, "%[^\n]\n", msgtext);
     if (read_result_g != -1 && !(kbhit() && story_skip)) {
         if (story_picture > 1)
             blit(tile_page, 0, 160, 320, 8, scrbuf, 0, 160);
@@ -766,7 +763,6 @@ int story_step(void)
             story_wait++;
         story_wait = clamp(story_delays[story_line], story_clock + 45 * story_wait, 32767);
     } else {
-        extern FILE *story_file;
         if (read_result_g == -1)
             flip(180);
         fclose(story_file);
