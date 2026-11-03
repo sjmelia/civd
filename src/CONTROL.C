@@ -42,9 +42,6 @@
 
 
 
-extern void unit_remove(), unit_icon();
-extern void select_page();
-
 #define U armydata[civ][jf]
 /* ai_turn is too large for the post-optimizer (C4063); its exact code depends
    on the compiler memory taken by identifiers it references. Keep its labels,

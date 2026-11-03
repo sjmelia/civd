@@ -928,7 +928,6 @@ int type, count, arg1, arg2, arg3, arg4;
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
 
-extern void far draw_values(int, int, int);
 void menu_begin(void)
 {
     blit(scrbuf, 0, 0, 320, 200, back_page, 0, 0);

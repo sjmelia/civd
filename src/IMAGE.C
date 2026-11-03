@@ -1,10 +1,9 @@
 /* Screen-image run-length encoding. */
+#include <stdlib.h>
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "DRIVER.H"
 #include "PICTURE.H"
-
-extern int errno;
 
 struct page;
 int image_rect(struct page *, int, int, int, int, char *);
