@@ -28,7 +28,7 @@ int quiz_busy = 0;
 /* Module state, stored in RESIDENT.ASM. */
 extern int target_value;
 extern int match_count;
-extern int group_total;
+extern int stack_total;
 extern int selected_score;
 extern int selected_stack_index;
 extern int total_limit;
@@ -140,7 +140,7 @@ next_radius:
         if (a != -1 && owner != the_enemy) {
             if (!(g & 1))
                 armydata[owner][index].visibility |= 1 << the_enemy;
-            each_stack(the_enemy, a, validate_record);
+            each_stack(the_enemy, a, wake_unit);
             if (terrain_at(h, i) == 10 || f != 10)
                 armydata[the_enemy][a].goto_x = -1;
             if (!(terrain_at(h, i) == 10 && f != 10 && utypes[armydata[owner][index].type].domain != 1))
@@ -342,7 +342,7 @@ void drop_u_stack(int civ, int index)
 #undef lost_type
 }
 
-int select_location_record(int civ, int index)
+int square_defender(int civ, int index)
 {
     int candidate;
     if (armydata[civ][index].next == -1)
@@ -351,7 +351,7 @@ int select_location_record(int civ, int index)
     selected_score = 0;
     for (candidate = 0; candidate < 128; candidate++)
         if (armydata[civ][candidate].type != -1 && armydata[civ][candidate].x == armydata[civ][index].x && armydata[civ][candidate].y == armydata[civ][index].y) {
-            each_stack(civ, candidate, score_group_record);
+            each_stack(civ, candidate, score_defender);
             break;
         }
     return selected_stack_index;
@@ -363,11 +363,11 @@ int stack_other(int civ, int index)
         return index;
     selected_stack_index = index;
     selected_score = -1;
-    each_stack(civ, index, score_group_record);
+    each_stack(civ, index, score_defender);
     return selected_stack_index;
 }
 
-void score_group_record(int civ, int index)
+void score_defender(int civ, int index)
 {
     int type, classification, score;
     type = armydata[civ][index].type;
@@ -388,31 +388,31 @@ void score_group_record(int civ, int index)
 
 int stack_len(int civ, int index, int mode)
 {
-    group_total = 0;
+    stack_total = 0;
     total_mode = mode;
     total_limit = index;
-    each_stack(civ, index, add_group_value);
-    return group_total;
+    each_stack(civ, index, add_stack_value);
+    return stack_total;
 }
 
-void add_group_value(int civ, int index)
+void add_stack_value(int civ, int index)
 {
     switch (total_mode) {
     case 0:
-        group_total += utypes[armydata[civ][index].type].cost;
+        stack_total += utypes[armydata[civ][index].type].cost;
         break;
     case 1:
-        group_total += utypes[armydata[civ][index].type].defense;
+        stack_total += utypes[armydata[civ][index].type].defense;
         break;
     case 2:
-        ++group_total;
+        ++stack_total;
         break;
     case 3:
-        group_total += utypes[armydata[civ][index].type].attack;
+        stack_total += utypes[armydata[civ][index].type].attack;
         break;
     case 4:
         if (index < total_limit && utypes[armydata[civ][index].type].role == 2)
-            ++group_total;
+            ++stack_total;
     }
 }
 
@@ -420,11 +420,11 @@ int count_u(int civ, int index, int value)
 {
     target_value = value;
     match_count = 0;
-    each_stack(civ, index, count_matching_record);
+    each_stack(civ, index, match_unit_type);
     return match_count;
 }
 
-void count_matching_record(int civ, int index)
+void match_unit_type(int civ, int index)
 {
     if (armydata[civ][index].type == target_value)
         ++match_count;
@@ -434,11 +434,11 @@ int stack_strength(int civ, int index, int value)
 {
     target_value = value;
     match_count = 0;
-    each_stack(civ, index, match_type_category);
+    each_stack(civ, index, match_unit_role);
     return match_count;
 }
 
-void match_type_category(int civ, int index)
+void match_unit_role(int civ, int index)
 {
     if (utypes[armydata[civ][index].type].role == target_value)
         ++match_count;
@@ -447,11 +447,11 @@ void match_type_category(int civ, int index)
 int stack_cap(int civ, int index)
 {
     match_count = 0;
-    each_stack(civ, index, count_weighted_record);
+    each_stack(civ, index, add_free_capacity);
     return match_count;
 }
 
-void count_weighted_record(int civ, int index)
+void add_free_capacity(int civ, int index)
 {
     if (utypes[armydata[civ][index].type].domain == 0)
         --match_count;
@@ -477,7 +477,7 @@ void each_stack(int civ, int index, void (far *callback) (int, int))
 #undef count
 }
 
-void validate_record(int civ, int index)
+void wake_unit(int civ, int index)
 {
     if (terrain_at(armydata[civ][index].x, armydata[civ][index].y) == 10 && utypes[armydata[civ][index].type].domain == 0)
         return;
@@ -599,7 +599,7 @@ int unit_blocked(int civ, int x, int y)
     return 0;
 }
 
-int adj_grp(int civ, int x, int y)
+int adj_civ(int civ, int x, int y)
 {
     int state[4];
 #define adjacent_x state[3]
@@ -766,7 +766,7 @@ int pick_unit(int owner, int index)
     int a, b[12], c, d, e, f, g, h, i;
     mouse_off();
     menu_begin();
-    h = select_location_record(owner, index);
+    h = square_defender(owner, index);
     i = 0;
     d = index;
     a = 0;

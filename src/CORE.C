@@ -82,7 +82,7 @@ next_unit:
     return index;
 }
 
-int nearest_record(int civ, int excluded, int x, int y)
+int nearest_unit(int civ, int excluded, int x, int y)
 {
     int i, index, min_dist, dist;
     min_dist = 999;

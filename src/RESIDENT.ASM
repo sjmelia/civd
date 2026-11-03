@@ -374,8 +374,8 @@ PUBLIC _story_skip
 _story_skip EQU _F2B01+067FCH
 PUBLIC _story_wait
 _story_wait EQU _F2B01+06806H
-PUBLIC _group_total
-_group_total EQU _F2B01+06532H
+PUBLIC _stack_total
+_stack_total EQU _F2B01+06532H
 PUBLIC _selected_score
 _selected_score EQU _F2B01+06534H
 PUBLIC _selected_stack_index
