@@ -341,7 +341,7 @@ int ai_order(int player, int unit)
     home = near_city(uxk, uyk);
     city_distj = town_gap;
     armydata[player][unit].type = -1;
-    best_c = nearest_record(player, unit, uxk, uyk);
+    best_c = nearest_unit(player, unit, uxk, uyk);
     near_dist = town_gap;
     armydata[player][unit].type = utypej;
     terrain_g = terrain_at(uxk, uyk);
@@ -460,7 +460,7 @@ int ai_order(int player, int unit)
             else {
                 sc_d = armydata[player][unit].type;
                 armydata[player][unit].type = 26;
-                own_b = select_location_record(player, unit);
+                own_b = square_defender(player, unit);
                 armydata[player][unit].type = sc_d;
                 if (own_b != -1 && utypes[armydata[player][own_b].type].defense < utypes[armydata[player][unit].type].defense)
                     return 0x66;
@@ -477,7 +477,7 @@ int ai_order(int player, int unit)
                 return 0x66;
             sc_d = armydata[player][unit].status;
             armydata[player][unit].status |= 8;
-            if (select_location_record(player, unit) == unit && townbuf[home].size / divisor + 1 > stack_len(player, unit, 4)) {
+            if (square_defender(player, unit) == unit && townbuf[home].size / divisor + 1 > stack_len(player, unit, 4)) {
                 armydata[player][unit].status = sc_d;
                 return 0x66;
             } else {
@@ -725,7 +725,7 @@ int ai_order(int player, int unit)
         }
     }
     if ((unsigned char) armydata[player][unit].goto_x != 0xff) {
-        if (rolel != 3 || !adj_grp(player, uxk, uyk))
+        if (rolel != 3 || !adj_civ(player, uxk, uyk))
             return 0;
     }
     if (rolel == 2 && terrain_g != 10) {
@@ -1107,7 +1107,7 @@ int unit_ai_move(int player, int unit)
     int best_value3;
     int tx1;
     int st6;
-    int rec3;
+    int closest;
     int pad44;
     int pad35;
     int pad26;
@@ -1229,10 +1229,10 @@ int unit_ai_move(int player, int unit)
             return 0x20;
         dist29 = town_gap;
         if (land != 10) {
-            rec3 = nearest_record(player, unit, armydata[player][unit].x, armydata[player][unit].y);
-            if (town_gap <= 3 && armydata[player][rec3].type != 0x1a) {
-                armydata[player][unit].goto_x = armydata[player][rec3].x;
-                armydata[player][unit].goto_y = armydata[player][rec3].y;
+            closest = nearest_unit(player, unit, armydata[player][unit].x, armydata[player][unit].y);
+            if (town_gap <= 3 && armydata[player][closest].type != 0x1a) {
+                armydata[player][unit].goto_x = armydata[player][closest].x;
+                armydata[player][unit].goto_y = armydata[player][closest].y;
                 return 0;
             }
             if ((turn_tick & 7) + 4 <= dist29) {

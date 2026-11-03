@@ -6,7 +6,7 @@ extern void label_with_style(int, int, int);
 extern int city_at(int, int);
 extern int clamp(int, int, int);
 extern int near_city(int, int);
-extern int nearest_record(int, int, int, int);
+extern int nearest_unit(int, int, int, int);
 extern int half_dist(int, int);
 extern int distance_twice(int, int);
 extern int map_dist(int, int, int, int);

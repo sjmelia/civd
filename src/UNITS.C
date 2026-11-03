@@ -28,7 +28,7 @@ int quiz_busy = 0;
 /* Module state, stored in RESIDENT.ASM. */
 extern int target_value;
 extern int match_count;
-extern int group_total;
+extern int stack_total;
 extern int selected_score;
 extern int selected_stack_index;
 extern int total_limit;
@@ -140,7 +140,7 @@ next_radius:
         if (a != -1 && owner != fight_enemy) {
             if (!(g & 1))
                 armydata[owner][index].visibility |= 1 << fight_enemy;
-            each_stack(fight_enemy, a, validate_record);
+            each_stack(fight_enemy, a, wake_unit);
             if (terrain_at(h, i) == 10 || f != 10)
                 armydata[fight_enemy][a].goto_x = -1;
             if (!(terrain_at(h, i) == 10 && f != 10 && utypes[armydata[owner][index].type].domain != 1))
@@ -322,63 +322,63 @@ int create_unit(int owner, int type, int x, int y)
     return -1;
 }
 
-void drop_u_stack(int group, int index)
+void drop_u_stack(int civ, int index)
 {
-#define record_type armydata[group][index].type
+#define lost_type armydata[civ][index].type
     if (see_fight_all)
-        unit_losses[group][record_type]++;
-    if (utypes[record_type].capacity && armydata[group][index].next != -1 && terrain_at(armydata[group][index].x, armydata[group][index].y) == 10)
-        each_stack(group, index, remove_reset_kind_zero);
-    if (record_type == 23 && armydata[group][index].next != -1 && terrain_at(armydata[group][index].x, armydata[group][index].y) == 10)
-        each_stack(group, index, remove_reset_kind_one);
-    forces_present[group][record_type]--;
-    armydata[group][index].type = -1;
-    armydata[group][index].moves = 0;
-    lift_unit(group, index, armydata[group][index].x, armydata[group][index].y);
+        unit_losses[civ][lost_type]++;
+    if (utypes[lost_type].capacity && armydata[civ][index].next != -1 && terrain_at(armydata[civ][index].x, armydata[civ][index].y) == 10)
+        each_stack(civ, index, remove_reset_kind_zero);
+    if (lost_type == 23 && armydata[civ][index].next != -1 && terrain_at(armydata[civ][index].x, armydata[civ][index].y) == 10)
+        each_stack(civ, index, remove_reset_kind_one);
+    forces_present[civ][lost_type]--;
+    armydata[civ][index].type = -1;
+    armydata[civ][index].moves = 0;
+    lift_unit(civ, index, armydata[civ][index].x, armydata[civ][index].y);
     if (!quiz_busy)
         if (style == -1)
-            if (xray_on || group == civnow || (armydata[group][index].visibility & (1 << civnow)))
-                map_note(armydata[group][index].x, armydata[group][index].y, group);
-#undef record_type
+            if (xray_on || civ == civnow || (armydata[civ][index].visibility & (1 << civnow)))
+                map_note(armydata[civ][index].x, armydata[civ][index].y, civ);
+#undef lost_type
 }
 
-int select_location_record(int group, int index)
+int square_defender(int civ, int index)
 {
     int candidate;
-    if (armydata[group][index].next == -1)
+    if (armydata[civ][index].next == -1)
         return index;
     selected_stack_index = index;
     selected_score = 0;
     for (candidate = 0; candidate < 128; candidate++)
-        if (armydata[group][candidate].type != -1 && armydata[group][candidate].x == armydata[group][index].x && armydata[group][candidate].y == armydata[group][index].y) {
-            each_stack(group, candidate, score_group_record);
+        if (armydata[civ][candidate].type != -1 && armydata[civ][candidate].x == armydata[civ][index].x && armydata[civ][candidate].y == armydata[civ][index].y) {
+            each_stack(civ, candidate, score_defender);
             break;
         }
     return selected_stack_index;
 }
 
-int stack_other(int group, int index)
+int stack_other(int civ, int index)
 {
-    if (armydata[group][index].next == -1)
+    if (armydata[civ][index].next == -1)
         return index;
     selected_stack_index = index;
     selected_score = -1;
-    each_stack(group, index, score_group_record);
+    each_stack(civ, index, score_defender);
     return selected_stack_index;
 }
 
-void score_group_record(int group, int index)
+void score_defender(int civ, int index)
 {
     int type, classification, score;
-    type = armydata[group][index].type;
-    classification = terrain_at(armydata[group][index].x, armydata[group][index].y);
+    type = armydata[civ][index].type;
+    classification = terrain_at(armydata[civ][index].x, armydata[civ][index].y);
     if (classification == 10 && utypes[type].domain != 2)
         return;
     if (utypes[type].domain == 0)
-        score = ((armydata[group][index].status & 8) ? 3 : 2) * utypes[type].defense * terrains[classification].defense << 3;
+        score = ((armydata[civ][index].status & 8) ? 3 : 2) * utypes[type].defense * terrains[classification].defense << 3;
     else
         score = utypes[type].defense << 4;
-    if (armydata[group][index].status & 0x20)
+    if (armydata[civ][index].status & 0x20)
         score += score / 2;
     if (score > selected_score) {
         selected_score = score;
@@ -386,80 +386,80 @@ void score_group_record(int group, int index)
     }
 }
 
-int stack_len(int group, int index, int mode)
+int stack_len(int civ, int index, int mode)
 {
-    group_total = 0;
+    stack_total = 0;
     total_mode = mode;
     total_limit = index;
-    each_stack(group, index, add_group_value);
-    return group_total;
+    each_stack(civ, index, add_stack_value);
+    return stack_total;
 }
 
-void add_group_value(int group, int index)
+void add_stack_value(int civ, int index)
 {
     switch (total_mode) {
     case 0:
-        group_total += utypes[armydata[group][index].type].cost;
+        stack_total += utypes[armydata[civ][index].type].cost;
         break;
     case 1:
-        group_total += utypes[armydata[group][index].type].defense;
+        stack_total += utypes[armydata[civ][index].type].defense;
         break;
     case 2:
-        ++group_total;
+        ++stack_total;
         break;
     case 3:
-        group_total += utypes[armydata[group][index].type].attack;
+        stack_total += utypes[armydata[civ][index].type].attack;
         break;
     case 4:
-        if (index < total_limit && utypes[armydata[group][index].type].role == 2)
-            ++group_total;
+        if (index < total_limit && utypes[armydata[civ][index].type].role == 2)
+            ++stack_total;
     }
 }
 
-int count_u(int group, int index, int value)
+int count_u(int civ, int index, int value)
 {
     target_value = value;
     match_count = 0;
-    each_stack(group, index, count_matching_record);
+    each_stack(civ, index, match_unit_type);
     return match_count;
 }
 
-void count_matching_record(int group, int index)
+void match_unit_type(int civ, int index)
 {
-    if (armydata[group][index].type == target_value)
+    if (armydata[civ][index].type == target_value)
         ++match_count;
 }
 
-int stack_strength(int group, int index, int value)
+int stack_strength(int civ, int index, int value)
 {
     target_value = value;
     match_count = 0;
-    each_stack(group, index, match_type_category);
+    each_stack(civ, index, match_unit_role);
     return match_count;
 }
 
-void match_type_category(int group, int index)
+void match_unit_role(int civ, int index)
 {
-    if (utypes[armydata[group][index].type].role == target_value)
+    if (utypes[armydata[civ][index].type].role == target_value)
         ++match_count;
 }
 
-int stack_cap(int group, int index)
+int stack_cap(int civ, int index)
 {
     match_count = 0;
-    each_stack(group, index, count_weighted_record);
+    each_stack(civ, index, add_free_capacity);
     return match_count;
 }
 
-void count_weighted_record(int group, int index)
+void add_free_capacity(int civ, int index)
 {
-    if (utypes[armydata[group][index].type].domain == 0)
+    if (utypes[armydata[civ][index].type].domain == 0)
         --match_count;
-    if (utypes[armydata[group][index].type].role == 5)
-        match_count += utypes[armydata[group][index].type].capacity;
+    if (utypes[armydata[civ][index].type].role == 5)
+        match_count += utypes[armydata[civ][index].type].capacity;
 }
 
-void each_stack(int group, int index, void (far *callback) (int, int))
+void each_stack(int civ, int index, void (far *callback) (int, int))
 {
     int state[5];
 #define count state[0]
@@ -468,8 +468,8 @@ void each_stack(int group, int index, void (far *callback) (int, int))
     count = 0;
     original = index;
     do {
-        next_link = armydata[group][index].next;
-        callback(group, index);
+        next_link = armydata[civ][index].next;
+        callback(civ, index);
         index = next_link;
     } while (index != -1 && index - original != 0 && ++count < 10);
 #undef original
@@ -477,61 +477,61 @@ void each_stack(int group, int index, void (far *callback) (int, int))
 #undef count
 }
 
-void validate_record(int group, int index)
+void wake_unit(int civ, int index)
 {
-    if (terrain_at(armydata[group][index].x, armydata[group][index].y) == 10 && utypes[armydata[group][index].type].domain == 0)
+    if (terrain_at(armydata[civ][index].x, armydata[civ][index].y) == 10 && utypes[armydata[civ][index].type].domain == 0)
         return;
-    armydata[group][index].status &= 0xfe;
+    armydata[civ][index].status &= 0xfe;
 }
 
-void unit_reset(int group, int index)
+void unit_reset(int civ, int index)
 {
-    if (armydata[group][index].status & 1) {
-        armydata[group][index].status &= ~1;
-        armydata[group][index].moves = 3 * utypes[armydata[group][index].type].moves;
-        if (utypes[armydata[group][index].type].fuel)
-            armydata[group][index].fuel = utypes[armydata[group][index].type].fuel - 1;
+    if (armydata[civ][index].status & 1) {
+        armydata[civ][index].status &= ~1;
+        armydata[civ][index].moves = 3 * utypes[armydata[civ][index].type].moves;
+        if (utypes[armydata[civ][index].type].fuel)
+            armydata[civ][index].fuel = utypes[armydata[civ][index].type].fuel - 1;
     }
-    armydata[group][index].goto_x = armydata[group][index].last_dir = -1;
+    armydata[civ][index].goto_x = armydata[civ][index].last_dir = -1;
 }
 
-void reset_state(int group, int index)
+void reset_state(int civ, int index)
 {
-    if (utypes[armydata[group][index].type].domain == 2)
-        kill_cb(group, index);
+    if (utypes[armydata[civ][index].type].domain == 2)
+        kill_cb(civ, index);
 }
 
-void kill_cb(int group, int index)
+void kill_cb(int civ, int index)
 {
-    if (armydata[group][index].status & 0xc2)
-        armydata[group][index].fuel = 0;
-    if (armydata[group][index].status & 0xcb)
-        armydata[group][index].moves = 3 * utypes[armydata[group][index].type].moves;
-    armydata[group][index].status &= 0x30;
-    armydata[group][index].goto_x = -1;
-    if (group == civnow)
-        unit_redraw(group, index);
+    if (armydata[civ][index].status & 0xc2)
+        armydata[civ][index].fuel = 0;
+    if (armydata[civ][index].status & 0xcb)
+        armydata[civ][index].moves = 3 * utypes[armydata[civ][index].type].moves;
+    armydata[civ][index].status &= 0x30;
+    armydata[civ][index].goto_x = -1;
+    if (civ == civnow)
+        unit_redraw(civ, index);
 }
 
-void remove_reset_kind_zero(int group, int index)
+void remove_reset_kind_zero(int civ, int index)
 {
-    if (utypes[armydata[group][index].type].domain == 0)
-        drop_u_stack(group, index);
+    if (utypes[armydata[civ][index].type].domain == 0)
+        drop_u_stack(civ, index);
 }
 
-void kill_stack_cb(int group, int index)
+void kill_stack_cb(int civ, int index)
 {
-    if (utypes[armydata[group][index].type].domain != 0)
-        drop_u_stack(group, index);
+    if (utypes[armydata[civ][index].type].domain != 0)
+        drop_u_stack(civ, index);
 }
 
-void remove_reset_kind_one(int group, int index)
+void remove_reset_kind_one(int civ, int index)
 {
-    if (utypes[armydata[group][index].type].domain == 1)
-        drop_u_stack(group, index);
+    if (utypes[armydata[civ][index].type].domain == 1)
+        drop_u_stack(civ, index);
 }
 
-void map_center(int group, int x, int y)
+void map_center(int civ, int x, int y)
 {
     int refresh = 0;
     if (x < 16 && map_x0 > 64)
@@ -541,23 +541,23 @@ void map_center(int group, int x, int y)
     if (y < map_y0 + 2 || y > map_y0 + 9)
         refresh = 1;
     if (refresh)
-        reveal(group, wrap_x(x - 8), y - 6);
+        reveal(civ, wrap_x(x - 8), y - 6);
 }
 
-int if_open(int group, int x, int y)
+int if_open(int civ, int x, int y)
 {
     if (map_flags(x, y) & 1)
         return 0;
-    return unit_blocked(group, x, y);
+    return unit_blocked(civ, x, y);
 }
 
-int unit_blocked(int group, int x, int y)
+int unit_blocked(int civ, int x, int y)
 {
     int state[8];
-#define unit_index state[7]
-#define record_index state[6]
+#define city_index state[7]
+#define stack_unit state[6]
 #define candidate_x state[5]
-#define found_group state[4]
+#define found_civ state[4]
 #define candidate_y state[3]
 #define direction state[2]
 #define classification state[1]
@@ -568,19 +568,19 @@ int unit_blocked(int group, int x, int y)
         candidate_y = spiral_y[direction] + y;
         if ((classification == 10) != (terrain_at(candidate_x, candidate_y) == 10))
             continue;
-        found_group = map_owner(candidate_x, candidate_y);
-        if (found_group == -1 || found_group == group)
+        found_civ = map_owner(candidate_x, candidate_y);
+        if (found_civ == -1 || found_civ == civ)
             continue;
-        if (group == civnow) {
-            record_index = map_stack(candidate_x, candidate_y);
-            if (!(armydata[found_group][record_index].visibility & (1 << civnow))) {
-                armydata[found_group][record_index].visibility |= visibility_bit = 1 << civnow;
+        if (civ == civnow) {
+            stack_unit = map_stack(candidate_x, candidate_y);
+            if (!(armydata[found_civ][stack_unit].visibility & (1 << civnow))) {
+                armydata[found_civ][stack_unit].visibility |= visibility_bit = 1 << civnow;
                 civ_vis_grid[candidate_x][candidate_y] |= visibility_bit;
                 map_note(candidate_x, candidate_y);
             }
             if (map_flags(candidate_x, candidate_y) & 1) {
-                unit_index = city_at(candidate_x, candidate_y);
-                townbuf[unit_index].visible_size = townbuf[unit_index].size;
+                city_index = city_at(candidate_x, candidate_y);
+                townbuf[city_index].visible_size = townbuf[city_index].size;
                 map_mark(candidate_x, candidate_y);
                 civ_vis_grid[candidate_x][candidate_y] |= 1 << civnow;
                 map_note(candidate_x, candidate_y);
@@ -592,30 +592,30 @@ int unit_blocked(int group, int x, int y)
 #undef classification
 #undef direction
 #undef candidate_y
-#undef found_group
+#undef found_civ
 #undef candidate_x
-#undef record_index
-#undef unit_index
+#undef stack_unit
+#undef city_index
     return 0;
 }
 
-int adj_grp(int group, int x, int y)
+int adj_civ(int civ, int x, int y)
 {
     int state[4];
 #define adjacent_x state[3]
-#define adjacent_group state[2]
+#define adjacent_civ state[2]
 #define adjacent_y state[1]
 #define adjacent_direction state[0]
     for (adjacent_direction = 1; adjacent_direction < 9; adjacent_direction++) {
         adjacent_x = wrap_x(spiral_x[adjacent_direction] + x);
         adjacent_y = spiral_y[adjacent_direction] + y;
-        adjacent_group = map_owner(adjacent_x, adjacent_y);
-        if (adjacent_group != -1 && adjacent_group != group)
+        adjacent_civ = map_owner(adjacent_x, adjacent_y);
+        if (adjacent_civ != -1 && adjacent_civ != civ)
             return 1;
     }
 #undef adjacent_direction
 #undef adjacent_y
-#undef adjacent_group
+#undef adjacent_civ
 #undef adjacent_x
     return 0;
 }
@@ -701,15 +701,15 @@ mercenaries:
     }
 }
 
-/* Exact animation [1D55,1F69). The SI local is reused for group,
- * record and direction offsets; inner direction_offset spills at BP-12.
- * Refresh computes its group offset inside the argument expression. */
+/* Exact animation [1D55,1F69). The SI local is reused for civ,
+ * mover and direction offsets; inner direction_offset spills at BP-12.
+ * Refresh computes its civ offset inside the argument expression. */
 
-void anim_unit(int group, int index, int direction)
+void anim_unit(int civ, int index, int direction)
 {
     int screen_x, screen_y;
     if (still == 1) {
-        seen_map(armydata[group][index].x, armydata[group][index].y);
+        seen_map(armydata[civ][index].x, armydata[civ][index].y);
         return;
     }
     mouse_off();
@@ -718,36 +718,36 @@ void anim_unit(int group, int index, int direction)
         int frame;
 
         {
-            register int record_offset;
+            register int shown_offset;
             int direction_offset;
-            offset = group * 1536;
-            record_offset = index * 12 + offset;
-#define record (*(struct unit *)((char *)armydata+record_offset))
-            if (!seen_map(record.x, record.y))
+            offset = civ * 1536;
+            shown_offset = index * 12 + offset;
+#define mover (*(struct unit *)((char *)armydata+shown_offset))
+            if (!seen_map(mover.x, mover.y))
                 goto done;
-            if (!in_view(record.x, record.y))
+            if (!in_view(mover.x, mover.y))
                 goto done;
             direction_offset = direction * 2;
-            if (!in_view(record.x + *(int *) ((char *) spiral_x + direction_offset), record.y + *(int *) ((char *) spiral_y + direction_offset)))
+            if (!in_view(mover.x + *(int *) ((char *) spiral_x + direction_offset), mover.y + *(int *) ((char *) spiral_y + direction_offset)))
                 goto done;
-            if (record.next != -1 && (terrain_at(record.x, record.y) != 10 || utypes[((struct unit *) ((char *) armydata + offset))
-                                                                                     [record.next].type].domain == 2))
+            if (mover.next != -1 && (terrain_at(mover.x, mover.y) != 10 || utypes[((struct unit *) ((char *) armydata + offset))
+                                                                                  [mover.next].type].domain == 2))
                 goto refresh_link;
             goto draw_frame;
-#undef record
+#undef mover
         }
 refresh_link:
-        unit_redraw(group, ((struct unit *) ((char *) armydata + index * 12 + (offset = group * 1536)))->next);
+        unit_redraw(civ, ((struct unit *) ((char *) armydata + index * 12 + (offset = civ * 1536)))->next);
 draw_frame:;
         {
             blit(scrbuf, 80, 0, 240, 200, back_page, 80, 0);
-            offset = group * 1536 + index * 12;
+            offset = civ * 1536 + index * 12;
             screen_x = (wrap_x(((struct unit *) ((char *) armydata + offset))->x - map_x0) << 4) + 80;
             screen_y = ((((struct unit *) ((char *) armydata + offset))->y - map_y0) << 4) + 8;
             frame = 0;
             do {
                 offset = direction * 2;
-                label_with_style((signed char) armydata[group][index].type + (group << 5) + 64, screen_x + *(int *) ((char *) spiral_x + offset) * frame + 1, screen_y + *(int *) ((char *) spiral_y + offset) * frame + 1);
+                label_with_style((signed char) armydata[civ][index].type + (civ << 5) + 64, screen_x + *(int *) ((char *) spiral_x + offset) * frame + 1, screen_y + *(int *) ((char *) spiral_y + offset) * frame + 1);
                 flip(1);
                 blit(back_page, screen_x + *(int *) ((char *) spiral_x + offset) * frame, screen_y + *(int *) ((char *) spiral_y + offset) * frame, 16, 16, scrbuf, screen_x + *(int *) ((char *) spiral_x + offset) * frame, screen_y + *(int *) ((char *) spiral_y + offset) * frame);
                 frame++;
@@ -766,7 +766,7 @@ int pick_unit(int owner, int index)
     int a, b[12], c, d, e, f, g, h, i;
     mouse_off();
     menu_begin();
-    h = select_location_record(owner, index);
+    h = square_defender(owner, index);
     i = 0;
     d = index;
     a = 0;

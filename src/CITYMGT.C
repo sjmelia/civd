@@ -623,7 +623,7 @@ label_governor_done:
                         for (city_index = 0; city_index < 128; city_index++) {
                             if (townbuf[city_index].owner != civnow || townbuf[city_index].status == -1)
                                 continue;
-                            scratch_i = nearest_record(selected_owner, unit, townbuf[city_index].x, townbuf[city_index].y);
+                            scratch_i = nearest_unit(selected_owner, unit, townbuf[city_index].x, townbuf[city_index].y);
                             town_gap = abs(town_gap - 3);
                             if (townbuf[city_index].status & 0x20)
                                 town_gap = 3;
@@ -1867,7 +1867,7 @@ label_tile_toggle:
             }
         }
     }
-    if ((townbuf[city].status & 4) && adj_grp(townbuf[city].x, townbuf[city].y) == 0)
+    if ((townbuf[city].status & 4) && adj_civ(townbuf[city].x, townbuf[city].y) == 0)
         garrison_in(city);
     *(int *) ((char *) scrbuf + 0x10) = 1;
     mouse_on();

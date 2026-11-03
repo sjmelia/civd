@@ -236,12 +236,12 @@ PUBLIC _line_off
 _line_off EQU _F2B01+064D0H
 PUBLIC _bios_regs
 _bios_regs EQU _F2B01+0671CH
-PUBLIC _table1
-_table1 EQU _F2B01+06762H
-PUBLIC _table2
-_table2 EQU _F2B01+06734H
-PUBLIC _table3
-_table3 EQU _F2B01+06759H
+PUBLIC _gfx_choices
+_gfx_choices EQU _F2B01+06762H
+PUBLIC _sound_choices
+_sound_choices EQU _F2B01+06734H
+PUBLIC _custom_sounds
+_custom_sounds EQU _F2B01+06759H
 PUBLIC _edit_cursor
 _edit_cursor EQU _F2B01+0684EH
 PUBLIC _edit_cursor_w
@@ -364,8 +364,8 @@ PUBLIC _story_skip
 _story_skip EQU _F2B01+0677EH
 PUBLIC _story_wait
 _story_wait EQU _F2B01+06788H
-PUBLIC _group_total
-_group_total EQU _F2B01+064B6H
+PUBLIC _stack_total
+_stack_total EQU _F2B01+064B6H
 PUBLIC _selected_score
 _selected_score EQU _F2B01+064B8H
 PUBLIC _selected_stack_index

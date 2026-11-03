@@ -110,7 +110,7 @@ void ai_turn(int civ)
                 }
                 if (map_flags(U.x, U.y) & 1) {
                     hh = city_at(U.x, U.y);
-                    if (U.home_city == hh && adj_grp(U.x, U.y) == 0)
+                    if (U.home_city == hh && adj_civ(U.x, U.y) == 0)
                         garrison_in(hh);
                 }
                 continue;
