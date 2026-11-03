@@ -1,7 +1,6 @@
 /* Overlay 16: technology-picture quiz. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "SPACESHP.H"
@@ -17,13 +16,7 @@
 #include "QUIZ.H"
 #include "TURN.H"
 
-extern struct unit armydata[8][128];
-
 extern char far advance_pages[];
-
-
-
-
 
 extern int quiz();              /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 

@@ -7,7 +7,6 @@
 #include "MESSAGE.H"
 #include "DRIVER.H"
 
-
 void news_wrap(int columns)
 {
     int width, index;

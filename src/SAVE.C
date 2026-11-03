@@ -1,15 +1,17 @@
 /* Overlay 11: save and load menus, disk handling and state transfers. */
+#include <io.h>
 #include <dos.h>
 #include <bios.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include "CIV.H"
 #include "CORE.H"
 #include "DIALOG.H"
 #include "FAME.H"
 #include "FILEIO.H"
 #include "GAME.H"
+#include "CAPTURE.H"
+#include "REPLAY.H"
 #include "GLOBALS.H"
 #include "INTRO.H"
 #include "RESIDENT.H"
@@ -20,25 +22,20 @@
 #include "MESSAGE.H"
 #include "SAVE.H"
 
-extern char filename[];
-extern int debug;
+/* Module state, stored in RESIDENT.ASM. */
+extern int save_error;
+extern int save_fd;
+extern int save_index;
+extern int save_mode;
+extern int save_player;
+extern int save_turn;
+extern int save_year;
 
-extern int treaties[8][8];
-extern struct city townbuf[];
-extern struct unit_type utypes[];
-extern struct unit armydata[8][128];
-extern char replay_length[], block_ground_way[];
-extern char ship_success[], ai_ship_success[];
-extern char far power_history[], far war_record[];
-extern char far map_visible_to[];
-extern int far advance_owners[];
-extern char far place_name[][13], far replay_log[];
-extern char far unit_losses[];
-extern char far adv_source[], far spaceships[];
+extern char filename[];
+
 extern unsigned int drive_choice;
 
-extern int image_screen(), open(), read(), write(), close();
-extern long lseek();
+extern int image_screen();
 int read_save_header();         /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 char filename[] = "a:CIVIL0.SVE";
@@ -201,7 +198,7 @@ int write_save(char *file)
 void save_write(int fd, char *buf, int length)
 {
     if (write(fd, buf, length) == -1)
-        save_error = image_error;
+        save_error = errno;
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
@@ -381,7 +378,7 @@ void transfer_game(void)
     transfer_far((char far *) advance_owners, 0x90);
     transfer_near((char *) killed, 0x80);
     transfer_far((char far *) place_name, 0xd00);
-    transfer_near((char *) replay_length, 0x2);
+    transfer_near((char *) &replay_length, 0x2);
     transfer_far((char far *) replay_log, 0x1000);
     transfer_near((char *) marvel_site, 0x2c);
     transfer_far((char far *) unit_losses, 0x1c0);
@@ -399,8 +396,8 @@ void transfer_game(void)
     transfer_near((char *) history_rating, 0x10);
     transfer_far((char far *) spaceships, 0x5a0);
     transfer_near((char *) &game_flags, 0x2);
-    transfer_near((char *) ship_success, 0x2);
-    transfer_near((char *) ai_ship_success, 0x2);
+    transfer_near((char *) &ship_success, 0x2);
+    transfer_near((char *) &ai_ship_success, 0x2);
     transfer_near((char *) spaceship_arrive_dates, 0x10);
     transfer_near((char *) floors_palace, 0x18);
     transfer_near((char *) section_grades, 0x18);

@@ -85,7 +85,7 @@ decisions:
   so a Civilized tribe favours improvements and a Militaristic tribe favours units.
 - The settler rank uses `4 - civilized` (with a Granary) or
   `6 - civilized` as its factor, so Militaristic tribes build fewer settlers.
-- `advance_value()` returns `a + civilized * b` from the advance's
+- `advance_value()` returns `base_value + civilized * civilized_value` from the advance's
   `advance_attrs` entry. It weights the AI's random research choice, the
   advance taken when a city is captured, the advance an AI demands in an
   audience and each free advance at the start of a game, for the human's

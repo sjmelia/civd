@@ -1,13 +1,25 @@
 /* Shared game records. Field names are inferred; sizes and signedness
  * preserve the DOS representation. */
+#ifndef CIV_H
+#define CIV_H
 
-/* DGROUP 0282: 12 terrain types, 19 bytes each. */
+/* DGROUP 0282: 12 terrain types, then the same 12 with their special
+ * resource, 19 bytes each. */
 struct terrain_type {
     char name[12];
-    unsigned char move_cost;
+    signed char move_cost;
     signed char defense;        /* defense multiplier, in halves */
-    unsigned char food, shields, trade, f5, f6;
+    signed char food, shields, trade, f5, f6;
 };
+
+/* Columns of work_rules. Negative change values are a yield bonus of
+ * -1 - value (-1 for none); others name the terrain the tile turns into. */
+#define WORK_IRRIGATE 0
+#define WORK_IRRIGATE_TURNS 1
+#define WORK_MINE 2
+#define WORK_MINE_TURNS 3
+#define WORK_ROAD 4             /* AI builds roads here */
+#define WORK_ROAD_BRIDGES 5     /* the same with Bridge Building */
 
 /* DGROUP 112A: 28 unit types, 34 bytes each. */
 struct unit_type {
@@ -39,7 +51,7 @@ struct city {
     int shield_box;             /* accumulated production */
     long workers;               /* worked tiles 0..20, specialist count 26..31 */
     int specialists;            /* eight two-bit specialist types */
-    char name_id;               /* unsigned index into place_name */
+    unsigned char name_id;      /* index into place_name */
     char routes[3];             /* destination city indices, -1 if empty */
     char garrison[2];           /* unit type plus veteran bit 0x40, -1 if empty */
 };
@@ -58,7 +70,7 @@ struct unit {
     char fuel;
     char goto_x;
     char goto_y;
-    char f8;
+    char last_dir;              /* last direction moved (1-8), or -1 */
     signed char visibility;     /* one bit per civilization */
     signed char next;           /* next unit in the same stack, or -1 */
     char home_city;
@@ -66,3 +78,5 @@ struct unit {
 
 #define UNIT_FORTIFIED  0x08
 #define UNIT_VETERAN    0x20
+
+#endif

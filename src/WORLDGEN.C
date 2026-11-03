@@ -1,4 +1,5 @@
 /* Overlay 7: world generation and global warming. */
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
@@ -20,32 +21,14 @@
 #include "WORLDGEN.H"
 #include "DIALOG.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern int story_clock;
+extern int story_line;
+extern int story_skip;
+extern int story_wait;
 
-
-#pragma pack(1)
-struct story_data_type {
-    unsigned char cycles[131];
-    unsigned int delays[45];
-};
-#pragma pack()
 extern unsigned char far story_cycles[131];
 extern unsigned int far story_delays[45];
-
-extern char far map_visible_to[][50];
-
-    /* land mass, temperature, climate, age */
-extern int abs(int);
-     /* good city sites per continent; tiles per land [0] and sea [1] region */
-extern unsigned char block_ground_way[20][13];
-struct terrain_signed {
-    char name[12];
-    signed char moves, defense, food, shields, trade, f5, f6;
-};
-struct work_rules {
-    int food, shields, trade, a, b, c;
-};
-extern struct terrain_signed terrains[];
-extern struct work_rules work_rules[];
 
 
 void page_zero(void)
@@ -460,10 +443,10 @@ void score_sites(void)
         type_o = i_h % 12;
         if (type_o != 2 && type_o != 11)
             weights_f[i_h] += terrains[i_h].shields * 2;
-        if (work_rules[type_o].trade < 0)
-            weights_f[i_h] += (-1 - work_rules[type_o].trade);
-        else if (work_rules[type_o].food < 0)
-            weights_f[i_h] += (-1 - work_rules[type_o].food) * 2;
+        if (work_rules[type_o][WORK_MINE] < 0)
+            weights_f[i_h] += (-1 - work_rules[type_o][WORK_MINE]);
+        else if (work_rules[type_o][WORK_IRRIGATE] < 0)
+            weights_f[i_h] += (-1 - work_rules[type_o][WORK_IRRIGATE]) * 2;
     }
 
     for (x_i = 2; x_i < 78; x_i++)
@@ -578,8 +561,6 @@ skip_extra:    ;
             story_step();
     }
 }
-
-extern unsigned char coarse_ocean_map[20][13];
 
 void link_seas(int show)
 {

@@ -1,5 +1,4 @@
 #include <string.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -12,30 +11,6 @@
 #include "RESIDENT.H"
 #include "UNITS.H"
 #include "NOTES.H"
-
-struct terr_rec {
-    char name[12];
-    unsigned char move_cost;
-    signed char defense, food, shields, trade, f5, f6;
-};
-struct city_rec {
-    char pad[11];
-    signed char owner;
-    char rest[16];
-};
-struct player_rec {
-    char pad[0x38];
-};
-
-extern struct terr_rec terrains[];
-extern struct city_rec townbuf[];
-extern struct unit armydata[8][128];
-
-extern int civ_state[][28];
-extern char debug;
-
-extern char *strupr(char *);
-extern int map_near();
 
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */

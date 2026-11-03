@@ -4,6 +4,8 @@
 #include "DRIVER.H"
 #include "PICTURE.H"
 
+extern int errno;
+
 struct page;
 int image_rect(struct page *, int, int, int, int, char *);
 void image_run(unsigned int, unsigned char);
@@ -23,7 +25,7 @@ int image_rect(struct page *page, int x, int y, int width, int height, char *nam
     int last, run, value, alignment;
     unsigned char *begin, *pixels, *end;
     if (image_begin(name, width, height))
-        return image_error;
+        return errno;
     alignment = x & 7;
     begin = unpack_raster + alignment;
     end = begin + width;
@@ -52,7 +54,7 @@ int image_rect(struct page *page, int x, int y, int width, int height, char *nam
     }
     image_run(run, last);
     if (image_finish())
-        return image_error;
+        return errno;
     return 0;
 }
 

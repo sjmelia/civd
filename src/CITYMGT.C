@@ -1,7 +1,7 @@
 /* City turn processing, worker assignment and the interactive city screen. */
-#include "CIV.H"
 #include "RESIDENT.H"
 #include "GAME.H"
+#include "GLOBALS.H"
 #include "BATTLE.H"
 #include "CAPTURE.H"
 #include "CITYMGT.H"
@@ -24,88 +24,30 @@
 #include "MESSAGE.H"
 #include "UNITAI.H"
 #include "PATH.H"
-#include "DRIVER.H"
 
-/* Keep the local data list: GLOBALS.H exhausts MSC 5.1 heap with LOADFIX. */
-extern struct city townbuf[];
-extern struct unit armydata[][128];
-extern int palace_remote;
-extern int pop_smog_advances;
-extern int year;
-extern int city_experts_num;
-extern int civnow;
-extern int cur_tier;
-extern int nation_ratings[];
-extern int civ_gov[];
-extern int map_x0;
-extern int map_y0;
-extern int rule_options;
-extern char msgtext[];
+/* Module state, stored in RESIDENT.ASM. */
+extern int excess_unhappy;
+extern int selected_city;
+extern int selected_owner;
+extern int radius_tiles;
+extern int units_abroad;
 
-extern char far map_visible_to[];
+#define special_resources (terrains + 12)
 
+/* DRIVER.H would exhaust MSC 5.1 heap under LOADFIX, and only this is used. */
+extern void recolour_rect();
+
+/* The library's headers would exhaust the heap too. */
 extern int abs(int);
 
 extern char *strupr(char *);
 
-
-
 extern char *strcpy(char *, char *);
 extern char *strcat(char *, char *);
-extern struct unit_type utypes[];
-extern int home_troops_maintained;
-extern int city_keep;
-extern int colonist_homed;
-extern int town_human_unit_near;
-extern int town_res_sums[];     /* city food, shields, trade and luxury */
-#define city_revel_sums (town_res_sums[3])
-extern int human_set;
-extern int turn_tick;
-extern int show_city_display;
-
-extern int plant_waste_divisor;
-
-extern int far advance_owners[];
-extern int city_count[];
-
-extern int town_gap;
-extern int treaties[8][8];
-extern int forces_present[8][28];
-extern int last_met_turn[];
-
-extern int marvel_site[];
-extern int debug;
-
-extern int civ_units_ordered[8][28];
-extern int game_flags, ai_ship_success, spaceship_arrive_dates[], money[], players;
-
-extern int x_cap[];
-
-extern int civ_area_plan[8][16];
-
-extern int city_leak;
-extern int sci[], civ_toll[];
-extern int taxes, learning_yield;
-
-extern int town_happy_ones_num, town_unhappy_counts, excess_unhappy;
-
-extern int unused_support;
-
-extern int gangmode, tech_count[], margin_democracy;
-extern int troop_over, civ_tribe_of[];
 
 extern char *itoa(int, char *, int);
-extern char nstr[];
 
-extern int village_icons;
-extern int troops_total[], mse_held, ptr_x, ptr_y;
 extern int kbhit(void);
-extern int map_view_changed;
-
-extern int human_counts;
-
-extern int selected_index, civ_research_tally[], cost_penalty, civ_ratings[];
-
 
 int working_tiles = 0;
 int city_view_mode = 0;
@@ -312,7 +254,7 @@ label_render_restart:
         append_place_name(city);
         strupr(msgtext);
         strcat(msgtext, " (Pop:");
-        format_total(scratch_i);
+        format_population(scratch_i);
         strcat(msgtext, ")");
         draw_text(msgtext, 104, 2, 15);
         framed_panel(127, 23, 208, 104);
@@ -324,7 +266,7 @@ label_render_restart:
             tile_x_l = townbuf[city].x + radius_dx[index_i];
             radius_y = townbuf[city].y + radius_dy[index_i];
             if (selected_owner == civnow) {
-                if (!(map_visible_to[tile_x_l * 50 + radius_y] & (1 << selected_owner)))
+                if (!(map_visible_to[tile_x_l][radius_y] & (1 << selected_owner)))
                     continue;
             }
             scratch_i = map_owner(tile_x_l, radius_y);
@@ -431,7 +373,7 @@ label_render_restart:
         tile_x_l = townbuf[city].x + radius_dx[index_i];
         radius_y = townbuf[city].y + radius_dy[index_i];
         if (selected_owner != 0) {
-            if (!(map_visible_to[tile_x_l * 50 + radius_y] & (1 << selected_owner))) {
+            if (!(map_visible_to[tile_x_l][radius_y] & (1 << selected_owner))) {
                 tile_taken[index_i] = 1;
             }
         }
@@ -754,7 +696,7 @@ label_governor_done:
                         if (human_set & (1 << selected_owner))
                             show_city_display = 1;
                         else
-                            map_visible_to[townbuf[city].x * 50 + townbuf[city].y] = -1;
+                            map_visible_to[townbuf[city].x][townbuf[city].y] = -1;
                         msgtext[0] = 0;
                         append_place_name(city);
                         strcat(msgtext, " builds\n");
@@ -824,7 +766,7 @@ label_governor_done:
                         for (city_index = 0; city_index < 128; city_index++) {
                             if (townbuf[city_index].status != -1 && townbuf[city_index].owner != selected_owner) {
                                 townbuf[city_index].visible_size = townbuf[city_index].size;
-                                map_visible_to[townbuf[city_index].x * 50 + townbuf[city_index].y] |= 1 << selected_owner;
+                                map_visible_to[townbuf[city_index].x][townbuf[city_index].y] |= 1 << selected_owner;
                                 map_mark(townbuf[city_index].x, townbuf[city_index].y);
                             }
                         }
@@ -1613,7 +1555,7 @@ label_after_tabs:;
                         cursor_y_k--;
                         break;
                     }
-                    if (abs(cursor_x_l) > 2 || abs(cursor_y_k) > 2 || abs(cursor_x_l) + abs(cursor_y_k) >= 4 || !(map_visible_to[(townbuf[city].x + cursor_x_l) * 50 + townbuf[city].y + cursor_y_k] & (1 << civnow))) {
+                    if (abs(cursor_x_l) > 2 || abs(cursor_y_k) > 2 || abs(cursor_x_l) + abs(cursor_y_k) >= 4 || !(map_visible_to[townbuf[city].x + cursor_x_l][townbuf[city].y + cursor_y_k] & (1 << civnow))) {
                         cursor_x_l = draw_x_l;
                         cursor_y_k = draw_y_k;
                     }
@@ -1711,7 +1653,7 @@ label_sell:
 label_tile_toggle:
                     index_i = radius_index(draw_x_l, draw_y_k);
                     if (index_i != -1 && index_i < 20) {
-                        if (map_visible_to[(townbuf[city].x + radius_dx[index_i]) * 50 + townbuf[city].y + radius_dy[index_i]] & (1 << selected_owner)) {
+                        if (map_visible_to[townbuf[city].x + radius_dx[index_i]][townbuf[city].y + radius_dy[index_i]] & (1 << selected_owner)) {
                             town_res_sums[1] = raw_shld_m;
                             town_res_sums[2] = raw_trade_h;
                             if (!(townbuf[city].workers & (1L << index_i)) && blocked_m[radius_dx[index_i] + 2][radius_dy[index_i] + 2] != 0)
@@ -1962,25 +1904,7 @@ label_exit:;
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
 
-extern struct city townbuf[];
-extern int improvement_words[], marvel_site[];
-extern int selected_city, excess_unhappy, town_happy_ones_num, town_unhappy_counts, polluted;
 #define CITY_STATE (townbuf[selected_city].specialists)
-
-struct terrains {
-    char raw[14];
-    signed char value[3];
-    char tail[2];
-};
-struct work_rule {
-    int value[6];
-};
-extern struct terrains terrains[];
-#define special_resources (terrains + 12)
-extern struct work_rule work_rules[];
-extern int rule_options, selected_owner, civ_gov[], working_tiles, town_res_sums[];
-extern int troop_over, margin_democracy;
-
 
 /* yield_sum_f is only initialized in drawing mode. The original still reads it
    first in the final && test when mode differs; keep that observed ordering.
@@ -2030,9 +1954,9 @@ int tile_yield(int x, int y, int kind)
         return 0;
     terrain_l = terrain_at(x, y);
     if (patterned_cell(terrain_l, x, y))
-        yield_value_n = special_resources[terrain_l].value[kind];
+        yield_value_n = (&special_resources[terrain_l].food)[kind];
     else
-        yield_value_n = terrains[terrain_l].value[kind];
+        yield_value_n = (&terrains[terrain_l].food)[kind];
     tile_flags_g = map_flags(x, y);
     if (!(rule_options & 2)) {
         tile_flags_g = terrain_l <= 2 ? 2 : 4;
@@ -2041,9 +1965,9 @@ int tile_yield(int x, int y, int kind)
     }
     if (terrain_l != 10) {
         if (kind == 0 && (tile_flags_g & 2))
-            yield_value_n += -1 - work_rules[terrain_l].value[0];
+            yield_value_n += -1 - work_rules[terrain_l][WORK_IRRIGATE];
         if (kind == 1 && (tile_flags_g & 4))
-            yield_value_n += -1 - work_rules[terrain_l].value[2];
+            yield_value_n += -1 - work_rules[terrain_l][WORK_MINE];
         if (kind == 2 && (tile_flags_g & 8) && terrain_l <= 2)
             yield_value_n++;
     }
@@ -2157,13 +2081,9 @@ void fit_citizens(int city, int delta)
 /* Original reads unknown_gap_j before assigning it; preserve that observed quirk.
    unused_word_b reserves the other unused word in the ten-byte frame. */
 
-extern int city_glad_glyphs[];
 /* city_glad_glyphs is the nine citizen icons: 0-1 happy, 2-3 content, 4-5
  * unhappy, 6-8 the specialists, indexed by kind 1-3 from
  * specialist_people. */
-#define quiet_persons (city_glad_glyphs + 2)
-#define city_angry_images (city_glad_glyphs + 4)
-#define specialist_people (city_glad_glyphs + 5)
 
 int draw_city_view(int city, int x, int y, int special, int width)
 {
@@ -2201,8 +2121,6 @@ int draw_city_view(int city, int x, int y, int special, int width)
 }
 
 /* City-screen panels and improvement icons. */
-
-extern int vga_modes;
 
 void draw_icon(int icon, int x, int y)
 {
@@ -2265,10 +2183,6 @@ void draw_button(int x1, int y1, int x2, int y2, char *label, int color)
 
 /* City-screen minimap, centred horizontally on the human capital. */
 
-extern int civnow, x_cap[], city_view_mode;
-extern char msgtext[];
-
-extern char *strcpy(char *, char *);
 signed char mini_x[4] = { 0, 2, 0, 1 }, mini_y[4] = { -1, 0, 1, 2 };
 
 void draw_minimap(void)
@@ -2279,7 +2193,7 @@ void draw_minimap(void)
         for (column_c = 0; column_c < 80; column_c++) {
             map_x_l = wrap_x(x_cap[civnow] + column_c - 40);
             map_y_k = row_i;
-            if (!(map_visible_to[map_x_l * 50 + map_y_k] & (1 << civnow)))
+            if (!(map_visible_to[map_x_l][map_y_k] & (1 << civnow)))
                 continue;
             pixel_part_i = ((row_i & 1) << 1) + (column_c & 1);
             screen_x_j = column_c / 2 * 3 + mini_x[pixel_part_i] + 101;

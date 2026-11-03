@@ -1,6 +1,5 @@
 #include <string.h>
 #include "GAME.H"
-#include "CIV.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "DIALOG.H"
@@ -11,10 +10,6 @@
 #include "CAPTURE.H"
 #include "CORE.H"
 #include "DRIVER.H"
-
-extern struct city townbuf[];
-
-
 
 void news_box(int city)
 {                               /* newsflash panel */

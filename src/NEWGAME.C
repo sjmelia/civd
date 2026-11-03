@@ -1,7 +1,6 @@
 /* Overlay 5: game setup, tribe selection, starting sites and cabinet. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CORE.H"
 #include "DIALOG.H"
@@ -20,22 +19,6 @@
 #include "UNITS.H"
 #include "MESSAGE.H"
 #include "NEWGAME.H"
-
-extern int debug;
-extern char sound_driver[];
-extern struct city townbuf[];
-extern int far advance_owners[];
-extern char far map_visible_to[][50];
-extern signed char far adv_source[][72];
-extern int far unit_losses[][28];
-extern struct unit armydata[8][128];
-
-extern int treaties[8][8];
-
-
-
-
-extern char far spaceships[][15][12];
 
 signed char start_pos[16][2] = {
     0, 0, 36, 19, 45, 22, 38, 15, 41, 24, 12, 18, 39, 18, 57, 24,

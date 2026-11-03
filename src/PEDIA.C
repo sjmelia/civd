@@ -1,7 +1,7 @@
 /* Overlay 8: Civilopedia. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "AUDIENCE.H"
 #include "CAPTURE.H"
 #include "CITYMGT.H"
@@ -19,27 +19,13 @@
 #include "MESSAGE.H"
 #include "PEDIA.H"
 
-struct terrain {
-    char name[12];
-    char move_cost, defense, food, shields, trade, f17, f18;
-};
+/* Module state, stored in RESIDENT.ASM. */
+extern int pedia_more;
 
-struct terrain_rule {
-    int irrigate, irrigate_time, mine, mine_time, f8, f10;
-};
-
-extern int debug;
-extern struct unit_type utypes[];
-extern struct terrain terrains[];
-extern struct terrain_rule work_rules[];
 extern int far pedia_topics[];
 extern int far topic_class[];
-extern signed char far adv_source[][72];
 extern signed char far pedia_icons[];
 
-
-extern int kbhit(void);
-extern char *strupr(char *);
 
 int no_pictures = 0;            /* pedia picture disk absent: text only */
 char *concepts[] = {
@@ -481,14 +467,14 @@ void pedia_show(int index, int kind)
                 continue;
             draw_string(terrains[t].name, 12, y, 1);
             y += 8;
-            if (terrains[t].food || work_rules[index].irrigate < -1) {
+            if (terrains[t].food || work_rules[index][WORK_IRRIGATE] < -1) {
                 strcpy(msgtext, "Food: ");
                 strcat(msgtext, itoa(terrains[t].food, nstr, 10));
                 if (terrains[t].food >= 3)
                     strcat(msgtext, "*");
-                if (work_rules[index].irrigate < -1) {
+                if (work_rules[index][WORK_IRRIGATE] < -1) {
                     strcat(msgtext, " (");
-                    strcat(msgtext, itoa(terrains[t].food - work_rules[index].irrigate - 1, nstr, 10));
+                    strcat(msgtext, itoa(terrains[t].food - work_rules[index][WORK_IRRIGATE] - 1, nstr, 10));
                     if (terrains[t].food >= 2)
                         strcat(msgtext, "*");
                     strcat(msgtext, " with Irrigation)");
@@ -497,15 +483,15 @@ void pedia_show(int index, int kind)
                 draw_string(msgtext, 16, y, 9);
                 y += 8;
             }
-            if (terrains[t].shields || work_rules[index].mine < -1) {
+            if (terrains[t].shields || work_rules[index][WORK_MINE] < -1) {
                 strcpy(msgtext, "Production: ");
                 if (index == 2 || index == 11)
                     strcat(msgtext, "0/");
                 strcat(msgtext, itoa(terrains[t].shields, nstr, 10));
-                if (work_rules[index].mine < -1) {
+                if (work_rules[index][WORK_MINE] < -1) {
                     strcat(msgtext, " (");
-                    strcat(msgtext, itoa(terrains[t].shields - work_rules[index].mine - 1, nstr, 10));
-                    if (terrains[t].shields - work_rules[index].mine - 1 >= 3)
+                    strcat(msgtext, itoa(terrains[t].shields - work_rules[index][WORK_MINE] - 1, nstr, 10));
+                    if (terrains[t].shields - work_rules[index][WORK_MINE] - 1 >= 3)
                         strcat(msgtext, "*");
                     strcat(msgtext, " with Mining)");
                 }

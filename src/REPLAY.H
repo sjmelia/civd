@@ -1,5 +1,6 @@
 /* REPLAY.H: shared declarations of symbols defined in REPLAY.C. */
 
+extern int replay_length;
 extern void conquest_replay(void);
 extern void replay(void);
 extern void replay_line(void);

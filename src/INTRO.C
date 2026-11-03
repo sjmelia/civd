@@ -1,8 +1,8 @@
 /* Overlay 2: startup, credits, title sequence and game-ending screens. */
+#include <conio.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -30,16 +30,7 @@
 #include "PATH.H"
 #include "RASTER.H"
 
-extern char graphics_driver[], sound_driver[];
-extern int debug;
-
-extern struct terrain_type terrains[];
-
 extern FILE *credits_stream;
-
-extern int kbhit(void);
-extern int getch(void);
-
 
 
 static void show_label(int, int, int, int);

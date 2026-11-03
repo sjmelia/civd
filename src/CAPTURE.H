@@ -1,5 +1,6 @@
 /* CAPTURE.H: shared declarations of symbols defined in CAPTURE.C. */
 
+extern char far place_name[][13];
 extern int incited;
 /* Callers pass long arguments to int parameters; preserve their stack layout. */
 extern void capunit();

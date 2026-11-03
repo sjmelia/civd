@@ -1,7 +1,6 @@
 /* Pathfinding with coarse connectivity and a cached local cost search. */
 #include <stdlib.h>
 #include <string.h>
-#include "CIV.H"
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
@@ -10,21 +9,19 @@
 #include "CORE.H"
 #include "UNITS.H"
 
-/* Signed movement costs, as in UNITAI's local terrain declaration. */
-struct path_terrain {
-    char name[12], cost, defense, food, shields, rest[3];
-};
-extern struct unit armydata[8][128];
+/* Module state, stored in RESIDENT.ASM. */
+extern int path_cache_x;
+extern int path_cache_y;
+extern int path_limit;
+extern char path_queue_x[256];
+extern char path_queue_y[256];
+extern int path_target_x;
+extern int path_target_y;
+
 /* Path searches run on a probe unit: civilization 0's last unit slot. */
 #define path_probe_x armydata[0][127].x
 #define path_probe_y armydata[0][127].y
 #define path_probe_domain armydata[0][127].type
-extern struct unit_type utypes[28];
-extern struct path_terrain terrains[];
-
-
-extern char coarse_ocean_map[20][13], block_ground_way[20][13];
-
 
 int unit_goal(int player, int unit)
 {
@@ -69,7 +66,7 @@ int unit_goal(int player, int unit)
     ty = path_target_y - armydata[player][unit].y;
     old_distance_k = abs(tx) + abs(ty) + (abs(tx) > abs(ty) ? abs(tx) : abs(ty));
     if (tx == 0 && ty == 0) {
-        armydata[player][unit].goto_x = armydata[player][unit].f8 = -1;
+        armydata[player][unit].goto_x = armydata[player][unit].last_dir = -1;
         armydata[player][unit].moves = 0;
         return -1;
     }
@@ -94,13 +91,13 @@ int unit_goal(int player, int unit)
         if (terrain_f == 10 && map_region(nx, ny) < 5)
             continue;
         if (!on_road_c || !(map_flags(nx, ny) & 8))
-            move_cost_d = utypes[armydata[player][unit].type].moves > 1 ? terrains[terrain_f].cost * 3 : 3;
+            move_cost_d = utypes[armydata[player][unit].type].moves > 1 ? terrains[terrain_f].move_cost * 3 : 3;
         else
             move_cost_d = 1;
         move_cost_d += new_distance_e * 4 + abs(remaining_x_p) + abs(remaining_y_o);
-        if (armydata[player][unit].f8 != -1) {
+        if (armydata[player][unit].last_dir != -1) {
             /* Prefer a smooth heading: squared turn angle breaks distance/cost ties. */
-            turn_angle_c = abs(armydata[player][unit].f8 - i);
+            turn_angle_c = abs(armydata[player][unit].last_dir - i);
             if (turn_angle_c > 4)
                 turn_angle_c = 8 - turn_angle_c;
             move_cost_d += turn_angle_c * turn_angle_c;
@@ -110,13 +107,13 @@ int unit_goal(int player, int unit)
             best_cost_j = move_cost_d;
         }
     }
-    if (armydata[player][unit].f8 != -1 && (armydata[player][unit].f8 ^ 4) == best_direction_k)
+    if (armydata[player][unit].last_dir != -1 && (armydata[player][unit].last_dir ^ 4) == best_direction_k)
         best_direction_k = armydata[player][unit].moves = 0;
     if (best_direction_k == 0) {
-        armydata[player][unit].goto_x = armydata[player][unit].f8 = -1;
+        armydata[player][unit].goto_x = armydata[player][unit].last_dir = -1;
         best_direction_k = -1;
     } else
-        armydata[player][unit].f8 = best_direction_k;
+        armydata[player][unit].last_dir = best_direction_k;
     return best_direction_k;
 }
 
@@ -155,7 +152,7 @@ int path_coarse(int player, int unit)
         cost_j = block_steps[x39][y2];
         tail_g++;
         tail_g = (unsigned char) tail_g;
-        mask_h = sea_m ? coarse_ocean_map[x39][y2] : block_ground_way[x39][y2];
+        mask_h = sea_m ? (char) coarse_ocean_map[x39][y2] : (char) block_ground_way[x39][y2];
         for (i3 = 1; i3 <= 8; i3++) {
             if ((1 << (i3 - 1)) & mask_h) {
                 nx_g = x39 + spiral_x[i3];
@@ -178,7 +175,7 @@ int path_coarse(int player, int unit)
     if (found_g) {
         nearest_p = 99;
         best_f = -1;
-        mask_h = utypes[armydata[player][unit].type].domain == 2 ? coarse_ocean_map[cx_d][cy_d] : block_ground_way[cx_d][cy_d];
+        mask_h = utypes[armydata[player][unit].type].domain == 2 ? (char) coarse_ocean_map[cx_d][cy_d] : (char) block_ground_way[cx_d][cy_d];
         for (i3 = 1; i3 <= 8; i3++) {
             if ((1 << (i3 - 1)) & mask_h) {
                 nx_g = cx_d + spiral_x[i3];
@@ -332,7 +329,7 @@ int path_search(int player, int unit, int limit)
                         terrain_h = terrain_at(next_x_m, next_y_h);
                         if ((terrain_h == 10) != sea_n && !(map_flags(next_x_m, next_y_h) & 1))
                             continue;
-                        new_cost_d = region_n && has_road(next_x_m, next_y_h) ? current_cost_h + 1 : road_n ? current_cost_h + 3 : current_cost_h + terrains[terrain_h].cost * 3;
+                        new_cost_d = region_n && has_road(next_x_m, next_y_h) ? current_cost_h + 1 : road_n ? current_cost_h + 3 : current_cost_h + terrains[terrain_h].move_cost * 3;
                         previous_o = walk_cost[raw_x_m - base_x_e][next_y_h - base_y_j];
                         if (previous_o && previous_o <= new_cost_d)
                             continue;
