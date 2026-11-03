@@ -4,8 +4,8 @@ This book describes the MS-DOS version of *Sid Meier's Civilization*,
 version 474.05. It follows the C and assembly in `src/`, from DOS drivers
 and map storage to city simulation, unit movement and diplomacy.
 
-The code is reverse engineered. Names are inferred, and some modules still
-use local record declarations or casts that differ from the shared headers.
+The code is reverse engineered. Names are inferred, and some code still
+reaches shared records through casts or byte offsets.
 Descriptions here follow the operations and stored values, including quirks
 that may differ from a player's expectations. The [build notes](architecture/toolchain_clues.md)
 explain what the executable comparison establishes.
