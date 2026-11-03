@@ -8,11 +8,6 @@ alongside events, civilisation ratings, status displays and player-screen
 setup. Reading the whole file shows which work the turn routine performs
 directly and which work it delegates.
 
-The local declarations need care. The macro named `units` points into
-`townbuf`, the city array, at an offset of four bytes. Here, expressions such
-as `units[i].size` refer to city data. The reconstructed name alone would give
-a misleading account of the record.
-
 {{#include src/TURN.C}}
 
 ## Civilisation activity

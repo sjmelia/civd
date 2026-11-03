@@ -20,8 +20,7 @@ The 28 unit types are 34-byte records in `utypes[28]` (`GAME.C`, DGROUP
 | `role` | Category used by the AI ([roles](../ai/unit_ai.md#unit-roles)) |
 | `prereq` | Advance needed to build the type; −1 for none |
 
-`GAME.C` declares its own copy of the structure with fields `w2`–`w10` in
-the same positions. The table, in ID order:
+`GAME.C` defines the table, in ID order:
 
 ```c
 {{#include ../../../src/GAME.C:286:315}}

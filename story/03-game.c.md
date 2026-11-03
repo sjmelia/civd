@@ -8,9 +8,6 @@ Terrain, technology, improvement, unit and civilisation tables precede `main`.
 Screen and input helpers follow it. The final declarations reserve far-memory
 arrays for shared state.
 
-The local record declarations do not all use the descriptive field names
-from `CIV.H`. Their fields occupy the same positions.
-
 {{#include src/GAME.C}}
 
 ## Rule tables
@@ -28,10 +25,8 @@ it elsewhere.
 
 ## Units and civilisations
 
-`utypes` supplies the values shared by each unit type. Its local declaration
-still calls several fields `w2` through `w10`. `CIV.H` gives those positions
-more descriptive names. Both declarations need to preserve the compiled
-representation.
+`utypes` supplies the values shared by each unit type, in the record declared
+by `CIV.H`.
 
 The tables that follow include civilisation and leader data. Keeping these
 tables beside the entry point shows the responsibilities assigned to this
