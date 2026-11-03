@@ -27,7 +27,7 @@ is set. On exit it closes the mouse, stops sound, restores timer and break
 handlers, and requests BIOS text mode 3.
 
 ```c
-{{#include ../../src/GAME.C:490:543}}
+{{#include ../../src/GAME.C:448:501}}
 ```
 
 `GAME.C` also defines the terrain, technology, improvement, unit and tribe

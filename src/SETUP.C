@@ -9,11 +9,12 @@
 #include "DRIVER.H"
 #include "STRBIOS.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern char table1[];
+extern char table2[];
+extern char table3[];
+
 extern union REGS bios_regs;
-
-
-extern char graphics_driver;
-extern char sound_driver;
 
 char *gfx_names[4] = { ") VGA (256 color)", ") MCGA (256 color)", ") EGA (16 color)", ") Tandy 1000 (16 color)" };
 char *sound_names[6] = { ") No sounds please", ") IBM sounds", ") Tandy sounds", ") AdLib/Sound Blaster", ") Roland MT-32 MIDI board", ") Custom sound driver" };
@@ -79,7 +80,7 @@ void setup_main(void)
         set_cursor(13, 49);
         key_n = key_echo();
         if (key_n >= '1' && key_n < option_count_n + '0') {
-            graphics_driver = table1[key_n - '0'];
+            *graphics_driver = table1[key_n - '0'];
             await_choice_d = 0;
         }
     } while (await_choice_d);
@@ -113,7 +114,7 @@ void setup_main(void)
             set_cursor(13, 50);
             key_n = key_echo();
             if (key_n >= '1' && key_n < option_count_n + '0') {
-                sound_driver = table2[key_n - '0'];
+                *sound_driver = table2[key_n - '0'];
                 await_choice_d = 0;
             }
         } while (await_choice_d);

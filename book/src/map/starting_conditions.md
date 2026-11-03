@@ -101,8 +101,8 @@ prerequisites are known. `has_tech(civ, -1)` is true, so a missing prerequisite
 requires nothing. Each eligible advance gets this random rating:
 
 ```text
-weight = (signed char) advance_attrs[id].a
-         + civt[civ_tribe_of[civ]].civilized * advance_attrs[id].b
+weight = (signed char) advance_attrs[id].base_value
+         + civt[civ_tribe_of[civ]].civilized * advance_attrs[id].civilized_value
 rating = rand_scaled(weight * 4)
 ```
 

@@ -3,7 +3,6 @@
  * names ascend in its order. See GLOBALS.H for the tie rule. */
 #include <dos.h>
 #include "CIV.H"
-#define GLOBALS_STORAGE
 #include "GLOBALS.H"
 
 int palace_remote;              /* distance from the city to its palace */

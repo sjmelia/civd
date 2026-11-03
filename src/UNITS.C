@@ -1,10 +1,11 @@
 /* Unit stacks, creation, movement, exploration and animation. */
-#include "CIV.H"
+#include <conio.h>
 #include "AUDIENCE.H"
 #include "DIALOG.H"
 #include "DIPLOMAC.H"
 #include "DRIVER.H"
 #include "GAME.H"
+#include "REPLAY.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "UNITAI.H"
@@ -21,13 +22,17 @@
 #include "TURN.H"
 #include "PATH.H"
 
-extern struct unit_type utypes[];
-
 int quiz_busy = 0;
 /* City garrison transfer. Letter suffixes preserve MSC stack-slot ordering. */
 
-extern struct city townbuf[];
-extern struct unit armydata[][128];
+/* Module state, stored in RESIDENT.ASM. */
+extern int target_value;
+extern int match_count;
+extern int group_total;
+extern int selected_score;
+extern int selected_stack_index;
+extern int total_limit;
+extern int total_mode;
 
 void unpack_garrison(int city)
 {                               /* turn stored city units back into units */
@@ -87,16 +92,6 @@ void garrison_in(int city)
 
 /* Exploration and contact around a unit. */
 
-extern struct unit armydata[][128];
-extern struct terrain_type terrains[];
-extern char civ_vis_grid[80][50];
-extern struct city townbuf[];
-extern struct {
-    char a, b;
-} treaties[8][8];
-
-
-
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void unit_sight(x, y, owner, index, redraw)     /* reveal and make contact around a unit */
 int x, y, owner, index, redraw;
@@ -135,7 +130,7 @@ next_radius:
                 townbuf[d].visible_size = townbuf[d].size;
             if (utypes[armydata[owner][index].type].domain == 0) {
                 armydata[owner][index].visibility |= 1 << j;
-                if (!(treaties[owner][j].a & 2)) {
+                if (!(treaty_low(owner, j) & 2)) {
                     add_target(j, h, i, 1, 4);
                     add_target(j, h, i, 2, 2);
                 }
@@ -154,7 +149,7 @@ next_radius:
                 armydata[fight_enemy][a].visibility |= 1 << owner;
             if (utypes[armydata[owner][index].type].domain == 0 && terrain_at(x, y) != 10 && terrain_at(h, i) != 10 && utypes[armydata[fight_enemy][a].type].domain != 1) {
                 diplomacy_event(owner, fight_enemy, x, y);
-                if (!(treaties[owner][fight_enemy].a & 2)) {
+                if (!(treaty_low(owner, fight_enemy) & 2)) {
                     c = 1;
                     if (fight_enemy != 0 && armydata[fight_enemy][a].type != 26 && (!(armydata[fight_enemy][a].status & 8) || utypes[armydata[fight_enemy][a].type].role != 2))
                         c = 3;
@@ -167,7 +162,7 @@ next_radius:
                         add_target(fight_enemy, x, y, 2, 1);
                 }
             }
-            if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaties[owner][fight_enemy].a & 2))
+            if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaty_low(owner, fight_enemy) & 2))
                 add_target(owner, h, i, 3, 2);
         }
         if (redraw && (owner == civnow || xray_on)) {
@@ -188,7 +183,7 @@ next_radius:
             if (a != -1 && owner != fight_enemy && armydata[fight_enemy][a].type != 22) {
                 if (!(k & 1))
                     armydata[fight_enemy][a].visibility |= 1 << owner;
-                if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaties[owner][fight_enemy].a & 2))
+                if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaty_low(owner, fight_enemy) & 2))
                     add_target(owner, h, i, 3, 2);
             }
             if (redraw && (owner == civnow || xray_on)) {
@@ -203,7 +198,7 @@ next_radius:
                 armydata[fight_enemy][a].goto_x = -1;
                 if (!(g & 1))
                     armydata[owner][index].visibility |= 1 << fight_enemy;
-                if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaties[owner][fight_enemy].a & 2))
+                if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaty_low(owner, fight_enemy) & 2))
                     add_target(fight_enemy, x, y, 3, 2);
             } else if (fight_enemy == civnow && (map_flags(h, i) & 1) && (civ_vis_grid[x][y] & (1 << civnow))) {
                 armydata[owner][index].visibility |= 1 << fight_enemy;
@@ -231,10 +226,6 @@ next_radius:
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
 
 /* Unit/end-turn blink, 0866:[0AD6,0CF5); isolated diagnostic. */
-
-extern struct unit armydata[][128];
-extern int kbhit(void);
-
 
 
 void blink_unit(int owner, int index, int x, int y)
@@ -281,11 +272,6 @@ void blink_unit(int owner, int index, int x, int y)
 /* Genuine unit-creation body, 0866:[0CF5,0F10).
  * Isolated diagnostics only: its 01DC same-TU call needs the full unit. */
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
-extern char civ_vis_grid[80][50];
-
-
 int create_unit(int owner, int type, int x, int y)
 {
     int index;
@@ -304,7 +290,7 @@ int create_unit(int owner, int type, int x, int y)
             armydata[owner][index].type = type;
             armydata[owner][index].visibility = bit;
             armydata[owner][index].goto_x = -1;
-            armydata[owner][index].f8 = -1;
+            armydata[owner][index].last_dir = -1;
             armydata[owner][index].fuel = utypes[armydata[owner][index].type].fuel;
             armydata[owner][index].home_city = near_city(x, y);
             if (townbuf[armydata[owner][index].home_city].owner != owner)
@@ -336,10 +322,6 @@ int create_unit(int owner, int type, int x, int y)
     return -1;
 }
 
-extern struct unit armydata[][128];
-extern int far unit_losses[][28];
-
-
 void drop_u_stack(int group, int index)
 {
 #define record_type armydata[group][index].type
@@ -359,8 +341,6 @@ void drop_u_stack(int group, int index)
                 map_note(armydata[group][index].x, armydata[group][index].y, group);
 #undef record_type
 }
-
-extern struct unit armydata[][128];
 
 int select_location_record(int group, int index)
 {
@@ -406,8 +386,6 @@ void score_group_record(int group, int index)
     }
 }
 
-extern struct unit armydata[][128];
-
 int stack_len(int group, int index, int mode)
 {
     group_total = 0;
@@ -437,8 +415,6 @@ void add_group_value(int group, int index)
             ++group_total;
     }
 }
-
-extern struct unit armydata[][128];
 
 int count_u(int group, int index, int value)
 {
@@ -508,7 +484,6 @@ void validate_record(int group, int index)
     armydata[group][index].status &= 0xfe;
 }
 
-extern struct unit armydata[][128];
 void unit_reset(int group, int index)
 {
     if (armydata[group][index].status & 1) {
@@ -517,10 +492,8 @@ void unit_reset(int group, int index)
         if (utypes[armydata[group][index].type].fuel)
             armydata[group][index].fuel = utypes[armydata[group][index].type].fuel - 1;
     }
-    armydata[group][index].goto_x = armydata[group][index].f8 = -1;
+    armydata[group][index].goto_x = armydata[group][index].last_dir = -1;
 }
-
-extern struct unit armydata[][128];
 
 void reset_state(int group, int index)
 {
@@ -540,8 +513,6 @@ void kill_cb(int group, int index)
         unit_redraw(group, index);
 }
 
-extern struct unit armydata[][128];
-
 void remove_reset_kind_zero(int group, int index)
 {
     if (utypes[armydata[group][index].type].domain == 0)
@@ -559,8 +530,6 @@ void remove_reset_kind_one(int group, int index)
     if (utypes[armydata[group][index].type].domain == 1)
         drop_u_stack(group, index);
 }
-
-extern struct unit armydata[][128];
 
 void map_center(int group, int x, int y)
 {
@@ -654,12 +623,6 @@ int adj_grp(int group, int x, int y)
 /* Hut rewards and Barbarian encounters. */
 #include <string.h>
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
-extern struct terrain_type terrains[];
-
-
-
 void enter_hut(int owner, int index)
 {
     int a, b, c, d, e, f, g, h, i;
@@ -742,10 +705,6 @@ mercenaries:
  * record and direction offsets; inner direction_offset spills at BP-12.
  * Refresh computes its group offset inside the argument expression. */
 
-extern struct unit armydata[][128];
-
-
-
 void anim_unit(int group, int index, int direction)
 {
     int screen_x, screen_y;
@@ -800,10 +759,7 @@ done:
 }
 
 /* Stack selection dialog, 0866:[1F69,226D). */
-#include <string.h>
-extern struct unit armydata[][128];
 
-extern int kbhit(void);
 
 int pick_unit(int owner, int index)
 {                               /* choose a unit from a stack */
@@ -952,8 +908,6 @@ unit_next:
 }
 
 /* Event stream append, 0866:[250E,25B6). */
-extern int replay_length;
-extern char far replay_log[];
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void post_event(type, count, arg1, arg2, arg3, arg4)
 int type, count, arg1, arg2, arg3, arg4;
@@ -995,7 +949,6 @@ int help_probe(int a, int b, int c)
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
-
 
 void menu_clear(void)
 {

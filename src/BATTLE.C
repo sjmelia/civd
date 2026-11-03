@@ -9,7 +9,6 @@
 #include "CAPTURE.H"
 #include "TURN.H"
 
-#include "CIV.H"
 #include "CORE.H"
 #include "GAME.H"
 #include "GLOBALS.H"
@@ -18,14 +17,6 @@
 #include "UNITS.H"
 #include "PATH.H"
 #include "DRAW.H"
-
-extern struct unit armydata[][128];
-extern struct unit_type utypes[];
-extern struct city townbuf[];
-extern struct terrain_type terrains[];
-extern int treaties[8][8];
-
-
 
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 int battle(attacker_civ_b, attacker_unit_m, defender_civ_e, defender_unit_p, flag)

@@ -15,7 +15,6 @@
 #include "TURN.H"
 #include "UNITS.H"
 
-#include "CIV.H"
 #include "DIPLOMAT.H"
 #include "GAME.H"
 #include "GLOBALS.H"
@@ -24,34 +23,9 @@
 #include "BATTLE.H"
 #include "DRIVER.H"
 
-
-extern int treaties[8][8];
-extern struct unit armydata[8][128];
-extern struct unit_type utypes[28];
-extern struct city townbuf[128];
-extern char civ_vis_grid[];
-extern char far fog_map[];
-
-struct terr {
-    char name[12];
-    char cost;
-    char defense;
-    char food;
-    char shields;
-    char rest[3];
-};
-
-
-
-
-
-extern int work_rules[][6];
-extern struct terr terrains[];
 int ai_watch_player = -1;
 int ai_watch_unit = -1;
 int near_human = 0;             /* mask: civ shares a continent with the human's cities */
-
-extern int treaties[8][8];
 
 void unit_phase(int player)
 {
@@ -79,7 +53,7 @@ void unit_phase(int player)
     }
     for (x = 0; x < 20; x++)
         for (y = 0; y < 13; y++)
-            fog_map[x * 13 + y] = 0;
+            fog_map[x][y] = 0;
     troops_total[player] = civ_settlers_n[player] = military_table[player] = 0;
     for (i = 0; i < 128; i++) {
         if (armydata[player][i].type != -1 && armydata[player][i].type != 0x19) {
@@ -97,7 +71,7 @@ void unit_phase(int player)
                 civ_cont_attackers[player][island] += utypes[armydata[player][i].type].attack;
             } else if (utypes[armydata[player][i].type].domain == 0)
                 armydata[player][i].status |= 0x10;
-            fog_map[(armydata[player][i].x >> 2) * 13 + (armydata[player][i].y >> 2)]
+            fog_map[armydata[player][i].x >> 2][armydata[player][i].y >> 2]
                 |= 2 << utypes[armydata[player][i].type].role;
         }
     }
@@ -110,7 +84,7 @@ void unit_phase(int player)
         if (townbuf[i].status == -1)
             continue;
         if (player != townbuf[i].owner) {
-            if (turn_tick * cur_tier > 200 || (civ_vis_grid[townbuf[i].x * 50 + townbuf[i].y] & (1 << player))
+            if (turn_tick * cur_tier > 200 || (civ_vis_grid[townbuf[i].x][townbuf[i].y] & (1 << player))
                 || civnow != townbuf[i].owner) {
                 if ((treaties[player][townbuf[i].owner] & 0x102) != 2 && ((i + turn_tick) & 3) != 0)
                     add_target(player, townbuf[i].x, townbuf[i].y, 1, (townbuf[i].buildings & 0x80) ? 3 : 5);
@@ -123,7 +97,7 @@ void unit_phase(int player)
                 civ_units_ordered[player][townbuf[i].production]++;
             x = townbuf[i].x >> 2;
             y = townbuf[i].y >> 2;
-            fog_map[x * 13 + y] |= 1;
+            fog_map[x][y] |= 1;
             for (v = 0; v < 2; v++) {
                 if (townbuf[i].garrison[v] != -1) {
                     military_table[player] += utypes[townbuf[i].garrison[v] & 0x3f].attack + utypes[townbuf[i].garrison[v] & 0x3f].defense;
@@ -139,7 +113,7 @@ void unit_phase(int player)
     civ_held_cells[player] = 0;
     for (x = 0; x < 20; x++)
         for (y = 0; y < 13; y++)
-            if (fog_map[x * 13 + y])
+            if (fog_map[x][y])
                 civ_held_cells[player]++;
     civ_area_plan[player][0] = 0;
     civ_area_plan[player][15] = 0;
@@ -671,7 +645,7 @@ int ai_order(int player, int unit)
         if (terrain_g != 10) {
             if (near_dist >= 2)
                 add_target(player, uxk, uyk, 2, 2);
-            if ((work_rules[terrain_g][has_tech(player, 5) ? 5 : 4] != 0 || rstatem == 5)
+            if ((work_rules[terrain_g][has_tech(player, 5) ? WORK_ROAD_BRIDGES : WORK_ROAD] != 0 || rstatem == 5)
                 && city_distj > 0 && city_distj <= 2 && townbuf[home].owner == player && !(townbuf[home].size < 3 && terrain_g == 4 && !patterned_cell(terrain_g, uxk, uyk))
                 && (rule_options & 2)) {
                 switch (work_tile(uxk, uyk)) {
@@ -706,7 +680,7 @@ int ai_order(int player, int unit)
                     own_b = map_stack(nx, ny);
                     if (own_b != -1 && (player != fight_enemy || count_u(player, own_b, 0)))
                         continue;
-                    if (work_rules[terrain_at(nx, ny)][has_tech(player, 5) ? 5 : 4] != 0 && work_tile(nx, ny)
+                    if (work_rules[terrain_at(nx, ny)][has_tech(player, 5) ? WORK_ROAD_BRIDGES : WORK_ROAD] != 0 && work_tile(nx, ny)
                         && !(townbuf[home].size < 3 && terrain_at(nx, ny) == 4 && !patterned_cell(4, nx, ny))
                         && half_dist(nx - townbuf[home].x, ny - townbuf[home].y) <= 2) {
                         armydata[player][unit].goto_x = nx;
@@ -731,7 +705,7 @@ int ai_order(int player, int unit)
                 }
                 vl &= vl >> 4;
                 if ((count_f < 4 && (vl || (city_distj == 1 && terrain_g <= 2)))
-                    || (count_f == 1 && sc_d && terrains[terrain_g].cost == 1))
+                    || (count_f == 1 && sc_d && terrains[terrain_g].move_cost == 1))
                     return 0x72;
             }
         }
@@ -740,7 +714,7 @@ int ai_order(int player, int unit)
         sc_d = rand_scaled(20) + 1;
         nx = armydata[player][unit].x / 4 + spiral_x[sc_d];
         ny = armydata[player][unit].y / 4 + spiral_y[sc_d];
-        if (!(fog_map[nx * 13 + ny] & 3)) {
+        if (!(fog_map[nx][ny] & 3)) {
             armydata[player][unit].goto_x = spiral_x[sc_d] * 4 + armydata[player][unit].x;
             armydata[player][unit].goto_y = spiral_y[sc_d] * 4 + armydata[player][unit].y;
             if (map_in_bounds((unsigned char) armydata[player][unit].goto_x, (unsigned char) armydata[player][unit].goto_y)
@@ -771,7 +745,7 @@ int ai_order(int player, int unit)
     result_i = 0;
     freem = 0;
     if (unit_blocked(player, uxk, uyk))
-        armydata[player][unit].f8 = -1;
+        armydata[player][unit].last_dir = -1;
     else
         freem = 1;
     if (utypej == 1 && rstatem == 1)
@@ -809,7 +783,7 @@ int ai_order(int player, int unit)
         } else {
             if (armydata[player][unit].visibility == 0 && terrain_g != 10) {
                 if (rolel == 1)
-                    vl = rand_scaled(3) - terrains[tern].cost * 2;
+                    vl = rand_scaled(3) - terrains[tern].move_cost * 2;
                 else
                     vl = rand_scaled(3) - terrains[tern].defense;
             } else {
@@ -827,8 +801,8 @@ int ai_order(int player, int unit)
             if (utypes[armydata[player][unit].type].domain == 1)
                 vl = rand_scaled(3);
         }
-        if (armydata[player][unit].f8 != -1) {
-            adiff_h = abs(armydata[player][unit].f8 - k);
+        if (armydata[player][unit].last_dir != -1) {
+            adiff_h = abs(armydata[player][unit].last_dir - k);
             if (adiff_h > 4)
                 adiff_h = 8 - adiff_h;
             vl -= adiff_h * adiff_h * 2;
@@ -879,14 +853,14 @@ int ai_order(int player, int unit)
         if (freem) {
             nx = spiral_x[k] * 4 + uxk;
             ny = spiral_y[k] * 4 + uyk;
-            if (fog_map[nx / 4 * 13 + ny / 4] == 0 && terrain_at(nx, ny) != 10 && map_in_bounds(nx, ny))
+            if (fog_map[nx / 4][ny / 4] == 0 && terrain_at(nx, ny) != 10 && map_in_bounds(nx, ny))
                 vl += 8;
             for (j2 = 1; j2 <= 8; j2++) {
                 mxm = wrap_x(spiral_x[j2] + nx);
                 mym = spiral_y[j2] + ny;
                 if (!map_in_bounds(mxm, mym))
                     continue;
-                if (!(civ_vis_grid[mxm * 50 + mym] & pbitn)) {
+                if (!(civ_vis_grid[mxm][mym] & pbitn)) {
                     if (terrain_at(mxm, mym) != 10 || utypes[armydata[player][unit].type].domain == 2)
                         vl += 2;
                 }
@@ -906,7 +880,7 @@ int ai_order(int player, int unit)
     }
     if (attack_f && armydata[player][unit].moves < 3)
         result_i = 0;
-    armydata[player][unit].f8 = result_i;
+    armydata[player][unit].last_dir = result_i;
     return result_i;
 }
 
@@ -1183,7 +1157,7 @@ int unit_ai_move(int player, int unit)
             tx1 = wrap_x(spiral_x[n1] + ux1);
             ty1 = spiral_y[n1] + uy;
             if (town_gap <= 8 && terrain_at(tx1, ty1) != 10 && !(map_flags(tx1, ty1) & 1) && map_owner(tx1, ty1) == -1 && ty1 > 1 && ty1 < 0x30) {
-                if ((civ_vis_grid[tx1 * 50 + ty1] & (1 << civnow)) && townbuf[home].owner == civnow && region_key(tx1, ty1) == region_key(townbuf[home].x, townbuf[home].y)) {
+                if ((civ_vis_grid[tx1][ty1] & (1 << civnow)) && townbuf[home].owner == civnow && region_key(tx1, ty1) == region_key(townbuf[home].x, townbuf[home].y)) {
                     armydata[player][unit].visibility |= 1 << civnow;
                     map_center(civnow, tx1, ty1);
                     message_mode = 3;
@@ -1193,7 +1167,7 @@ int unit_ai_move(int player, int unit)
                     strcat(msgtext, "!\nCitizens are alarmed.\n");
                     show_msg(msgtext, 100, 32);
                 }
-                armydata[player][unit].visibility |= civ_vis_grid[tx1 * 50 + ty1];
+                armydata[player][unit].visibility |= civ_vis_grid[tx1][ty1];
                 armydata[player][unit].moves = 0;
                 return 0x75;
             }
@@ -1246,7 +1220,7 @@ int unit_ai_move(int player, int unit)
     if (fx1 != -2) {
         armydata[player][unit].goto_x = townbuf[city5].x;
         armydata[player][unit].goto_y = townbuf[city5].y;
-        armydata[player][unit].f8 = unit_goal(player, unit);
+        armydata[player][unit].last_dir = unit_goal(player, unit);
     }
     armydata[player][unit].goto_x = -1;
     if (armydata[player][unit].type == 0x1a) {
@@ -1289,7 +1263,7 @@ next:
             if (st6 != -1)
                 value += (player == fight_enemy) ? 99 : -99;
             near_city(tx1, ty1);
-            value += terrains[land].cost + rand_scaled(4) + town_gap * 4;
+            value += terrains[land].move_cost + rand_scaled(4) + town_gap * 4;
         } else {
             if ((map_flags(tx1, ty1) & 1) && map_city(tx1, ty1) != player) {
                 if (terrain_at(ux1, uy) != 10)
@@ -1311,7 +1285,7 @@ next:
             }
             if (enemy1 && utypes[armydata[player][unit].type].domain == 0 && st6 == -1 && if_open(player, tx1, ty1))
                 continue;
-            if (armydata[player][unit].f8 == n1)
+            if (armydata[player][unit].last_dir == n1)
                 value += 6;
             if (spiral_x[n1] == fx1)
                 value += 2;
@@ -1325,7 +1299,7 @@ next:
     }
     if ((map_flags(ux1, uy) & 1) && armydata[player][unit].next == -1 && best_value3 < 99)
         return 0x20;
-    armydata[player][unit].f8 = best;
+    armydata[player][unit].last_dir = best;
     return best;
 }
 

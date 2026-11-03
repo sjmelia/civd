@@ -1,4 +1,6 @@
 /* City capture, unrest, technology theft, place names and caravan trade. */
+#include <conio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "AUDIENCE.H"
 #include "CITYVIEW.H"
@@ -20,45 +22,8 @@
 #include "PATH.H"
 #include "CITYMGT.H"
 
-struct unit {
-    unsigned long flags;
-    unsigned char x, y;
-    char f6, f7, f8;
-    signed char f9, f10, owner;
-    int pad12, f14;
-    char pad16[6];
-    unsigned char f22, slot[3];
-    char pad26[2];
-};
-struct group {
-    unsigned char x, y;
-    char type;
-    char pad3[7];
-    signed char owner;
-    char pad11;
-};
-struct unit_type {
-    char pad0[20];
-    int attack;
-    char pad22[12];
-};
-struct relation {
-    char a, b;
-};
-
-extern int debug;
-extern char far place_name[][13];
-extern struct unit townbuf[];
-extern char armydata[];
-#define unit_tab ((struct group (*)[128]) (armydata + 1))       /* units from x */
-extern struct unit_type utypes[];
-extern struct relation treaties[8][8];
-
-
 extern void unit_notify(), unit_defect();
 extern void unit_home();
-extern int kbhit(void), getch(void);
-extern char *itoa(int, char *, int);
 
 int incited = 0;                /* city taken by a diplomat: capture, never destroy */
 
@@ -76,18 +41,18 @@ int a, b, c;
         old = old;
     }
     if (old != civnow) {
-        if (((townbuf[b].flags & 1) || townbuf[b].f9 == -1) && c == 0) {
-            if ((townbuf[b].flags & 1) && city_count[old] > 4 && nation_ratings[civnow] < nation_ratings[old]) {
+        if (((townbuf[b].buildings & 1) || townbuf[b].production == -1) && c == 0) {
+            if ((townbuf[b].buildings & 1) && city_count[old] > 4 && nation_ratings[civnow] < nation_ratings[old]) {
                 if (civil_war(old) == 0) {
                     townbuf[b].owner = a;
                     r = central_city(old);
-                    townbuf[r].f9 = -1;
+                    townbuf[r].production = -1;
                     townbuf[b].owner = old;
                 }
             }
         }
     }
-    if (townbuf[b].flags & 1) {
+    if (townbuf[b].buildings & 1) {
         strcpy(msgtext, civ_adjectives[old]);
         strcat(msgtext, " spaceship\n");
         if (game_flags & (1 << (old + 8))) {
@@ -101,26 +66,26 @@ int a, b, c;
     if (old == civnow)
         last_met_turn[a] = -1;
     val = clamp(unrest_chance(b), 0, money[old]);
-    if (a == 0 && utypes[unit_tab[a][map_stack(x, y)].type].attack <= 2 && incited == 0) {
+    if (a == 0 && utypes[armydata[a][map_stack(x, y)].type].attack <= 2 && incited == 0) {
         vanish(b, x, y);
-        townbuf[b].f7 = 0;
+        townbuf[b].size = 0;
     } else {
-        townbuf[b].f14 = 0;
-        townbuf[b].f6 &= 0xae;
-        townbuf[b].flags &= ~0x449;
+        townbuf[b].shield_box = 0;
+        townbuf[b].status &= 0xae;
+        townbuf[b].buildings &= ~0x449;
         if (c == 0)
-            townbuf[b].flags &= 0xaaaau >> rand_scaled(2);
-        if (c == 0 || townbuf[b].f7 > 1)
-            if (--townbuf[b].f7 == 0)
+            townbuf[b].buildings &= 0xaaaau >> rand_scaled(2);
+        if (c == 0 || townbuf[b].size > 1)
+            if (--townbuf[b].size == 0)
                 vanish(b, x, y);
     }
     money[old] -= val;
     if (a)
         money[a] += val;
-    if (townbuf[b].f7 != 0) {
-        post_event(9, 4, a, townbuf[b].f22, x, y);
+    if (townbuf[b].size != 0) {
+        post_event(9, 4, a, townbuf[b].name_id, x, y);
         clear_sites_near(a, 0, x, y, 4);
-        townbuf[b].f6 &= 0x9b;
+        townbuf[b].status &= 0x9b;
         n = 0;
         do {
             sx = wrap_x(spiral_x[n] + x);
@@ -153,13 +118,13 @@ int a, b, c;
         } else
             news_box(b);
         sound(1);
-        townbuf[b].f8 = (a == civnow) ? 0 : townbuf[b].f7;
-    } else if ((treaties[civnow][a].a & 0x40)
-               || (treaties[civnow][old].a & 0x40)) {
+        townbuf[b].visible_size = (a == civnow) ? 0 : townbuf[b].size;
+    } else if ((treaty_low(civnow, a) & 0x40)
+               || (treaty_low(civnow, old) & 0x40)) {
         message_mode = 0;
         strcpy(msgtext, "Spies report:\n");
         strcat(msgtext, civ_names[a]);
-        strcat(msgtext, townbuf[b].f7 ? " capture\nthe " : " destroy\nthe ");
+        strcat(msgtext, townbuf[b].size ? " capture\nthe " : " destroy\nthe ");
         strcat(msgtext, civ_adjectives[old]);
         strcat(msgtext, " city\nof ");
         append_place_name(b);
@@ -170,23 +135,23 @@ int a, b, c;
     map_refresh(a, x, y);
     n = 0;
     do {
-        if (unit_tab[old][n].type != -1 && unit_tab[old][n].owner == b && (unit_tab[old][n].x != townbuf[b].x || unit_tab[old][n].y != townbuf[b].y || townbuf[b].f7 == 0))
+        if (armydata[old][n].type != -1 && armydata[old][n].home_city == b && (armydata[old][n].x != townbuf[b].x || armydata[old][n].y != townbuf[b].y || townbuf[b].size == 0))
             drop_u_stack(old, n);
         ++n;
     } while (n < 128);
     if (a == civnow && civ_gov[civnow] < 4)
-        townbuf[b].f6 |= 1;
-    if (townbuf[b].f7 != 0) {
-        if (townbuf[b].f9 >= 0)
-            --civ_units_ordered[old][townbuf[b].f9];
+        townbuf[b].status |= 1;
+    if (townbuf[b].size != 0) {
+        if (townbuf[b].production >= 0)
+            --civ_units_ordered[old][townbuf[b].production];
         if (a == civnow) {
             city_process(b, 1L);
             sel_player();
         } else {
-            townbuf[b].f9 = 0;
-            townbuf[b].f9 = find_slot(a, b);
-            if (townbuf[b].f9 >= 0)
-                ++civ_units_ordered[a][townbuf[b].f9];
+            townbuf[b].production = 0;
+            townbuf[b].production = find_slot(a, b);
+            if (townbuf[b].production >= 0)
+                ++civ_units_ordered[a][townbuf[b].production];
         }
     }
     kill_civ(old, a);
@@ -199,9 +164,9 @@ int unrest_chance(int i)
     int owner;
 
     owner = townbuf[i].owner;
-    if (32000 / townbuf[i].f7 > money[owner])
-        return money[owner] * townbuf[i].f7 / (citizens[owner] + 1);
-    return money[owner] / (citizens[owner] + 1) * townbuf[i].f7;
+    if (32000 / townbuf[i].size > money[owner])
+        return money[owner] * townbuf[i].size / (citizens[owner] + 1);
+    return money[owner] / (citizens[owner] + 1) * townbuf[i].size;
 }
 
 void steal_advance(int a, int b)
@@ -260,7 +225,7 @@ void append_place_name(int i)
     if (i == -1)
         strcat(msgtext, "NONE");
     else
-        copy_from_far(place_name[townbuf[i].f22], msgtext + strlen(msgtext), 13);
+        copy_from_far(place_name[townbuf[i].name_id], msgtext + strlen(msgtext), 13);
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */
@@ -279,9 +244,9 @@ int rpath(int a, int b, int c)
 {
     int r, s, t, w, j, k, best, n1;
 
-    t = unit_tab[a][b].owner;
+    t = armydata[a][b].home_city;
     r = map_dist(townbuf[c].x, townbuf[t].x, townbuf[c].y, townbuf[t].y) + 10;
-    r *= townbuf[c].f10 + townbuf[t].f10;
+    r *= townbuf[c].trade + townbuf[t].trade;
     r /= 24;
     n1 = townbuf[t].x;
     if (region_key(townbuf[c].x, townbuf[c].y) == region_key(n1, n1))
@@ -307,18 +272,18 @@ int rpath(int a, int b, int c)
         status_draw();
     }
     drop_u_stack(a, b);
-    s = townbuf[c].f10;
+    s = townbuf[c].trade;
     if (townbuf[c].owner != a)
         s <<= 1;
     best = -1;
     for (j = 0; j < 3; j++) {
-        k = townbuf[t].slot[j];
+        k = (unsigned char) townbuf[t].routes[j];
         if (k == c)
             return 1;
         if (k == 0xff)
             w = -1;
         else {
-            w = townbuf[k].f10;
+            w = townbuf[k].trade;
             if (townbuf[k].owner != a)
                 w <<= 1;
         }
@@ -328,7 +293,7 @@ int rpath(int a, int b, int c)
         }
     }
     if (best != -1)
-        townbuf[t].slot[best] = c;
+        townbuf[t].routes[best] = c;
     return 1;
 }
 

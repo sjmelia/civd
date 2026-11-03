@@ -1,7 +1,7 @@
 /* Overlay 17: Palace view and upgrades. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -17,10 +17,8 @@
 #include "MESSAGE.H"
 #include "PALACE.H"
 
-
-
-extern int kbhit(void);
-
+/* Module state, stored in RESIDENT.ASM. */
+extern int selected_tile;
 
 
 int centre_width = 48;

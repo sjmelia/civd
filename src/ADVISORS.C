@@ -1,7 +1,7 @@
 /* Overlay 14: advisor and city-status reports. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CONTROL.H"
 #include "DIALOG.H"
 #include "GAME.H"
@@ -17,9 +17,6 @@
 #include "ECONOMY.H"
 #include "MESSAGE.H"
 #include "MOUSE.H"
-
-extern unsigned char far advance_owners[][2];
-
 
 void advisor_open(char *title, int mode)
 {
@@ -100,7 +97,7 @@ void sci_rpt(int civ)
         if (!has_tech(civ, i))
             continue;
         strcpy(msgtext, advances[i].name);
-        draw_string(msgtext, (count % 3) * 100 + 8, y, ((advance_owners[i][0] & 7) == civ) ? 15 : 11);
+        draw_string(msgtext, (count % 3) * 100 + 8, y, ((advance_owners[i] & 7) == civ) ? 15 : 11);
         count++;
         if (count % 3 == 0) {
             y += 7;
@@ -111,9 +108,6 @@ void sci_rpt(int civ)
 
     advisor_close();
 }
-
-extern struct unit_type utypes[];
-extern int far unit_losses[8][28];
 
 void mil_rpt(int civ)
 {                               /* military status report */
@@ -195,9 +189,6 @@ void military_losses(int civ)
     draw_box(100, 25, 18, y - 25, civ_colours[civnow]);
     advisor_close();
 }
-
-extern struct city townbuf[];
-
 
 void trade_rpt(int civ)
 {                               /* trade report */
@@ -313,8 +304,6 @@ void trade_rpt(int civ)
     advisor_close();
 }
 
-extern int treaties[8][8];
-extern int kbhit(void);
 
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void spy_rpt(civ_arg)           /* intelligence report */
@@ -594,7 +583,7 @@ void mood_rpt(int civ)
     }
 
     strcpy(msgtext, "Population: ");
-    count_weighted_units(civ);
+    population_points(civ);
     strcat(msgtext, " Happy:");
     append_percent(happy_total, tot);
     strcat(msgtext, "% Content:");

@@ -20,34 +20,8 @@
 #include "CITY.H"
 #include "STATUS.H"
 
-struct unit12 {
-    unsigned char x, y;
-    char type;
-    char pad[6];
-    char cargo;
-    char pad2[2];
-};
-struct terr_fx {
-    int irrigate, a, mine, b, c, d;
-};
-struct unit_type {
-    char name[12];
-    int obsolete_by, domain, moves, fuel, attack, defense, cost, sight, capacity, role, prereq;
-};
-struct terrain_rec {
-    char name[12];
-    unsigned char f0, f1, f2, f3, f4, f5, f6;
-};
-
-extern int debug;
-extern char armydata[];
-#define unit_tab ((struct unit12 (*)[128]) (armydata + 1))      /* units from x */
-extern struct terr_fx work_rules[];
-extern struct unit_type utypes[];
-extern struct terrain_rec terrains[];
-
-
-
+/* Module state, stored in RESIDENT.ASM. */
+extern int menu_result;
 
 void cmd_menu(int x, int y, int sel)
 {
@@ -144,14 +118,14 @@ void unit_orders_menu(int p, int u)
         return;
     pos = 0;
     msgtext[0] = 0;
-    ox = unit_tab[p][u].x;
-    oy = unit_tab[p][u].y;
+    ox = armydata[p][u].x;
+    oy = armydata[p][u].y;
     tileflags = map_flags(ox, oy);
     ter = terrain_at(ox, oy);
     strcat(msgtext, " No Orders \217space\n");
     keybuf[pos++] = ' ';
     dialog_dim = 0;
-    if (unit_tab[p][u].type == 0) {
+    if (armydata[p][u].type == 0) {
         strcat(msgtext, (tileflags & 1) ? " Add to City \217b\n" : " Found New City \217b\n");
         keybuf[pos++] = 'b';
         if (!(tileflags & 8)) {
@@ -164,31 +138,31 @@ void unit_orders_menu(int p, int u)
             }
         }
         if (!(tileflags & 2)) {
-            if (work_rules[ter].irrigate == -2) {
+            if (work_rules[ter][WORK_IRRIGATE] == -2) {
                 strcat(msgtext, " Build Irrigation");
                 if (!build_ok(ox, oy))
                     dialog_dim |= 1 << pos;
             } else {
-                if (work_rules[ter].irrigate >= 0) {
+                if (work_rules[ter][WORK_IRRIGATE] >= 0) {
                     strcat(msgtext, " Change to ");
-                    strcat(msgtext, terrains[terrain_map[work_rules[ter].irrigate]].name);
+                    strcat(msgtext, terrains[terrain_map[work_rules[ter][WORK_IRRIGATE]]].name);
                 }
             }
-            if (work_rules[ter].irrigate != -1) {
+            if (work_rules[ter][WORK_IRRIGATE] != -1) {
                 keybuf[pos++] = 'i';
                 strcat(msgtext, " \217i\n");
             }
         }
         if (!(tileflags & 4)) {
-            if (work_rules[ter].mine <= -2)
+            if (work_rules[ter][WORK_MINE] <= -2)
                 strcat(msgtext, " Build Mines");
             else {
-                if (work_rules[ter].mine >= 0) {
+                if (work_rules[ter][WORK_MINE] >= 0) {
                     strcat(msgtext, " Change to ");
-                    strcat(msgtext, terrains[terrain_map[work_rules[ter].mine]].name);
+                    strcat(msgtext, terrains[terrain_map[work_rules[ter][WORK_MINE]]].name);
                 }
             }
-            if (work_rules[ter].mine != -1) {
+            if (work_rules[ter][WORK_MINE] != -1) {
                 keybuf[pos++] = 'm';
                 strcat(msgtext, " \217m\n");
             }
@@ -198,21 +172,21 @@ void unit_orders_menu(int p, int u)
             keybuf[pos++] = 'p';
         }
     }
-    if (unit_tab[p][u].type == 0) {
+    if (armydata[p][u].type == 0) {
         strcat(msgtext, " Build Fortress \217f\n");
         if (!has_tech(p, 0x2d))
             dialog_dim |= 1 << pos;
-    } else if (utypes[unit_tab[p][u].type].domain == 0) {
+    } else if (utypes[armydata[p][u].type].domain == 0) {
         strcat(msgtext, " Fortify \217f\n");
     }
-    if (utypes[unit_tab[p][u].type].domain == 0)
+    if (utypes[armydata[p][u].type].domain == 0)
         keybuf[pos++] = 'f';
     strcat(msgtext, " Wait \217w\n Sentry \217s\n GoTo\n");
     keybuf[pos++] = 'w';
     keybuf[pos++] = 's';
     keybuf[pos++] = 'g';
     if (tileflags & 0x1e) {
-        ty = unit_tab[p][u].type;
+        ty = armydata[p][u].type;
         if (ty < 0x1a && ty != 0xe) {
             strcat(msgtext, " Pillage \217P\n");
             keybuf[pos++] = 'P';
@@ -222,9 +196,9 @@ void unit_orders_menu(int p, int u)
         strcat(msgtext, " Home City \217h\n");
         keybuf[pos++] = 'h';
     }
-    ty = unit_tab[p][u].type;
+    ty = armydata[p][u].type;
     if (utypes[ty].role == 5 || ty == 0x17) {
-        if (unit_tab[p][u].cargo != -1) {
+        if (armydata[p][u].next != -1) {
             strcat(msgtext, " Unload \217u\n");
             keybuf[pos++] = 'u';
         }

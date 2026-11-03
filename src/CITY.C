@@ -1,7 +1,6 @@
 /* Overlay 20: city creation, city events and civilization scores. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "ADVISORS.H"
 #include "CAPTURE.H"
 #include "CITYMGT.H"
@@ -25,20 +24,10 @@
 #include "NOTES.H"
 #include "PATH.H"
 
-extern struct city townbuf[];
-extern char far place_name[][13];
-extern char civ_vis_grid[];
-extern int work_rules[][6];
-extern int debug;
-
-
-
 /* Unit event declarations */
-
 
 /* Score declarations */
 
-extern int ship_success;
 extern int icon_row_step;
 
 /* --- Function 1: [0000, 0540) create_city --- */
@@ -97,21 +86,21 @@ int city_create(int player, int unused, int x, int y, int size)
         if (human_set & (1 << player)) {
             if (!rename_city(city))
                 return -1;
-            place_name[(unsigned char) townbuf[city].name_id][12] = 0;
+            place_name[townbuf[city].name_id][12] = 0;
         }
 
         i = 11;
         do {
-            ptr = &place_name[(unsigned char) townbuf[city].name_id][i];
+            ptr = &place_name[townbuf[city].name_id][i];
             if (*ptr != ' ')
                 break;
             *ptr = 0;
         } while (--i > 0);
 
-        post_event(1, 4, player, (unsigned char) townbuf[city].name_id, x, y);
+        post_event(1, 4, player, townbuf[city].name_id, x, y);
         unflag(36, x, y);
         flag_tile(9, x, y);
-        if (work_rules[terrain_at(x, y)][0] < -1) {
+        if (work_rules[terrain_at(x, y)][WORK_IRRIGATE] < -1) {
             flag_tile(2, x, y);
         }
 
@@ -193,7 +182,7 @@ int city_create(int player, int unused, int x, int y, int size)
         } else {
             townbuf[city].production = find_slot(player, city);
             if (civ_wonder(civnow, 19)) {
-                civ_vis_grid[townbuf[city].x * 50 + townbuf[city].y] |= 1 << civnow;
+                civ_vis_grid[townbuf[city].x][townbuf[city].y] |= 1 << civnow;
                 townbuf[city].visible_size = 1;
                 map_mark(townbuf[city].x, townbuf[city].y);
             }
@@ -408,7 +397,7 @@ check_city:                ;
                         } while (other_city < 128 && other_city != city && townbuf[other_city].status != -1);
                         if (best_city != -1) {
                             if (townbuf[best_city].owner != townbuf[city].owner) {
-                                if (civ_vis_grid[townbuf[city].x * 50 + townbuf[city].y] & (1 << civnow)) {
+                                if (civ_vis_grid[townbuf[city].x][townbuf[city].y] & (1 << civnow)) {
                                     strcpy(msgtext, "Residents of ");
                                     append_place_name(city);
                                     strcat(msgtext, " admire\nthe prosperity of ");
@@ -435,7 +424,7 @@ check_city:                ;
         note_map(townbuf[city].x, townbuf[city].y);
         return;
     }
-    if (civ_vis_grid[townbuf[city].x * 50 + townbuf[city].y] & (1 << civnow)) {
+    if (civ_vis_grid[townbuf[city].x][townbuf[city].y] & (1 << civnow)) {
         weight = 0;
         while (msgtext[weight++] != '\n');
         msgtext[weight] = 0;

@@ -13,28 +13,6 @@
 #include "FILEIO.H"
 #include "PALETTE.H"
 
-struct unit_record {
-    char x, y, type, size;
-    char unknown[3];
-    char owner;
-    char rest[20];
-};
-struct group_record {
-    char unknown[5];
-    unsigned char x, y;
-    char type;
-    char rest[4];
-};
-
-extern char townbuf[];
-extern char armydata[];
-/* City records seen from their x field, and units from 4 bytes before. */
-#define units ((struct unit_record *) (townbuf + 4))
-#define group_records ((struct group_record (*)[128]) (armydata - 4))
-extern union REGS bios_call_reg_block_io;
-
-
-
 void bios_request_13(void)
 {
     bios_call_reg_block_io.h.ah = 0;
@@ -78,7 +56,7 @@ int city_at(int x, int y)
 {
     int i;
     for (i = 0; i < 128; i++)
-        if (units[i].type != -1 && (unsigned char) units[i].x == x && (unsigned char) units[i].y == y)
+        if (townbuf[i].status != -1 && townbuf[i].x == x && townbuf[i].y == y)
             return i;
     return -1;
 }
@@ -90,9 +68,9 @@ int near_city(int x, int y)
     index = -1;
     i = 0;
     do {
-        if (units[i].type == -1)
+        if (townbuf[i].status == -1)
             goto next_unit;
-        dist = map_dist(x, (unsigned char) units[i].x, y, (unsigned char) units[i].y);
+        dist = map_dist(x, townbuf[i].x, y, townbuf[i].y);
         if (dist < min_dist) {
             min_dist = dist;
             index = i;
@@ -110,9 +88,9 @@ int nearest_record(int group, int excluded, int x, int y)
     min_dist = 999;
     index = -1;
     for (i = 0; i < 128; i++) {
-        if (group_records[(int) (unsigned int) group][i].type == -1 || i == excluded)
+        if (armydata[(int) (unsigned int) group][i].type == -1 || i == excluded)
             continue;
-        dist = map_dist(x, group_records[(int) (unsigned int) group][i].x, y, group_records[(int) (unsigned int) group][i].y);
+        dist = map_dist(x, armydata[(int) (unsigned int) group][i].x, y, armydata[(int) (unsigned int) group][i].y);
         if (dist < min_dist) {
             min_dist = dist;
             index = i;
@@ -154,20 +132,20 @@ int map_dist(int x1, int x2, int y1, int y2)
     return half_dist(x, y);
 }
 
-int count_weighted_units(int owner)
+int population_points(int owner)
 {
     int i, j, points;
     points = 0;
     for (i = 0; i < 128; i++) {
-        if (units[i].owner == owner && units[i].type != -1)
-            for (j = 1; j <= units[i].size; j++)
+        if (townbuf[i].owner == owner && townbuf[i].status != -1)
+            for (j = 1; j <= townbuf[i].size; j++)
                 points += j;
     }
-    format_total(points);
+    format_population(points);
     return points;
 }
 
-void format_total(int total)
+void format_population(int total)
 {
     if (total >= 100) {
         strcat(msgtext, itoa(total / 100, nstr, 10));

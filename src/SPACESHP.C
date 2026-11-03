@@ -1,7 +1,7 @@
 /* Overlay 18: spaceship screens. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -18,20 +18,20 @@
 #include "SPACESHP.H"
 #include "RASTER.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern int ship_state[];
+extern int ship_tiles[];
+extern unsigned char star_on[];
+extern unsigned char star_x[];
+extern unsigned char star_y[];
+
 struct ship_part {
     char name[16];
     int mass;
     int x, y, w, h;
 };
 
-extern int debug;
-     /* habitation modules, launch year per civ */
-
 extern char far ship_layout[][3];
-extern char far spaceships[][15][12];
-
-
-extern int kbhit(void);
 
 
 struct ship_part ship_parts[10] = {
