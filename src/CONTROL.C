@@ -1,4 +1,5 @@
 /* Unit movement and command handling for human and computer players. */
+#include <conio.h>
 #include "RESIDENT.H"
 #include "GAME.H"
 #include <string.h>
@@ -39,9 +40,7 @@
 #include "PALACE.H"
 #include "MOUSE.H"
 
-extern int abs(int);
 
-extern int getch(void);
 
 extern void unit_remove(), unit_icon();
 extern void select_page();
@@ -1311,8 +1310,6 @@ int build_ok(int x, int y)
     return result_f;
 }
 
-#include <string.h>
-#include <stdlib.h>
 
 void uinit(int player, int unit)
 {
@@ -1419,7 +1416,6 @@ void uinit(int player, int unit)
 
 /* Original final control helpers; human_notice crosses physical F0866. */
 
-extern int kbhit(void);
 
 int in_view(int x, int y)
 {

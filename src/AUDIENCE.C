@@ -1,4 +1,6 @@
 
+#include <string.h>
+#include <stdlib.h>
 #include "CAPTURE.H"
 #include "CORE.H"
 #include "DIPLOMAC.H"
@@ -37,9 +39,6 @@ extern char far leader_fonts[16];
 extern int far portrait_coords[7][4][2];
 extern int far portrait_origins[7][4][2];
 
-extern char *strcpy(char *, char *);
-extern char *strcat(char *, char *);
-extern char *itoa(int, char *, int);
 
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void leader_audience(civ, x0, y0, mode)

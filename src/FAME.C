@@ -1,4 +1,5 @@
 /* Overlay 3: Hall of Fame. */
+#include <io.h>
 #include <string.h>
 #include <stdlib.h>
 #include <dos.h>
@@ -24,8 +25,6 @@ struct fame {
 extern struct fame far fame_ranks[];
 extern char far hall_text[][25];
 
-extern int open();
-extern int read(), write(), close();
 
 void clear_fame_records(void)
 {

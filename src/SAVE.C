@@ -1,4 +1,5 @@
 /* Overlay 11: save and load menus, disk handling and state transfers. */
+#include <io.h>
 #include <dos.h>
 #include <bios.h>
 #include <stdlib.h>
@@ -34,8 +35,7 @@ extern char filename[];
 
 extern unsigned int drive_choice;
 
-extern int image_screen(), open(), read(), write(), close();
-extern long lseek();
+extern int image_screen();
 int read_save_header();         /* NOLINT(clang-diagnostic-deprecated-non-prototype) */
 
 char filename[] = "a:CIVIL0.SVE";

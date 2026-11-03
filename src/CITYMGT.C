@@ -37,6 +37,7 @@ extern int units_abroad;
 /* DRIVER.H would exhaust MSC 5.1 heap under LOADFIX, and only this is used. */
 extern void recolour_rect();
 
+/* The library's headers would exhaust the heap too. */
 extern int abs(int);
 
 extern char *strupr(char *);

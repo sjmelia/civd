@@ -1,4 +1,5 @@
 /* Overlay 2: startup, credits, title sequence and game-ending screens. */
+#include <conio.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,8 +32,6 @@
 
 extern FILE *credits_stream;
 
-extern int kbhit(void);
-extern int getch(void);
 
 static void show_label(int, int, int, int);
 static void next_credit(char *);

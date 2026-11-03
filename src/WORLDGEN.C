@@ -1,4 +1,5 @@
 /* Overlay 7: world generation and global warming. */
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
@@ -35,7 +36,6 @@ struct story_data_type {
 extern unsigned char far story_cycles[131];
 extern unsigned int far story_delays[45];
 
-extern int abs(int);
 
 void page_zero(void)
 {

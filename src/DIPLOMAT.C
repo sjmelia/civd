@@ -1,4 +1,5 @@
 /* Overlay 22: Diplomat actions, bribery, nuclear animation and city revolts. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "ADVISORS.H"
@@ -26,7 +27,6 @@
 
 #define diplomat_improvements (improvements + 1)
 
-extern int kbhit(void);
 
 #define tech unused_n
 #define cost costz

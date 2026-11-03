@@ -1,5 +1,7 @@
 /* Overlay 12: world map, PowerGraph, wonders, rankings and demographics. */
 
+#include <stdlib.h>
+#include <string.h>
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
@@ -18,10 +20,6 @@
 #include "MESSAGE.H"
 #include "PATH.H"
 
-extern int abs(int);
-extern char *itoa(int, char *, int);
-extern char *strcat(char *, char *);
-extern char *strcpy(char *, char *);
 
 /* Function 1: [0000, 03AC) - World Map View (F10) */
 /* Callers pass long arguments to int parameters; preserve their stack layout; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */

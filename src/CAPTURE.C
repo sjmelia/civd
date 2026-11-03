@@ -1,4 +1,6 @@
 /* City capture, unrest, technology theft, place names and caravan trade. */
+#include <conio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "AUDIENCE.H"
 #include "CITYVIEW.H"
@@ -22,8 +24,6 @@
 
 extern void unit_notify(), unit_defect();
 extern void unit_home();
-extern int kbhit(void), getch(void);
-extern char *itoa(int, char *, int);
 
 int incited = 0;                /* city taken by a diplomat: capture, never destroy */
 

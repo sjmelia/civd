@@ -1,4 +1,5 @@
 /* Overlay 18: spaceship screens. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "CAPTURE.H"
@@ -32,7 +33,6 @@ struct ship_part {
 
 extern char far ship_layout[][3];
 
-extern int kbhit(void);
 
 struct ship_part ship_parts[10] = {
     { "Structure1", 1, 0, 16, 16, 16 },

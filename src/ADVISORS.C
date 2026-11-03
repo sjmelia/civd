@@ -1,4 +1,5 @@
 /* Overlay 14: advisor and city-status reports. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "CONTROL.H"
@@ -303,7 +304,6 @@ void trade_rpt(int civ)
     advisor_close();
 }
 
-extern int kbhit(void);
 
 /* Calls use differing argument counts; retain this interface; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void spy_rpt(civ_arg)           /* intelligence report */

@@ -1,3 +1,5 @@
+#include <conio.h>
+#include <string.h>
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -16,9 +18,6 @@ extern int edit_cursor;
 extern int edit_cursor_w;
 extern int edit_cursor_x;
 
-extern int kbhit(void), getch(void);
-extern int strlen(), strnicmp();
-extern char *strcpy(char *, char *);
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 int rename_city(int city)
@@ -230,7 +229,7 @@ int edit_redraw(int x, int y, int n)
     y += 2;
     for (index = 0; index < n; index++) {
         rect_fill(scrbuf, x, y, 8, 8, 15);
-        if (strlen(msgtext) > index) {
+        if ((int) strlen(msgtext) > index) {
             character = msgtext[index + 1];
             msgtext[index + 1] = 0;
             draw_string_dim(msgtext + index, x, y, 0);

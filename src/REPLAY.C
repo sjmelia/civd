@@ -1,4 +1,6 @@
 /* Overlay 9: game replay and world-conquest ending. */
+#include <io.h>
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "AUDIENCE.H"
@@ -28,10 +30,7 @@ extern int replay_mode;
 extern int far replay_cities[3][128];
 extern char far fame_ranks[];
 
-extern int open();
-extern int write(), close();
 
-extern int getch(void);
 
 int replay_length = 0;          /* bytes used in replay_log */
 

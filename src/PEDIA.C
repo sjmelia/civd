@@ -1,4 +1,5 @@
 /* Overlay 8: Civilopedia. */
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "AUDIENCE.H"
@@ -25,8 +26,6 @@ extern int far pedia_topics[];
 extern int far topic_class[];
 extern signed char far pedia_icons[];
 
-extern int kbhit(void);
-extern char *strupr(char *);
 
 int no_pictures = 0;            /* pedia picture disk absent: text only */
 char *concepts[] = {

@@ -1,4 +1,7 @@
 /* Overlay 19: city views, citizens and invasion, riot and celebration animations. */
+#include <string.h>
+#include <stdlib.h>
+#include <conio.h>
 #include "CAPTURE.H"
 #include "CITYMGT.H"
 #include "CONTROL.H"
@@ -29,10 +32,6 @@ extern struct rect far wonder_rects[];
    offset are unknown; the binding supplies F2767 with an arbitrary offset 0. */
 extern struct rect far wonder_bounds[];
 
-extern int strlen();
-extern char *strcpy(char *, char *);
-extern void srand();
-extern int kbhit(void);
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void city_scene(int city, int mode)
@@ -60,11 +59,11 @@ void city_scene(int city, int mode)
     owner = townbuf[city].owner;
     lev = tech_count[owner] / 2;
     size = townbuf[city].size;
-    if (strlen(msgtext) < 120)
+    if ((int) strlen(msgtext) < 120)
         strcpy(title, msgtext);
     msgtext[0] = 0;
     append_place_name(city);
-    for (code = 0, i = 0; i < strlen(msgtext); i++)
+    for (code = 0, i = 0; i < (int) strlen(msgtext); i++)
         code += msgtext[i];
     srand(code);
     for (y = 0; y < 12; y++)

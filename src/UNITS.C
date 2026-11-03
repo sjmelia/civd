@@ -1,4 +1,5 @@
 /* Unit stacks, creation, movement, exploration and animation. */
+#include <conio.h>
 #include "AUDIENCE.H"
 #include "DIALOG.H"
 #include "DIPLOMAC.H"
@@ -226,7 +227,6 @@ next_radius:
 
 /* Unit/end-turn blink, 0866:[0AD6,0CF5); isolated diagnostic. */
 
-extern int kbhit(void);
 
 void blink_unit(int owner, int index, int x, int y)
 {
@@ -759,9 +759,7 @@ done:
 }
 
 /* Stack selection dialog, 0866:[1F69,226D). */
-#include <string.h>
 
-extern int kbhit(void);
 
 int pick_unit(int owner, int index)
 {                               /* choose a unit from a stack */

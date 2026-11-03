@@ -1,4 +1,6 @@
 /* Menus, mouse and keyboard selection, boxes and panels. */
+#include <string.h>
+#include <conio.h>
 #include <stdlib.h>
 #include "AUDIENCE.H"
 #include "GAME.H"
@@ -15,10 +17,7 @@ extern int hilite_colour;
 extern int line_count;
 extern int line_off[];
 
-extern int strlen(), abs(int);
-extern char *strcpy(char *, char *), *strcat(char *, char *);
 
-extern int kbhit(void);
 
 /* initialised data */
 int busy_flag = 0;
@@ -194,7 +193,7 @@ int menu_layout(char *text, int x, int y, int preset)
             itemkeys[index_or_font_b] = -1;
         line_count = item_index_j = 0;
         linewide = len = 0;
-        for (index_or_font_b = 0; strlen(text) > index_or_font_b; index_or_font_b++) {
+        for (index_or_font_b = 0; (int) strlen(text) > index_or_font_b; index_or_font_b++) {
             if (text[index_or_font_b] == 10) {
                 if (len > linewide)
                     linewide = len;

@@ -12,7 +12,6 @@
 #include "UNITS.H"
 #include "NOTES.H"
 
-extern char *strupr(char *);
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 void show_help(int civ)
