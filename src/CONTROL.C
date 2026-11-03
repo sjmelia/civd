@@ -1,5 +1,4 @@
 /* Unit movement and command handling for human and computer players. */
-#include "CIV.H"
 #include "RESIDENT.H"
 #include "GAME.H"
 #include <string.h>
@@ -43,22 +42,11 @@
 extern int debug;
 
 extern struct unit armydata[4][128];
-extern struct unit_type utypes[];
 extern struct city townbuf[];
 extern char far map_visible_to[];
 
 extern int abs(int);
 
-struct terrain_work_rule {
-    int irrigation_change, irrigation_turns, mining_change, mining_turns, road_change, road_turns;
-};
-struct terrain_control {
-    char name[12];
-    signed char move_cost;
-    char rest[6];
-};
-extern struct terrain_work_rule work_rules[];
-extern struct terrain_control terrains[];
 
 
 
@@ -531,7 +519,7 @@ uc:                            /* unit command */
                             break;
                         }
                         gi = terrain_at(ku, jv);
-                        hh = work_rules[gi].irrigation_change;
+                        hh = work_rules[gi][WORK_IRRIGATE];
                         if (hh == -1) {
                             map_center(civ, ku, jv);
                             human_msg("*NOIRR");
@@ -548,7 +536,7 @@ uc:                            /* unit command */
                         unit_note(civ, jf);
                         U.moves = 0;
                         U.goto_x = U.f8 = -1;
-                        if (work_rules[gi].irrigation_turns > ++U.fuel)
+                        if (work_rules[gi][WORK_IRRIGATE_TURNS] > ++U.fuel)
                             break;
                         if (hh >= 0) {
                             map_claim(ku, jv, hh, 2);
@@ -573,7 +561,7 @@ uc:                            /* unit command */
                             break;
                         }
                         gi = terrain_at(ku, jv);
-                        hh = work_rules[gi].mining_change;
+                        hh = work_rules[gi][WORK_MINE];
                         if (hh == -1) {
                             map_center(civ, ku, jv);
                             human_msg("*NOMINE");
@@ -584,7 +572,7 @@ uc:                            /* unit command */
                         unit_note(civ, jf);
                         U.moves = 0;
                         U.goto_x = U.f8 = -1;
-                        if (work_rules[gi].mining_turns > ++U.fuel)
+                        if (work_rules[gi][WORK_MINE_TURNS] > ++U.fuel)
                             break;
                         if (hh >= 0) {
                             if (++U.fuel <= 5)
@@ -1290,7 +1278,6 @@ fn:                            /* end of turn */
 
 #undef U
 
-extern struct unit_type utypes[];
 
 extern char far map_visible_to[];
 extern struct unit armydata[4][128];
@@ -1315,9 +1302,9 @@ int work_tile(int x, int y)
     if (map_flags(x, y) & 7)
         return 0;
     terrain19 = terrain_at(x, y);
-    if (work_rules[terrain19].mining_change <= -3)
+    if (work_rules[terrain19][WORK_MINE] <= -3)
         return 2;
-    if (work_rules[terrain19].irrigation_change == -2 && build_ok(x, y))
+    if (work_rules[terrain19][WORK_IRRIGATE] == -2 && build_ok(x, y))
         return 1;
     return 0;
 }
@@ -1346,7 +1333,6 @@ int build_ok(int x, int y)
 #include <string.h>
 #include <stdlib.h>
 
-extern struct terrain_control terrains[];
 extern struct city townbuf[];
 
 
@@ -1456,7 +1442,6 @@ void uinit(int player, int unit)
 /* Original final control helpers; human_notice crosses physical F0866. */
 
 extern struct unit armydata[4][128];
-extern struct unit_type utypes[];
 extern int kbhit(void);
 
 int in_view(int x, int y)

@@ -20,7 +20,7 @@
 #include "PATH.H"
 #include "CITYMGT.H"
 
-struct unit {
+struct city_view {
     unsigned long flags;
     unsigned char x, y;
     char f6, f7, f8;
@@ -37,21 +37,15 @@ struct group {
     signed char owner;
     char pad11;
 };
-struct unit_type {
-    char pad0[20];
-    int attack;
-    char pad22[12];
-};
 struct relation {
     char a, b;
 };
 
 extern int debug;
 extern char far place_name[][13];
-extern struct unit townbuf[];
+extern struct city_view townbuf[];
 extern char armydata[];
 #define unit_tab ((struct group (*)[128]) (armydata + 1))       /* units from x */
-extern struct unit_type utypes[];
 extern struct relation treaties[8][8];
 
 

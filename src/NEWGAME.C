@@ -1,7 +1,6 @@
 /* Overlay 5: game setup, tribe selection, starting sites and cabinet. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CORE.H"
 #include "DIALOG.H"

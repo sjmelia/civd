@@ -1,5 +1,4 @@
 /* Overlay 19: city views, citizens and invasion, riot and celebration animations. */
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CITYMGT.H"
 #include "CONTROL.H"
@@ -16,6 +15,10 @@
 #include "TURN.H"
 #include "CITYVIEW.H"
 #include "DIALOG.H"
+
+/* Module state, stored in RESIDENT.ASM. */
+extern int city_wonder_tiles[];
+extern int pop_tiles[];
 
 struct rect {
     int x, y, w, h;

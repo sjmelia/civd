@@ -10,6 +10,15 @@
 #include "RESIDENT.H"
 #include "FILEIO.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern int archive_index;
+extern int image_file;
+extern int picture_bytes;
+extern int picture_height;
+extern int picture_width;
+extern int source_offset;
+extern int source_segment;
+
 struct archive_entry {
     char name[12];
     int reserved[4];
@@ -152,21 +161,21 @@ int load_tile(int tile, int index, char *name)
     char far *address;
     int handle, count;
     if (_dos_open(name, 0, &handle))
-        return image_error;
+        return errno;
     if (_dos_read(handle, &num, 2, &count))
-        return image_error;
-    image_error = 2;
+        return errno;
+    errno = 2;
     if (index > num)
         return 2;
     if (file_seek(handle, (long) (index * 2)))
-        return image_error;
+        return errno;
     if (_dos_read(handle, &num, 2, &count))
-        return image_error;
+        return errno;
     num -= 8;
     if (file_seek(handle, num))
-        return image_error;
+        return errno;
     if (_dos_read(handle, &sprite_header, 8, &count))
-        return image_error;
+        return errno;
     width = sprite_header.right - sprite_header.left + 1;
     bytes = width * sprite_header.planes * (sprite_header.height + sprite_header.extra) + 8;
     address = font_address(tile) - 8;
@@ -176,11 +185,11 @@ int load_tile(int tile, int index, char *name)
         bytes += width;
     }
     if (file_seek(handle, num))
-        return image_error;
+        return errno;
     if (_dos_read(handle, (char far *) address, bytes, &count))
-        return image_error;
+        return errno;
     if (_dos_close(handle))
-        return image_error;
+        return errno;
     return 0;
 }
 
@@ -298,11 +307,11 @@ void file_video_mode(int mode)
 {
     int saved;
     union REGS regs;
-    saved = image_error;
+    saved = errno;
     regs.h.ah = 0;
     regs.h.al = mode;
     int86(16, &regs, &regs);
-    image_error = saved;
+    errno = saved;
 }
 
 int archive_open(char *name)

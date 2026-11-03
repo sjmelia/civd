@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include "CIV.H"
 #include "CORE.H"
 #include "DIALOG.H"
 #include "FAME.H"
@@ -20,12 +19,20 @@
 #include "MESSAGE.H"
 #include "SAVE.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern int save_error;
+extern int save_fd;
+extern int save_index;
+extern int save_mode;
+extern int save_player;
+extern int save_turn;
+extern int save_year;
+
 extern char filename[];
 extern int debug;
 
 extern int treaties[8][8];
 extern struct city townbuf[];
-extern struct unit_type utypes[];
 extern struct unit armydata[8][128];
 extern char replay_length[], block_ground_way[];
 extern char ship_success[], ai_ship_success[];
@@ -201,7 +208,7 @@ int write_save(char *file)
 void save_write(int fd, char *buf, int length)
 {
     if (write(fd, buf, length) == -1)
-        save_error = image_error;
+        save_error = errno;
 }
 
 /* NOLINTEND(clang-diagnostic-deprecated-non-prototype) */

@@ -1,7 +1,6 @@
 /* Overlay 14: advisor and city-status reports. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CONTROL.H"
 #include "DIALOG.H"
 #include "GAME.H"
@@ -112,7 +111,6 @@ void sci_rpt(int civ)
     advisor_close();
 }
 
-extern struct unit_type utypes[];
 extern int far unit_losses[8][28];
 
 void mil_rpt(int civ)

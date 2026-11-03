@@ -1,5 +1,4 @@
 /* Overlay 10: world map and unit-roster report. */
-#include "CIV.H"
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
@@ -11,7 +10,6 @@
 #include "TURN.H"
 
 extern char far map_visible_to[];
-extern struct unit_type utypes[];
 extern struct unit armydata[8][128];
 extern int row_flag[8][16];
 

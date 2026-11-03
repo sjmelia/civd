@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <dos.h>
-#include "CIV.H"
 #include "CORE.H"
 #include "GAME.H"
 #include "GLOBALS.H"

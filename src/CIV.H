@@ -1,13 +1,25 @@
 /* Shared game records. Field names are inferred; sizes and signedness
  * preserve the DOS representation. */
+#ifndef CIV_H
+#define CIV_H
 
-/* DGROUP 0282: 12 terrain types, 19 bytes each. */
+/* DGROUP 0282: 12 terrain types, then the same 12 with their special
+ * resource, 19 bytes each. */
 struct terrain_type {
     char name[12];
-    unsigned char move_cost;
+    signed char move_cost;
     signed char defense;        /* defense multiplier, in halves */
-    unsigned char food, shields, trade, f5, f6;
+    signed char food, shields, trade, f5, f6;
 };
+
+/* Columns of work_rules. Negative change values are a yield bonus of
+ * -1 - value (-1 for none); others name the terrain the tile turns into. */
+#define WORK_IRRIGATE 0
+#define WORK_IRRIGATE_TURNS 1
+#define WORK_MINE 2
+#define WORK_MINE_TURNS 3
+#define WORK_ROAD 4             /* AI builds roads here */
+#define WORK_ROAD_BRIDGES 5     /* the same with Bridge Building */
 
 /* DGROUP 112A: 28 unit types, 34 bytes each. */
 struct unit_type {
@@ -66,3 +78,5 @@ struct unit {
 
 #define UNIT_FORTIFIED  0x08
 #define UNIT_VETERAN    0x20
+
+#endif

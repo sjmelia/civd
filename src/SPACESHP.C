@@ -1,7 +1,6 @@
 /* Overlay 18: spaceship screens. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -17,6 +16,13 @@
 #include "TURN.H"
 #include "SPACESHP.H"
 #include "RASTER.H"
+
+/* Module state, stored in RESIDENT.ASM. */
+extern int ship_state[];
+extern int ship_tiles[];
+extern unsigned char star_on[];
+extern unsigned char star_x[];
+extern unsigned char star_y[];
 
 struct ship_part {
     char name[16];

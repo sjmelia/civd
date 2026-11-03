@@ -15,7 +15,6 @@
 #include "TURN.H"
 #include "UNITS.H"
 
-#include "CIV.H"
 #include "DIPLOMAT.H"
 #include "GAME.H"
 #include "GLOBALS.H"
@@ -27,26 +26,15 @@
 
 extern int treaties[8][8];
 extern struct unit armydata[8][128];
-extern struct unit_type utypes[28];
 extern struct city townbuf[128];
 extern char far map_visible_to[];
 extern char far fog_map[];
 
-struct terr {
-    char name[12];
-    char cost;
-    char defense;
-    char food;
-    char shields;
-    char rest[3];
-};
 
 
 
 
 
-extern int work_rules[][6];
-extern struct terr terrains[];
 int ai_watch_player = -1;
 int ai_watch_unit = -1;
 int near_human = 0;             /* mask: civ shares a continent with the human's cities */
@@ -681,7 +669,7 @@ test_c:
         if (terrain_g != 10) {
             if (near_dist >= 2)
                 add_target(player, uxk, uyk, 2, 2);
-            if ((work_rules[terrain_g][has_tech(player, 5) ? 5 : 4] != 0 || rstatem == 5)
+            if ((work_rules[terrain_g][has_tech(player, 5) ? WORK_ROAD_BRIDGES : WORK_ROAD] != 0 || rstatem == 5)
                 && city_distj > 0 && city_distj <= 2 && townbuf[home].owner == player && !(townbuf[home].size < 3 && terrain_g == 4 && !patterned_cell(terrain_g, uxk, uyk))
                 && (rule_options & 2)) {
                 switch (work_tile(uxk, uyk)) {
@@ -716,7 +704,7 @@ test_c:
                     own_b = map_stack(nx, ny);
                     if (own_b != -1 && (player != the_enemy || count_u(player, own_b, 0)))
                         continue;
-                    if (work_rules[terrain_at(nx, ny)][has_tech(player, 5) ? 5 : 4] != 0 && work_tile(nx, ny)
+                    if (work_rules[terrain_at(nx, ny)][has_tech(player, 5) ? WORK_ROAD_BRIDGES : WORK_ROAD] != 0 && work_tile(nx, ny)
                         && !(townbuf[home].size < 3 && terrain_at(nx, ny) == 4 && !patterned_cell(4, nx, ny))
                         && half_dist(nx - townbuf[home].x, ny - townbuf[home].y) <= 2) {
                         armydata[player][unit].goto_x = nx;
@@ -746,7 +734,7 @@ test_c:
                     if (city_distj == 1 && terrain_g <= 2)
                         return 0x72;
                 }
-                if (count_f == 1 && sc_d && terrains[terrain_g].cost == 1)
+                if (count_f == 1 && sc_d && terrains[terrain_g].move_cost == 1)
                     return 0x72;
             }
         }
@@ -827,7 +815,7 @@ test_c:
         } else {
             if (armydata[player][unit].visibility == 0 && terrain_g != 10) {
                 if (rolel == 1)
-                    vl = rand_scaled(3) - terrains[tern].cost * 2;
+                    vl = rand_scaled(3) - terrains[tern].move_cost * 2;
                 else
                     vl = rand_scaled(3) - terrains[tern].defense;
             } else {
@@ -1308,7 +1296,7 @@ next:
             if (st6 != -1)
                 value += (player == the_enemy) ? 99 : -99;
             near_city(tx1, ty1);
-            value += terrains[land].cost + rand_scaled(4) + town_gap * 4;
+            value += terrains[land].move_cost + rand_scaled(4) + town_gap * 4;
         } else {
             if ((map_flags(tx1, ty1) & 1) && map_city(tx1, ty1) != player) {
                 if (terrain_at(ux1, uy) != 10)

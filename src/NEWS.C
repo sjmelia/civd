@@ -1,6 +1,5 @@
 #include <string.h>
 #include "GAME.H"
-#include "CIV.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "DIALOG.H"

@@ -6,7 +6,7 @@ index is the civilization slot (0 for the Barbarians), the second the unit
 number. A record whose `type` is −1 is free.
 
 ```c
-{{#include ../../../src/CIV.H:53:65}}
+{{#include ../../../src/CIV.H:65:77}}
 ```
 
 | Offset | Field | Use |

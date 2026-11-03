@@ -1,7 +1,6 @@
 /* Overlay 22: Diplomat actions, bribery, nuclear animation and city revolts. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "ADVISORS.H"
 #include "AUDIENCE.H"
 #include "BATTLE.H"
@@ -30,7 +29,6 @@ extern struct {
 } treaties[8][8];
 extern struct city townbuf[];
 extern struct unit armydata[8][128];
-extern struct unit_type utypes[];
 #define diplomat_improvements (improvements + 1)
 extern int debug;
 extern char far map_visible_to[];

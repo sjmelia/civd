@@ -12,7 +12,6 @@
 #include "NOTES.H"
 #include "TURN.H"
 
-#include "CIV.H"
 #include "ADVISORS.H"
 #include "AUDIENCE.H"
 #include "CITYMGT.H"
@@ -37,7 +36,6 @@ extern int treaties[8][8];
 
 extern struct unit armydata[][128];
 extern struct city townbuf[];
-extern struct unit_type utypes[];
 extern int far advance_owners[];
 extern char far adv_source[];
 extern char far map_visible_to[];

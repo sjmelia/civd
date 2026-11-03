@@ -1,9 +1,13 @@
 /* GAME.H: shared declarations of symbols defined in GAME.C. */
 #ifndef GAME_H
 #define GAME_H
+#include "CIV.H"
 #include "GRAPHICS.H"
 
 /* Game rule tables, defined in GAME.C. */
+extern struct terrain_type terrains[];
+extern int work_rules[][6];
+extern struct unit_type utypes[];
 struct advance {
     char name[20];
     signed char prereq1, prereq2;

@@ -55,11 +55,6 @@ struct record_state {
     char mark;
     char pad2[2];
 };
-struct unit_type {
-    char pad0[24];
-    int cost;
-    char pad26[8];
-};
 struct relation {
     char a, b;
 };
@@ -81,7 +76,6 @@ extern int debug;
 extern struct unit_flag townbuf[];
 #define group_records ((struct group_record (*)[128]) ((char *) armydata - 4))
 extern struct record_state armydata[];
-extern struct unit_type utypes[];
 extern struct relation treaties[8][8];
 extern char far advance_owners[], far map_visible_to[], far power_history[];
 extern char far war_record[];
@@ -266,12 +260,12 @@ void game_turn(void)
             civ_ratings[units[marvel_site[i]].owner] += 25;
         ++i;
     } while (i <= 21);
-    if (load_state == -3)
-        load_state = -2;
+    if (fame_slot == -3)
+        fame_slot = -2;
     else {
         civ_ratings[civnow] -= 10 * polluted;
-        if (load_state == -2)
-            load_state = 0;
+        if (fame_slot == -2)
+            fame_slot = 0;
     }
     found = 0;
     for (i = 0; i < 128; i++)
@@ -562,7 +556,7 @@ void status_draw(void)
             pop_milestone = unit + 9;
         }
     }
-    if (last < pop_milestone && load_state >= -1) {
+    if (last < pop_milestone && fame_slot >= -1) {
         strcat(msgtext, "00,000 citizens.\n");
         message_mode = 4;
         show_msg(msgtext, 100, 80);

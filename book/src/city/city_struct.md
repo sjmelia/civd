@@ -5,7 +5,7 @@ The world has room for 128 cities, shared by all eight civilization slots.
 so the array occupies 3,584 bytes. A `status` of −1 marks a free record.
 
 ```c
-{{#include ../../../src/CIV.H:29:45}}
+{{#include ../../../src/CIV.H:41:57}}
 ```
 
 `o20_city()` in `CITY.C` finds a free record when a Settler founds a city.

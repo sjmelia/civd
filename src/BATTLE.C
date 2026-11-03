@@ -9,7 +9,6 @@
 #include "CAPTURE.H"
 #include "TURN.H"
 
-#include "CIV.H"
 #include "CORE.H"
 #include "GAME.H"
 #include "GLOBALS.H"
@@ -20,9 +19,7 @@
 #include "DRAW.H"
 
 extern struct unit armydata[][128];
-extern struct unit_type utypes[];
 extern struct city townbuf[];
-extern struct terrain_type terrains[];
 extern int treaties[8][8];
 
 

@@ -10,6 +10,11 @@
 #include "DRAW.H"
 #include "DRIVER.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern int hilite_colour;
+extern int line_count;
+extern int line_off[];
+
 extern int strlen(), abs(int);
 extern char *strcpy(char *, char *), *strcat(char *, char *);
 

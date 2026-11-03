@@ -1,6 +1,5 @@
 /* Overlay 15: civil war when a capital is captured. */
 #include <string.h>
-#include "CIV.H"
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"

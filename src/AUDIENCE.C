@@ -1,5 +1,4 @@
 
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CORE.H"
 #include "DIPLOMAC.H"
@@ -21,6 +20,18 @@
 #include "DRAW.H"
 #include "MAP.H"
 #include "DRIVER.H"
+
+/* Module state, stored in RESIDENT.ASM. */
+extern int shown_face;          /* advisor face last drawn */
+extern int faces_loaded;        /* leader face tiles allocated */
+extern int modern_court;        /* leader has Invention: modern pictures */
+extern int no_portraits;        /* portrait disk absent: text only */
+extern int audience_civ;
+extern int anim_step;           /* index into the face_* animation tables */
+extern int talk_hold;           /* frames before idle animation resumes */
+extern int portrait;            /* leader portrait number */
+extern int advisors_loaded;     /* advisor head tiles cut */
+extern int leader_font;
 
 extern char far leader_fonts[16];
 extern int far portrait_size[14][2];

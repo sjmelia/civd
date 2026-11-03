@@ -12,12 +12,6 @@
 #include "UNITS.H"
 #include "ECONOMY.H"
 
-struct unit_type {
-    char name[12];
-    int fields[11];
-};
-
-extern struct unit_type utypes[];
 extern unsigned char far advance_owners[][2];
 extern int treaties[8][8];
 

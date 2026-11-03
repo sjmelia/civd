@@ -1,5 +1,4 @@
 /* Unit stacks, creation, movement, exploration and animation. */
-#include "CIV.H"
 #include "AUDIENCE.H"
 #include "DIALOG.H"
 #include "DIPLOMAC.H"
@@ -21,11 +20,18 @@
 #include "TURN.H"
 #include "PATH.H"
 
-extern struct unit_type utypes[];
 
 int quiz_busy = 0;
 /* City garrison transfer. Letter suffixes preserve MSC stack-slot ordering. */
 
+/* Module state, stored in RESIDENT.ASM. */
+extern int target_value;
+extern int match_count;
+extern int group_total;
+extern int selected_score;
+extern int selected_stack_index;
+extern int total_limit;
+extern int total_mode;
 extern struct city townbuf[];
 extern struct unit armydata[][128];
 
@@ -88,7 +94,6 @@ void garrison_in(int city)
 /* Exploration and contact around a unit. */
 
 extern struct unit armydata[][128];
-extern struct terrain_type terrains[];
 extern char far map_visible_to[];
 extern struct city townbuf[];
 extern struct {
@@ -656,7 +661,6 @@ int adj_grp(int group, int x, int y)
 
 extern struct unit armydata[][128];
 extern struct city townbuf[];
-extern struct terrain_type terrains[];
 
 
 
@@ -888,6 +892,7 @@ activate:
 
 /* Nearest city/transport direction, 0866:[226D,250E). */
 #include <stdlib.h>
+
 
 int near_base(int owner, int index)
 {                               /* nearest city or carrier for a unit */

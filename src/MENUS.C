@@ -20,6 +20,9 @@
 #include "CITY.H"
 #include "STATUS.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern int menu_result;
+
 struct unit12 {
     unsigned char x, y;
     char type;
@@ -27,24 +30,10 @@ struct unit12 {
     char cargo;
     char pad2[2];
 };
-struct terr_fx {
-    int irrigate, a, mine, b, c, d;
-};
-struct unit_type {
-    char name[12];
-    int obsolete_by, domain, moves, fuel, attack, defense, cost, sight, capacity, role, prereq;
-};
-struct terrain_rec {
-    char name[12];
-    unsigned char f0, f1, f2, f3, f4, f5, f6;
-};
 
 extern int debug;
 extern char armydata[];
 #define unit_tab ((struct unit12 (*)[128]) (armydata + 1))      /* units from x */
-extern struct terr_fx work_rules[];
-extern struct unit_type utypes[];
-extern struct terrain_rec terrains[];
 
 
 
@@ -164,31 +153,31 @@ void unit_orders_menu(int p, int u)
             }
         }
         if (!(tileflags & 2)) {
-            if (work_rules[ter].irrigate == -2) {
+            if (work_rules[ter][WORK_IRRIGATE] == -2) {
                 strcat(msgtext, " Build Irrigation");
                 if (!build_ok(ox, oy))
                     dialog_dim |= 1 << pos;
             } else {
-                if (work_rules[ter].irrigate >= 0) {
+                if (work_rules[ter][WORK_IRRIGATE] >= 0) {
                     strcat(msgtext, " Change to ");
-                    strcat(msgtext, terrains[terrain_map[work_rules[ter].irrigate]].name);
+                    strcat(msgtext, terrains[terrain_map[work_rules[ter][WORK_IRRIGATE]]].name);
                 }
             }
-            if (work_rules[ter].irrigate != -1) {
+            if (work_rules[ter][WORK_IRRIGATE] != -1) {
                 keybuf[pos++] = 'i';
                 strcat(msgtext, " \217i\n");
             }
         }
         if (!(tileflags & 4)) {
-            if (work_rules[ter].mine <= -2)
+            if (work_rules[ter][WORK_MINE] <= -2)
                 strcat(msgtext, " Build Mines");
             else {
-                if (work_rules[ter].mine >= 0) {
+                if (work_rules[ter][WORK_MINE] >= 0) {
                     strcat(msgtext, " Change to ");
-                    strcat(msgtext, terrains[terrain_map[work_rules[ter].mine]].name);
+                    strcat(msgtext, terrains[terrain_map[work_rules[ter][WORK_MINE]]].name);
                 }
             }
-            if (work_rules[ter].mine != -1) {
+            if (work_rules[ter][WORK_MINE] != -1) {
                 keybuf[pos++] = 'm';
                 strcat(msgtext, " \217m\n");
             }

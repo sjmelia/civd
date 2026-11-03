@@ -11,7 +11,12 @@
 #include "DIALOG.H"
 #include "MAP.H"
 
-struct city {
+/* Module state, stored in RESIDENT.ASM. */
+extern int edit_cursor;
+extern int edit_cursor_w;
+extern int edit_cursor_x;
+
+struct city_view {
     unsigned long flags;
     unsigned char x, y;
     char status, f7, f8, f9, f10, owner;
@@ -19,7 +24,7 @@ struct city {
     unsigned char f22, slot[5];
 };
 
-extern struct city townbuf[];
+extern struct city_view townbuf[];
 extern char far place_name[][13];
 extern char far map_visible_to[];
 

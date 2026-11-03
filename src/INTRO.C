@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -33,7 +32,6 @@
 extern char graphics_driver[], sound_driver[];
 extern int debug;
 
-extern struct terrain_type terrains[];
 
 extern FILE *credits_stream;
 

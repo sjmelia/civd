@@ -1,7 +1,6 @@
 /* Overlay 16: technology-picture quiz. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "SPACESHP.H"

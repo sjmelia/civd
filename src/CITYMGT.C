@@ -1,5 +1,4 @@
 /* City turn processing, worker assignment and the interactive city screen. */
-#include "CIV.H"
 #include "RESIDENT.H"
 #include "GAME.H"
 #include "BATTLE.H"
@@ -25,6 +24,15 @@
 #include "UNITAI.H"
 #include "PATH.H"
 #include "DRIVER.H"
+
+/* Module state, stored in RESIDENT.ASM. */
+extern int excess_unhappy;      /* unhappy citizens beyond city size */
+extern int selected_city;
+extern int selected_owner;
+extern int radius_tiles;        /* tiles in a city radius (21) */
+extern int units_abroad;        /* military units away, causing unhappiness */
+
+#define special_resources (terrains + 12)
 
 /* Keep the local data list: GLOBALS.H exhausts MSC 5.1 heap with LOADFIX. */
 extern struct city townbuf[];
@@ -52,7 +60,6 @@ extern char *strupr(char *);
 
 extern char *strcpy(char *, char *);
 extern char *strcat(char *, char *);
-extern struct unit_type utypes[];
 extern int home_troops_maintained;
 extern int city_keep;
 extern int colonist_homed;
@@ -1967,17 +1974,6 @@ extern int improvement_words[], marvel_site[];
 extern int selected_city, excess_unhappy, town_happy_ones_num, town_unhappy_counts, polluted;
 #define CITY_STATE (townbuf[selected_city].specialists)
 
-struct terrains {
-    char raw[14];
-    signed char value[3];
-    char tail[2];
-};
-struct work_rule {
-    int value[6];
-};
-extern struct terrains terrains[];
-#define special_resources (terrains + 12)
-extern struct work_rule work_rules[];
 extern int rule_options, selected_owner, civ_gov[], working_tiles, town_res_sums[];
 extern int troop_over, margin_democracy;
 
@@ -2030,9 +2026,9 @@ int tile_yield(int x, int y, int kind)
         return 0;
     terrain_l = terrain_at(x, y);
     if (patterned_cell(terrain_l, x, y))
-        yield_value_n = special_resources[terrain_l].value[kind];
+        yield_value_n = (&special_resources[terrain_l].food)[kind];
     else
-        yield_value_n = terrains[terrain_l].value[kind];
+        yield_value_n = (&terrains[terrain_l].food)[kind];
     tile_flags_g = map_flags(x, y);
     if (!(rule_options & 2)) {
         tile_flags_g = terrain_l <= 2 ? 2 : 4;
@@ -2041,9 +2037,9 @@ int tile_yield(int x, int y, int kind)
     }
     if (terrain_l != 10) {
         if (kind == 0 && (tile_flags_g & 2))
-            yield_value_n += -1 - work_rules[terrain_l].value[0];
+            yield_value_n += -1 - work_rules[terrain_l][WORK_IRRIGATE];
         if (kind == 1 && (tile_flags_g & 4))
-            yield_value_n += -1 - work_rules[terrain_l].value[2];
+            yield_value_n += -1 - work_rules[terrain_l][WORK_MINE];
         if (kind == 2 && (tile_flags_g & 8) && terrain_l <= 2)
             yield_value_n++;
     }

@@ -1,7 +1,6 @@
 /* Overlay 20: city creation, city events and civilization scores. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "ADVISORS.H"
 #include "CAPTURE.H"
 #include "CITYMGT.H"
@@ -28,7 +27,6 @@
 extern struct city townbuf[];
 extern char far place_name[][13];
 extern char far map_visible_to[];
-extern int work_rules[][6];
 extern int debug;
 
 
@@ -111,7 +109,7 @@ int city_create(int player, int unused, int x, int y, int size)
         post_event(1, 4, player, (unsigned char) townbuf[city].name_id, x, y);
         unflag(36, x, y);
         flag_tile(9, x, y);
-        if (work_rules[terrain_at(x, y)][0] < -1) {
+        if (work_rules[terrain_at(x, y)][WORK_IRRIGATE] < -1) {
             flag_tile(2, x, y);
         }
 

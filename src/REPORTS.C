@@ -1,6 +1,5 @@
 /* Overlay 12: world map, PowerGraph, wonders, rankings and demographics. */
 
-#include "CIV.H"
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"

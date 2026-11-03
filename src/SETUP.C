@@ -9,6 +9,11 @@
 #include "DRIVER.H"
 #include "STRBIOS.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern char table1[];
+extern char table2[];
+extern char table3[];
+
 extern union REGS bios_regs;
 
 

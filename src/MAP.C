@@ -13,7 +13,6 @@
 #include "MESSAGE.H"
 #include "UNITS.H"
 
-#include "CIV.H"
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
@@ -23,7 +22,6 @@
 
 extern struct city townbuf[];
 extern struct unit armydata[4][128];
-extern struct unit_type utypes[];
 extern char far map_visible_to[];
 
 

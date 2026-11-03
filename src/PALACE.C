@@ -1,7 +1,6 @@
 /* Overlay 17: Palace view and upgrades. */
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -16,6 +15,9 @@
 #include "TURN.H"
 #include "MESSAGE.H"
 #include "PALACE.H"
+
+/* Module state, stored in RESIDENT.ASM. */
+extern int selected_tile;
 
 
 
