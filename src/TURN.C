@@ -187,7 +187,7 @@ void game_turn(void)
         cost_penalty = 0;
         if (year >= 0)
             cost_penalty = clamp(max_rating - turn_tick / 9, 0, 6);
-        n = count_weighted_units(civnow);
+        n = population_points(civnow);
         post_event(11, 3, city_count[civnow], n / 256, (unsigned char) n);
         i = 0;
         do {
@@ -465,7 +465,7 @@ void status_draw(void)
         draw_string(msgtext, 2, 59, 0);
     }
     msgtext[0] = 0;
-    pop = count_weighted_units(civnow);
+    pop = population_points(civnow);
     strcat(msgtext, "#");
     if (pop)
         draw_string(msgtext, 2, 73, 0);

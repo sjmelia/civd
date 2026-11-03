@@ -180,7 +180,7 @@ void replay(void)
                 strcat(msgtext, ": ");
                 strcat(msgtext, itoa(x, nstr, 10));
                 strcat(msgtext, " cities; ");
-                format_total((y << 8) + z);
+                format_population((y << 8) + z);
                 strcat(msgtext, " population");
                 replay_line();
                 break;

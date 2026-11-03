@@ -290,7 +290,7 @@ int create_unit(int owner, int type, int x, int y)
             armydata[owner][index].type = type;
             armydata[owner][index].visibility = bit;
             armydata[owner][index].goto_x = -1;
-            armydata[owner][index].f8 = -1;
+            armydata[owner][index].last_dir = -1;
             armydata[owner][index].fuel = utypes[armydata[owner][index].type].fuel;
             armydata[owner][index].home_city = near_city(x, y);
             if (townbuf[armydata[owner][index].home_city].owner != owner)
@@ -492,7 +492,7 @@ void unit_reset(int group, int index)
         if (utypes[armydata[group][index].type].fuel)
             armydata[group][index].fuel = utypes[armydata[group][index].type].fuel - 1;
     }
-    armydata[group][index].goto_x = armydata[group][index].f8 = -1;
+    armydata[group][index].goto_x = armydata[group][index].last_dir = -1;
 }
 
 void reset_state(int group, int index)

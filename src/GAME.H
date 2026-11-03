@@ -32,8 +32,8 @@ struct improvement {
 };
 
 struct advance_attr {
-    unsigned char a;
-    signed char b;
+    unsigned char base_value;
+    signed char civilized_value;        /* added per point of the civilized trait */
 };
 extern struct advance advances[];
 extern struct improvement improvements[];

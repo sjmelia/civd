@@ -254,7 +254,7 @@ label_render_restart:
         append_place_name(city);
         strupr(msgtext);
         strcat(msgtext, " (Pop:");
-        format_total(scratch_i);
+        format_population(scratch_i);
         strcat(msgtext, ")");
         draw_text(msgtext, 104, 2, 15);
         framed_panel(127, 23, 208, 104);

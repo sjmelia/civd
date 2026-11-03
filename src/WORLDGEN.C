@@ -27,12 +27,6 @@ extern int story_line;
 extern int story_skip;
 extern int story_wait;
 
-#pragma pack(1)
-struct story_data_type {
-    unsigned char cycles[131];
-    unsigned int delays[45];
-};
-#pragma pack()
 extern unsigned char far story_cycles[131];
 extern unsigned int far story_delays[45];
 

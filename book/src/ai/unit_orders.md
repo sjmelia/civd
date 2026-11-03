@@ -162,7 +162,7 @@ neighbouring tiles and takes the best:
   away, and loses 2 for each occupied one. Settlers add the food of those
   tiles.
 - Turning is penalized by `2 * d * d`, where `d` is the change of direction
-  from the last step (`f8`).
+  from the last step (`last_dir`).
 
 ### Attack odds
 

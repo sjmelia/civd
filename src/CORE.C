@@ -132,7 +132,7 @@ int map_dist(int x1, int x2, int y1, int y2)
     return half_dist(x, y);
 }
 
-int count_weighted_units(int owner)
+int population_points(int owner)
 {
     int i, j, points;
     points = 0;
@@ -141,11 +141,11 @@ int count_weighted_units(int owner)
             for (j = 1; j <= townbuf[i].size; j++)
                 points += j;
     }
-    format_total(points);
+    format_population(points);
     return points;
 }
 
-void format_total(int total)
+void format_population(int total)
 {
     if (total >= 100) {
         strcat(msgtext, itoa(total / 100, nstr, 10));

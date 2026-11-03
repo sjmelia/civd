@@ -506,7 +506,7 @@ test_city:
     draw_shadowed("Population:", 8, y, 15);
     for (i = 1; i < 8; i++) {
         msgtext[0] = 0;
-        rank[i] = count_weighted_units(i);
+        rank[i] = population_points(i);
         if (i == player) {
             draw_string(msgtext, 104, y, 15);
         }

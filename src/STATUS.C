@@ -26,7 +26,7 @@ void civ_info(int p)
     strcat(msgtext, government_names[civ_gov[p]]);
     draw_string(msgtext, 16, 24, 15);
     strcpy(msgtext, "Population: ");
-    count_weighted_units(p);
+    population_points(p);
     draw_string(msgtext, 16, 32, 15);
     strcpy(msgtext, "Treasury: $");
     strcat(msgtext, itoa(money[p], nstr, 10));

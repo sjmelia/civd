@@ -17,7 +17,7 @@ number. A record whose `type` is −1 is free.
 | 4 | `moves` | Movement left this turn, in thirds |
 | 5 | `fuel` | Turns of fuel for aircraft; work progress for Settlers |
 | 6–7 | `goto_x`, `goto_y` | Destination; `goto_x` is −1 when there is none |
-| 8 | `f8` | Last direction moved (1–8), or −1 |
+| 8 | `last_dir` | Last direction moved (1–8), or −1 |
 | 9 | `visibility` | One bit per civilization that can see the unit |
 | 10 | `next` | Next unit in the same [stack](unit_stacking.md), or −1 |
 | 11 | `home_city` | Supporting city, or −1 |

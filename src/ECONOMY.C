@@ -870,5 +870,5 @@ int has_tech(int civ, int adv)
 
 int advance_value(int civ, int adv)
 {
-    return (signed char) advance_attrs[adv].a + civt[civ_tribe_of[civ]].civilized * advance_attrs[adv].b;
+    return (signed char) advance_attrs[adv].base_value + civt[civ_tribe_of[civ]].civilized * advance_attrs[adv].civilized_value;
 }

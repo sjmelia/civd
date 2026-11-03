@@ -583,7 +583,7 @@ void mood_rpt(int civ)
     }
 
     strcpy(msgtext, "Population: ");
-    count_weighted_units(civ);
+    population_points(civ);
     strcat(msgtext, " Happy:");
     append_percent(happy_total, tot);
     strcat(msgtext, "% Content:");

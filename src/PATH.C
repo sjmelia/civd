@@ -66,7 +66,7 @@ int unit_goal(int player, int unit)
     ty = path_target_y - armydata[player][unit].y;
     old_distance_k = abs(tx) + abs(ty) + (abs(tx) > abs(ty) ? abs(tx) : abs(ty));
     if (tx == 0 && ty == 0) {
-        armydata[player][unit].goto_x = armydata[player][unit].f8 = -1;
+        armydata[player][unit].goto_x = armydata[player][unit].last_dir = -1;
         armydata[player][unit].moves = 0;
         return -1;
     }
@@ -95,9 +95,9 @@ int unit_goal(int player, int unit)
         else
             move_cost_d = 1;
         move_cost_d += new_distance_e * 4 + abs(remaining_x_p) + abs(remaining_y_o);
-        if (armydata[player][unit].f8 != -1) {
+        if (armydata[player][unit].last_dir != -1) {
             /* Prefer a smooth heading: squared turn angle breaks distance/cost ties. */
-            turn_angle_c = abs(armydata[player][unit].f8 - i);
+            turn_angle_c = abs(armydata[player][unit].last_dir - i);
             if (turn_angle_c > 4)
                 turn_angle_c = 8 - turn_angle_c;
             move_cost_d += turn_angle_c * turn_angle_c;
@@ -107,13 +107,13 @@ int unit_goal(int player, int unit)
             best_cost_j = move_cost_d;
         }
     }
-    if (armydata[player][unit].f8 != -1 && (armydata[player][unit].f8 ^ 4) == best_direction_k)
+    if (armydata[player][unit].last_dir != -1 && (armydata[player][unit].last_dir ^ 4) == best_direction_k)
         best_direction_k = armydata[player][unit].moves = 0;
     if (best_direction_k == 0) {
-        armydata[player][unit].goto_x = armydata[player][unit].f8 = -1;
+        armydata[player][unit].goto_x = armydata[player][unit].last_dir = -1;
         best_direction_k = -1;
     } else
-        armydata[player][unit].f8 = best_direction_k;
+        armydata[player][unit].last_dir = best_direction_k;
     return best_direction_k;
 }
 

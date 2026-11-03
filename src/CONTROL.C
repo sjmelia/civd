@@ -145,7 +145,7 @@ rd:                            /* redraw map and units */
                         U.goto_x = -1;
                     if (++wi > 4) {
                         ek = 32;
-                        U.goto_x = U.f8 = -1;
+                        U.goto_x = U.last_dir = -1;
                     }
                     goto uc;
                 }
@@ -239,7 +239,7 @@ rd:                            /* redraw map and units */
                         if (qo == 1) {
                             U.goto_x = oq;
                             U.goto_y = mc;
-                            U.f8 = -1;
+                            U.last_dir = -1;
                             mse_held = 0;
                             ig = 0;
                             set_mousecur(0, 0, splashhand);
@@ -261,7 +261,7 @@ ck:                            /* mouse click */
                             if (ig == 2 || ((map_visible_to[oq][mc] & (1 << civnow)) && ((utypes[U.type].domain == 2 && gi == 10) || (utypes[U.type].domain == 0 && gi != 10) || (map_flags(oq, mc) & 1) || utypes[U.type].domain == 1))) {
                                 U.goto_x = oq;
                                 U.goto_y = mc;
-                                U.f8 = -1;
+                                U.last_dir = -1;
                             }
                             ig = 0;
                             set_mousecur(0, 0, splashhand);
@@ -321,7 +321,7 @@ uc:                            /* unit command */
                     if (U.goto_x != -1)
                         ek = unit_goal(civ, jf);
                     else
-                        U.f8 = -1;
+                        U.last_dir = -1;
                     ku = U.x;
                     jv = U.y;
                     switch (ek) {
@@ -431,7 +431,7 @@ uc:                            /* unit command */
                         U.status |= 0x82;
                         unit_note(civ, jf);
                         U.moves = 0;
-                        U.goto_x = U.f8 = -1;
+                        U.goto_x = U.last_dir = -1;
                         if (++U.fuel < 4)
                             break;
                         unflag(64, ku, jv);
@@ -520,7 +520,7 @@ uc:                            /* unit command */
                         U.status |= 0x40;
                         unit_note(civ, jf);
                         U.moves = 0;
-                        U.goto_x = U.f8 = -1;
+                        U.goto_x = U.last_dir = -1;
                         if (work_rules[gi][WORK_IRRIGATE_TURNS] > ++U.fuel)
                             break;
                         if (hh >= 0) {
@@ -556,7 +556,7 @@ uc:                            /* unit command */
                         U.status |= 0x80;
                         unit_note(civ, jf);
                         U.moves = 0;
-                        U.goto_x = U.f8 = -1;
+                        U.goto_x = U.last_dir = -1;
                         if (work_rules[gi][WORK_MINE_TURNS] > ++U.fuel)
                             break;
                         if (hh >= 0) {
@@ -853,12 +853,12 @@ mv:                            /* move unit */
                         if (U.moves < 0)
                             U.moves = 0;
                         if (civ != civnow) {
-                            if (U.f8 != -1 && (U.f8 ^ 4) == ms && stack_len(civ, jf, 2) <= 2) {
-                                U.goto_x = U.f8 = -1;
+                            if (U.last_dir != -1 && (U.last_dir ^ 4) == ms && stack_len(civ, jf, 2) <= 2) {
+                                U.goto_x = U.last_dir = -1;
                                 U.moves = 0;
                                 break;
                             } else
-                                U.f8 = ms;
+                                U.last_dir = ms;
                         }
                         if (qo != -1 && civ == stk_plr && civ != civnow && !(fz & 1) && (utypes[U.type].domain == 0 || (utypes[U.type].domain == 1 && U.fuel != 0))) {
                             hh = stack_len(civ, qo, 2);
@@ -910,7 +910,7 @@ mv:                            /* move unit */
                         if (yg != 0 && yg < 8 && yg != civ)
                             map_claim(oq + 80, mc, 0, 2);
                         if ((unsigned char) U.goto_x == oq && (unsigned char) U.goto_y == mc) {
-                            U.goto_x = U.f8 = -1;
+                            U.goto_x = U.last_dir = -1;
                             if (civ != civnow)
                                 U.moves = 0;
                         }
@@ -926,7 +926,7 @@ mv:                            /* move unit */
                                     armydata[civ][sm].x = oq;
                                     armydata[civ][sm].y = mc;
                                     armydata[civ][sm].visibility = 0;
-                                    armydata[civ][sm].f8 = -1;
+                                    armydata[civ][sm].last_dir = -1;
                                     if (utypes[U.type].capacity != 0)
                                         armydata[civ][sm].status |= 1;
                                     if (utypes[armydata[civ][sm].type].fuel != 0)

@@ -763,7 +763,7 @@ test_c:
     result_i = 0;
     freem = 0;
     if (unit_blocked(player, uxk, uyk))
-        armydata[player][unit].f8 = -1;
+        armydata[player][unit].last_dir = -1;
     else
         freem = 1;
     if (utypej == 1 && rstatem == 1)
@@ -819,8 +819,8 @@ test_c:
             if (utypes[armydata[player][unit].type].domain == 1)
                 vl = rand_scaled(3);
         }
-        if (armydata[player][unit].f8 != -1) {
-            adiff_h = abs(armydata[player][unit].f8 - k);
+        if (armydata[player][unit].last_dir != -1) {
+            adiff_h = abs(armydata[player][unit].last_dir - k);
             if (adiff_h > 4)
                 adiff_h = 8 - adiff_h;
             vl -= adiff_h * adiff_h * 2;
@@ -898,7 +898,7 @@ test_c:
     }
     if (attack_f && armydata[player][unit].moves < 3)
         result_i = 0;
-    armydata[player][unit].f8 = result_i;
+    armydata[player][unit].last_dir = result_i;
 done:
     return result_i;
 }
@@ -1239,7 +1239,7 @@ int unit_ai_move(int player, int unit)
     if (fx1 != -2) {
         armydata[player][unit].goto_x = townbuf[city5].x;
         armydata[player][unit].goto_y = townbuf[city5].y;
-        armydata[player][unit].f8 = unit_goal(player, unit);
+        armydata[player][unit].last_dir = unit_goal(player, unit);
     }
     armydata[player][unit].goto_x = -1;
     if (armydata[player][unit].type == 0x1a) {
@@ -1304,7 +1304,7 @@ next:
             }
             if (enemy1 && utypes[armydata[player][unit].type].domain == 0 && st6 == -1 && if_open(player, tx1, ty1))
                 continue;
-            if (armydata[player][unit].f8 == n1)
+            if (armydata[player][unit].last_dir == n1)
                 value += 6;
             if (spiral_x[n1] == fx1)
                 value += 2;
@@ -1318,7 +1318,7 @@ next:
     }
     if ((map_flags(ux1, uy) & 1) && armydata[player][unit].next == -1 && best_value3 < 99)
         return 0x20;
-    armydata[player][unit].f8 = best;
+    armydata[player][unit].last_dir = best;
     return best;
 }
 

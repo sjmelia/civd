@@ -70,7 +70,7 @@ struct unit {
     char fuel;
     char goto_x;
     char goto_y;
-    char f8;
+    char last_dir;              /* last direction moved (1-8), or -1 */
     signed char visibility;     /* one bit per civilization */
     signed char next;           /* next unit in the same stack, or -1 */
     char home_city;
