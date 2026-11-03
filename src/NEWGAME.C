@@ -20,18 +20,12 @@
 #include "MESSAGE.H"
 #include "NEWGAME.H"
 
-extern int debug;
 extern char sound_driver[];
-extern int far advance_owners[];
-extern char far map_visible_to[][50];
-extern signed char far adv_source[][72];
-extern int far unit_losses[][28];
 
 
 
 
 
-extern char far spaceships[][15][12];
 
 signed char start_pos[16][2] = {
     0, 0, 36, 19, 45, 22, 38, 15, 41, 24, 12, 18, 39, 18, 57, 24,

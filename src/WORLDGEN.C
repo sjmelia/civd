@@ -37,7 +37,6 @@ struct story_data_type {
 extern unsigned char far story_cycles[131];
 extern unsigned int far story_delays[45];
 
-extern char far map_visible_to[][50];
 
     /* land mass, temperature, climate, age */
 extern int abs(int);

@@ -50,7 +50,6 @@ extern int map_y0;
 extern int rule_options;
 extern char msgtext[];
 
-extern char far map_visible_to[];
 
 extern int abs(int);
 
@@ -72,7 +71,6 @@ extern int show_city_display;
 
 extern int plant_waste_divisor;
 
-extern int far advance_owners[];
 extern int city_count[];
 
 extern int town_gap;
@@ -81,7 +79,6 @@ extern int forces_present[8][28];
 extern int last_met_turn[];
 
 extern int marvel_site[];
-extern int debug;
 
 extern int civ_units_ordered[8][28];
 extern int game_flags, ai_ship_success, spaceship_arrive_dates[], money[], players;
@@ -331,7 +328,7 @@ label_render_restart:
             tile_x_l = townbuf[city].x + radius_dx[index_i];
             radius_y = townbuf[city].y + radius_dy[index_i];
             if (selected_owner == civnow) {
-                if (!(map_visible_to[tile_x_l * 50 + radius_y] & (1 << selected_owner)))
+                if (!(map_visible_to[tile_x_l][radius_y] & (1 << selected_owner)))
                     continue;
             }
             scratch_i = map_owner(tile_x_l, radius_y);
@@ -438,7 +435,7 @@ label_render_restart:
         tile_x_l = townbuf[city].x + radius_dx[index_i];
         radius_y = townbuf[city].y + radius_dy[index_i];
         if (selected_owner != 0) {
-            if (!(map_visible_to[tile_x_l * 50 + radius_y] & (1 << selected_owner))) {
+            if (!(map_visible_to[tile_x_l][radius_y] & (1 << selected_owner))) {
                 tile_taken[index_i] = 1;
             }
         }
@@ -761,7 +758,7 @@ label_governor_done:
                         if (human_set & (1 << selected_owner))
                             show_city_display = 1;
                         else
-                            map_visible_to[townbuf[city].x * 50 + townbuf[city].y] = -1;
+                            map_visible_to[townbuf[city].x][townbuf[city].y] = -1;
                         msgtext[0] = 0;
                         append_place_name(city);
                         strcat(msgtext, " builds\n");
@@ -831,7 +828,7 @@ label_governor_done:
                         for (city_index = 0; city_index < 128; city_index++) {
                             if (townbuf[city_index].status != -1 && townbuf[city_index].owner != selected_owner) {
                                 townbuf[city_index].visible_size = townbuf[city_index].size;
-                                map_visible_to[townbuf[city_index].x * 50 + townbuf[city_index].y] |= 1 << selected_owner;
+                                map_visible_to[townbuf[city_index].x][townbuf[city_index].y] |= 1 << selected_owner;
                                 map_mark(townbuf[city_index].x, townbuf[city_index].y);
                             }
                         }
@@ -1620,7 +1617,7 @@ label_after_tabs:;
                         cursor_y_k--;
                         break;
                     }
-                    if (abs(cursor_x_l) > 2 || abs(cursor_y_k) > 2 || abs(cursor_x_l) + abs(cursor_y_k) >= 4 || !(map_visible_to[(townbuf[city].x + cursor_x_l) * 50 + townbuf[city].y + cursor_y_k] & (1 << civnow))) {
+                    if (abs(cursor_x_l) > 2 || abs(cursor_y_k) > 2 || abs(cursor_x_l) + abs(cursor_y_k) >= 4 || !(map_visible_to[townbuf[city].x + cursor_x_l][townbuf[city].y + cursor_y_k] & (1 << civnow))) {
                         cursor_x_l = draw_x_l;
                         cursor_y_k = draw_y_k;
                     }
@@ -1718,7 +1715,7 @@ label_sell:
 label_tile_toggle:
                     index_i = radius_index(draw_x_l, draw_y_k);
                     if (index_i != -1 && index_i < 20) {
-                        if (map_visible_to[(townbuf[city].x + radius_dx[index_i]) * 50 + townbuf[city].y + radius_dy[index_i]] & (1 << selected_owner)) {
+                        if (map_visible_to[townbuf[city].x + radius_dx[index_i]][townbuf[city].y + radius_dy[index_i]] & (1 << selected_owner)) {
                             town_res_sums[1] = raw_shld_m;
                             town_res_sums[2] = raw_trade_h;
                             if (!(townbuf[city].workers & (1L << index_i)) && blocked_m[radius_dx[index_i] + 2][radius_dy[index_i] + 2] != 0)
@@ -2275,7 +2272,7 @@ void draw_minimap(void)
         for (column_c = 0; column_c < 80; column_c++) {
             map_x_l = wrap_x(x_cap[civnow] + column_c - 40);
             map_y_k = row_i;
-            if (!(map_visible_to[map_x_l * 50 + map_y_k] & (1 << civnow)))
+            if (!(map_visible_to[map_x_l][map_y_k] & (1 << civnow)))
                 continue;
             pixel_part_i = ((row_i & 1) << 1) + (column_c & 1);
             screen_x_j = column_c / 2 * 3 + mini_x[pixel_part_i] + 101;

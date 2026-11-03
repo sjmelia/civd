@@ -21,10 +21,8 @@
 /* Module state, stored in RESIDENT.ASM. */
 extern int pedia_more;
 
-extern int debug;
 extern int far pedia_topics[];
 extern int far topic_class[];
-extern signed char far adv_source[][72];
 extern signed char far pedia_icons[];
 
 

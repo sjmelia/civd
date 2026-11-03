@@ -30,12 +30,8 @@
 
 #define CITY_SCI(i) (townbuf[i].shield_box)
 
-extern int debug;
 
 
-extern int far advance_owners[];
-extern char far adv_source[];
-extern char far map_visible_to[];
 
 
 
@@ -98,7 +94,7 @@ void vanish(int idx, int x, int y)
     city_count[townbuf[idx].owner]--;
     townbuf[idx].status = 0xff;
     flag_tile(0, x, y);
-    if (map_visible_to[50 * x + y] & (1 << civnow))
+    if (map_visible_to[x][y] & (1 << civnow))
         map_mark(x, y);
     for (dist = 0; dist < 128; dist++)
         for (j = 0; j < 3; j++)
@@ -732,7 +728,7 @@ void give_advance(int civ, int adv, int src)
         return;
     if (adv != 71) {
         advances_known[civ][adv / 16] |= 1 << (adv % 16);
-        adv_source[72 * civ + adv] = src;
+        adv_source[civ][adv] = src;
     }
     if (turn_tick)
         ++tech_count[civ];

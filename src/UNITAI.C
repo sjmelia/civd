@@ -24,8 +24,6 @@
 #include "DRIVER.H"
 
 
-extern char far map_visible_to[];
-extern char far fog_map[];
 
 
 
@@ -63,7 +61,7 @@ void unit_phase(int player)
     }
     for (x = 0; x < 20; x++)
         for (y = 0; y < 13; y++)
-            fog_map[x * 13 + y] = 0;
+            fog_map[x][y] = 0;
     troops_total[player] = civ_settlers_n[player] = military_table[player] = 0;
     for (i = 0; i < 128; i++) {
         if (armydata[player][i].type != -1 && armydata[player][i].type != 0x19) {
@@ -81,7 +79,7 @@ void unit_phase(int player)
                 civ_cont_attackers[player][island] += utypes[armydata[player][i].type].attack;
             } else if (utypes[armydata[player][i].type].domain == 0)
                 armydata[player][i].status |= 0x10;
-            fog_map[(armydata[player][i].x >> 2) * 13 + (armydata[player][i].y >> 2)]
+            fog_map[armydata[player][i].x >> 2][armydata[player][i].y >> 2]
                 |= 2 << utypes[armydata[player][i].type].role;
         }
     }
@@ -94,7 +92,7 @@ void unit_phase(int player)
         if (townbuf[i].status == -1)
             continue;
         if (player != townbuf[i].owner) {
-            if (turn_tick * cur_tier > 200 || (map_visible_to[townbuf[i].x * 50 + townbuf[i].y] & (1 << player))
+            if (turn_tick * cur_tier > 200 || (map_visible_to[townbuf[i].x][townbuf[i].y] & (1 << player))
                 || civnow != townbuf[i].owner) {
                 if ((treaties[player][townbuf[i].owner] & 0x102) != 2 && ((i + turn_tick) & 3) != 0)
                     add_target(player, townbuf[i].x, townbuf[i].y, 1, (townbuf[i].buildings & 0x80) ? 3 : 5);
@@ -107,7 +105,7 @@ void unit_phase(int player)
                 civ_units_ordered[player][townbuf[i].production]++;
             x = townbuf[i].x >> 2;
             y = townbuf[i].y >> 2;
-            fog_map[x * 13 + y] |= 1;
+            fog_map[x][y] |= 1;
             for (v = 0; v < 2; v++) {
                 if (townbuf[i].garrison[v] != -1) {
                     military_table[player] += utypes[townbuf[i].garrison[v] & 0x3f].attack + utypes[townbuf[i].garrison[v] & 0x3f].defense;
@@ -123,7 +121,7 @@ void unit_phase(int player)
     civ_held_cells[player] = 0;
     for (x = 0; x < 20; x++)
         for (y = 0; y < 13; y++)
-            if (fog_map[x * 13 + y])
+            if (fog_map[x][y])
                 civ_held_cells[player]++;
     civ_area_plan[player][0] = 0;
     civ_area_plan[player][15] = 0;
@@ -739,7 +737,7 @@ test_c:
         sc_d = rand_scaled(20) + 1;
         nx = armydata[player][unit].x / 4 + spiral_x[sc_d];
         ny = armydata[player][unit].y / 4 + spiral_y[sc_d];
-        if (!(fog_map[nx * 13 + ny] & 3)) {
+        if (!(fog_map[nx][ny] & 3)) {
             armydata[player][unit].goto_x = spiral_x[sc_d] * 4 + armydata[player][unit].x;
             armydata[player][unit].goto_y = spiral_y[sc_d] * 4 + armydata[player][unit].y;
             if (map_in_bounds((unsigned char) armydata[player][unit].goto_x, (unsigned char) armydata[player][unit].goto_y)
@@ -881,14 +879,14 @@ test_c:
         if (freem) {
             nx = spiral_x[k] * 4 + uxk;
             ny = spiral_y[k] * 4 + uyk;
-            if (fog_map[nx / 4 * 13 + ny / 4] == 0 && terrain_at(nx, ny) != 10 && map_in_bounds(nx, ny))
+            if (fog_map[nx / 4][ny / 4] == 0 && terrain_at(nx, ny) != 10 && map_in_bounds(nx, ny))
                 vl += 8;
             for (j2 = 1; j2 <= 8; j2++) {
                 mxm = wrap_x(spiral_x[j2] + nx);
                 mym = spiral_y[j2] + ny;
                 if (!map_in_bounds(mxm, mym))
                     continue;
-                if (!(map_visible_to[mxm * 50 + mym] & pbitn)) {
+                if (!(map_visible_to[mxm][mym] & pbitn)) {
                     if (terrain_at(mxm, mym) != 10 || utypes[armydata[player][unit].type].domain == 2)
                         vl += 2;
                 }
@@ -1186,7 +1184,7 @@ int unit_ai_move(int player, int unit)
             tx1 = wrap_x(spiral_x[n1] + ux1);
             ty1 = spiral_y[n1] + uy;
             if (town_gap <= 8 && terrain_at(tx1, ty1) != 10 && !(map_flags(tx1, ty1) & 1) && map_owner(tx1, ty1) == -1 && ty1 > 1 && ty1 < 0x30) {
-                if ((map_visible_to[tx1 * 50 + ty1] & (1 << civnow)) && townbuf[home].owner == civnow && region_key(tx1, ty1) == region_key(townbuf[home].x, townbuf[home].y)) {
+                if ((map_visible_to[tx1][ty1] & (1 << civnow)) && townbuf[home].owner == civnow && region_key(tx1, ty1) == region_key(townbuf[home].x, townbuf[home].y)) {
                     armydata[player][unit].visibility |= 1 << civnow;
                     map_center(civnow, tx1, ty1);
                     message_mode = 3;
@@ -1196,7 +1194,7 @@ int unit_ai_move(int player, int unit)
                     strcat(msgtext, "!\nCitizens are alarmed.\n");
                     show_msg(msgtext, 100, 32);
                 }
-                armydata[player][unit].visibility |= map_visible_to[tx1 * 50 + ty1];
+                armydata[player][unit].visibility |= map_visible_to[tx1][ty1];
                 armydata[player][unit].moves = 0;
                 return 0x75;
             }

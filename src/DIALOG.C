@@ -18,7 +18,6 @@ extern int line_off[];
 extern int strlen(), abs(int);
 extern char *strcpy(char *, char *), *strcat(char *, char *);
 
-extern int debug;
 
 extern int kbhit(void);
 

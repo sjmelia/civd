@@ -29,16 +29,10 @@ extern int save_turn;
 extern int save_year;
 
 extern char filename[];
-extern int debug;
 
 extern char replay_length[];
 extern char ship_success[], ai_ship_success[];
-extern char far power_history[], far war_record[];
-extern char far map_visible_to[];
-extern int far advance_owners[];
-extern char far place_name[][13], far replay_log[];
-extern char far unit_losses[];
-extern char far adv_source[], far spaceships[];
+extern char far place_name[][13];
 extern unsigned int drive_choice;
 
 extern int image_screen(), open(), read(), write(), close();

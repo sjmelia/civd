@@ -8,6 +8,18 @@
 extern struct terrain_type terrains[];
 extern int work_rules[][6];
 extern struct unit_type utypes[];
+
+/* Far world state; GAME.C explains their order. */
+extern char far power_history[][8];
+extern int far advance_owners[];
+extern char far map_visible_to[][50];
+extern char far spaceships[][15][12];
+extern signed char far adv_source[][72];
+extern char far war_record[][8];
+extern char far fog_map[][13];
+extern int far unit_losses[][28];
+extern unsigned char far replay_log[];
+extern int debug;
 struct advance {
     char name[20];
     signed char prereq1, prereq2;

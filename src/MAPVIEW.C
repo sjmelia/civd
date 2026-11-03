@@ -9,7 +9,6 @@
 #include "MAP.H"
 #include "TURN.H"
 
-extern char far map_visible_to[];
 extern int row_flag[8][16];
 
 
@@ -51,7 +50,7 @@ int map_report(int civ)
     known = 1 << civ;
     for (cy = 0; cy < 50; cy++) {
         for (x = 0; x < 80; x++) {
-            if (!(map_visible_to[50 * x + cy] & known) && !xray_on)
+            if (!(map_visible_to[x][cy] & known) && !xray_on)
                 continue;
             tx = x * 4;
             ty = cy * 4;

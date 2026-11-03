@@ -21,7 +21,6 @@
 #include "CITYMGT.H"
 
 
-extern int debug;
 extern char far place_name[][13];
 
 

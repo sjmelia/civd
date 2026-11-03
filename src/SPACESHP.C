@@ -30,11 +30,9 @@ struct ship_part {
     int x, y, w, h;
 };
 
-extern int debug;
      /* habitation modules, launch year per civ */
 
 extern char far ship_layout[][3];
-extern char far spaceships[][15][12];
 
 
 extern int kbhit(void);

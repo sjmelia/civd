@@ -27,7 +27,6 @@ extern int replay_mode;
 
 
 extern int far replay_cities[3][128];
-extern unsigned char far replay_log[];
 extern char far place_name[][13];
 extern char far fame_ranks[];
 extern int far portrait_size[][2], far portrait_offset[][2];

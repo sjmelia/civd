@@ -24,7 +24,6 @@
 extern int menu_result;
 
 
-extern int debug;
 
 
 

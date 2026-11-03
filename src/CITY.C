@@ -25,8 +25,6 @@
 #include "PATH.H"
 
 extern char far place_name[][13];
-extern char far map_visible_to[];
-extern int debug;
 
 
 
@@ -190,7 +188,7 @@ int city_create(int player, int unused, int x, int y, int size)
         } else {
             townbuf[city].production = find_slot(player, city);
             if (civ_wonder(civnow, 19)) {
-                map_visible_to[townbuf[city].x * 50 + townbuf[city].y] |= 1 << civnow;
+                map_visible_to[townbuf[city].x][townbuf[city].y] |= 1 << civnow;
                 townbuf[city].visible_size = 1;
                 map_mark(townbuf[city].x, townbuf[city].y);
             }
@@ -405,7 +403,7 @@ check_city:                ;
                         } while (other_city < 128 && other_city != city && townbuf[other_city].status != -1);
                         if (best_city != -1) {
                             if (townbuf[best_city].owner != townbuf[city].owner) {
-                                if (map_visible_to[townbuf[city].x * 50 + townbuf[city].y] & (1 << civnow)) {
+                                if (map_visible_to[townbuf[city].x][townbuf[city].y] & (1 << civnow)) {
                                     strcpy(msgtext, "Residents of ");
                                     append_place_name(city);
                                     strcat(msgtext, " admire\nthe prosperity of ");
@@ -432,7 +430,7 @@ check_city:                ;
         note_map(townbuf[city].x, townbuf[city].y);
         return;
     }
-    if (map_visible_to[townbuf[city].x * 50 + townbuf[city].y] & (1 << civnow)) {
+    if (map_visible_to[townbuf[city].x][townbuf[city].y] & (1 << civnow)) {
         weight = 0;
         while (msgtext[weight++] != '\n');
         msgtext[weight] = 0;

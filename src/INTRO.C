@@ -30,7 +30,6 @@
 #include "RASTER.H"
 
 extern char graphics_driver[], sound_driver[];
-extern int debug;
 
 
 extern FILE *credits_stream;

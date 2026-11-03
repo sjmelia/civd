@@ -41,7 +41,6 @@ extern int far portrait_origins[7][4][2];
 
 
 
-extern int debug;
 
 
 extern char *strcpy(char *, char *);

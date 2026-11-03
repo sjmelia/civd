@@ -44,10 +44,7 @@ int player_screen_flag = 0;
 
 /* DGROUP variables */
 
-extern int debug;
 
-extern char far advance_owners[], far map_visible_to[], far power_history[];
-extern char far war_record[];
 
 /* functions in other segments */
 
@@ -341,7 +338,7 @@ void uprising(void)
 
     if ((5 - cur_tier) * 30 > turn_tick)
         return;
-    if (!(((char) turn_tick + 1) & 7) && !(advance_owners[0x74] & 7)) {
+    if (!(((char) turn_tick + 1) & 7) && !(advance_owners[58] & 7)) {
         do {
             x = rand_scaled(80);
             y = rand_scaled(44) + 3;
@@ -349,7 +346,7 @@ void uprising(void)
         count = clamp(turn_tick / 150 + 1, 1, 3);
         create_unit(0, count < 3 ? 17 : 18, x, y);
         for (i = 0; i <= count; i++) {
-            if (!(advance_owners[0x70] & 7))
+            if (!(advance_owners[56] & 7))
                 t = 3;
             else
                 t = 7;
@@ -374,10 +371,10 @@ void uprising(void)
     } while (++dx < 99 && (w < 6 || unit_blocked(p, x, y) || terrain_at(x, y) == 10 || map_owner(x, y) != -1 || region_key(x, y) != region_key(townbuf[i].x, townbuf[i].y)));
     if (dx >= 99)
         return;
-    if (townbuf[i].owner == civnow && (map_visible_to[50 * x + y] & (1 << civnow))) {
+    if (townbuf[i].owner == civnow && (map_visible_to[x][y] & (1 << civnow))) {
         reveal(civnow, townbuf[i].x - 8, townbuf[i].y - 6);
         strcpy(msgtext, "Travellers report:\n");
-        strcat(msgtext, advance_owners[0x46] & 7 ? "Guerrilla uprising\nnear " : advance_owners[0x44] & 7 ? "Native unrest\nnear " : "Barbarian uprising\nnear ");
+        strcat(msgtext, advance_owners[35] & 7 ? "Guerrilla uprising\nnear " : advance_owners[34] & 7 ? "Native unrest\nnear " : "Barbarian uprising\nnear ");
         append_place_name(i);
         strcat(msgtext, "!\n");
         message_mode = 2;
@@ -385,13 +382,13 @@ void uprising(void)
     }
     count = clamp(rand_scaled(townbuf[i].size / 2), 2, 99);
     for (k = 0; k <= count; k++) {
-        if (advance_owners[0x46] & 7)
+        if (advance_owners[35] & 7)
             t = (k & 4) ? 9 : 4;
         else
             t = (k & 4) ? 10 : 6;
         if (k == count)
             t = 26;
-        armydata[0][create_unit(0, t, x, y)].visibility |= map_visible_to[50 * x + y];
+        armydata[0][create_unit(0, t, x, y)].visibility |= map_visible_to[x][y];
         if (townbuf[i].owner == civnow)
             map_note(x, y);
     }
@@ -411,13 +408,13 @@ void rate_civs(void)
         if (i != civnow && champ < rate[i])
             champ = rate[i];
         if (turn_tick < 600)
-            power_history[turn_tick / 4 % 150 * 8 + i] = clamp(rate[i] / 8, 0, 255);
+            power_history[turn_tick / 4 % 150][i] = clamp(rate[i] / 8, 0, 255);
         mask = 0;
         for (j = 0; j < 8; j++)
             if ((treaty_low(i, j) & 3) == 1)
                 mask |= 1 << j;
         if (turn_tick < 600)
-            war_record[turn_tick / 4 % 150 * 8 + i] = (char) mask;
+            war_record[turn_tick / 4 % 150][i] = (char) mask;
     }
     for (j = 1; j < 8; j++) {
         int rank;

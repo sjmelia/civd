@@ -20,7 +20,6 @@
 #include "DRIVER.H"
 #include "RASTER.H"
 
-extern char far map_visible_to[];
 
 
 
@@ -67,7 +66,7 @@ void reveal(int player, int x, int y)
         cx_c = r1 & 0xf;
         ty = r1 >> 4;
         if (ty < 12 && cx_c < 15) {
-            if (xray_on != 0 || (map_visible_to[wrap_x(cx_c + map_x0) * 50 + ty + map_y0] & player)) {
+            if (xray_on != 0 || (map_visible_to[wrap_x(cx_c + map_x0)][ty + map_y0] & player)) {
                 map_note(wrap_x(cx_c + map_x0), ty + map_y0);
             } else {
                 rect_fill(scrbuf, (cx_c << 4) + 80, (ty << 4) + 8, 16, 16, 0);
@@ -276,7 +275,7 @@ int seen_map(int x, int y)
         label_with_style(30, sx, y2);
     if (xray_on == 0) {
         for (k = 1; k <= 8; k += 2) {
-            if (!((1 << civnow) & map_visible_to[wrap_x(spiral_x[k] + x) * 50 + spiral_y[k] + y]))
+            if (!((1 << civnow) & map_visible_to[wrap_x(spiral_x[k] + x)][spiral_y[k] + y]))
                 sprite_draw(scrbuf, sx, y2, marks_pics[k / 2]);
         }
     }
@@ -603,7 +602,7 @@ int patterned_cell(int unused, int x, int y)
 int has_hut(int a, int x, int y)
 {
     int seed;
-    if (a == 10 || (map_visible_to[x * 50 + y] & 1) || y <= 1 || y >= 48)
+    if (a == 10 || (map_visible_to[x][y] & 1) || y <= 1 || y >= 48)
         return 0;
     seed = (x >> 2) * 13 + (y >> 2) * 11 + map_rng_state + 8;
     if ((x & 3) * 4 + (y & 3) == ((unsigned char) seed & 31) && !(map_flags(x, y) & 1))

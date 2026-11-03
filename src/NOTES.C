@@ -15,7 +15,6 @@
 
 
 extern int civ_state[][28];
-extern char debug;
 
 extern char *strupr(char *);
 extern int map_near();

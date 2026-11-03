@@ -12,7 +12,6 @@
 #include "UNITS.H"
 #include "ECONOMY.H"
 
-extern unsigned char far advance_owners[][2];
 
 
 void civ_info(int p)
@@ -89,7 +88,7 @@ void civ_info(int p)
     for (i = 0; i < 72; i++) {
         if (has_tech(p, i)) {
             strcpy(msgtext, advances[i].name);
-            draw_string(msgtext, k % 3 * 100 + 8, y, (advance_owners[i][0] & 7) == p ? 15 : 7);
+            draw_string(msgtext, k % 3 * 100 + 8, y, (advance_owners[i] & 7) == p ? 15 : 7);
             k++;
             if (k % 3 == 0)
                 y += 8;

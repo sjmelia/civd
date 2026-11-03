@@ -18,9 +18,7 @@
 #include "MESSAGE.H"
 #include "PATH.H"
 
-extern char far map_visible_to[][50];
 
-extern unsigned char far power_history[][8];
 
 
     /* historian ranking points; [0] counts reports */
@@ -204,8 +202,8 @@ test_turn:
             continue;
         draw_string(civ_adjectives[p], 8, (p << 3) + 4, civ_colours[p]);
         for (i = 0; i < turn_tick / 4; i++) {
-            if (max_val < power_history[i][p])
-                max_val = power_history[i][p];
+            if (max_val < (unsigned char) power_history[i][p])
+                max_val = (unsigned char) power_history[i][p];
         }
     }
 
@@ -220,7 +218,7 @@ test_turn:
         goto test_i;
         do {
             x = i * 2;
-            y = (180U * power_history[i][p]) / max_val;
+            y = (180U * (unsigned char) power_history[i][p]) / max_val;
             draw_line(turn + 4, 192 - y0, x + 4, 192 - y, civ_colours[p]);
             turn = x;
             y0 = y;

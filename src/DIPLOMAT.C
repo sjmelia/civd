@@ -25,8 +25,6 @@
 #include "PATH.H"
 
 #define diplomat_improvements (improvements + 1)
-extern int debug;
-extern char far map_visible_to[];
 
 
 
@@ -360,12 +358,12 @@ void city_revolt(int city_id, int new_owner)
     if (new_owner == -1)
         return;
 
-    map_visible_to[cx * 50 + cy] |= (1 << new_owner);
+    map_visible_to[cx][cy] |= (1 << new_owner);
     for (m = 0; m < 20; m++)
-        map_visible_to[(radius_dx[m] + cx) * 50 + radius_dy[m] + cy] |= (1 << new_owner);
+        map_visible_to[radius_dx[m] + cx][radius_dy[m] + cy] |= (1 << new_owner);
 
     if (civ == civnow || new_owner == civnow || (treaty_low(civnow, civ) & 0x40) || (treaty_low(civnow, new_owner) & 0x40)) {
-        if (map_visible_to[townbuf[city_id].x * 50 + townbuf[city_id].y] & (1 << civnow))
+        if (map_visible_to[townbuf[city_id].x][townbuf[city_id].y] & (1 << civnow))
             reveal(civnow, townbuf[city_id].x - 8, townbuf[city_id].y - 5);
         strcpy(msgtext, civ_names[civ]);
         strcat(msgtext, new_owner == 0 ? " declare\nindependence in\n" : " rebel!\nCivil War in\n");
