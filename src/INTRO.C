@@ -30,8 +30,6 @@
 #include "PATH.H"
 #include "RASTER.H"
 
-extern FILE *credits_stream;
-
 
 static void show_label(int, int, int, int);
 static void next_credit(char *);

@@ -30,9 +30,6 @@
 extern int mouse_hide_limit;
 extern void restore_timer(void);
 
-extern void (interrupt far * _dos_getvect(int)) ();
-extern void _dos_setvect(int, void (interrupt far *) ());
-
 extern void show_help(char *);
 
 /* 0-11 the terrain types, 12-23 the same with their special resource. */
