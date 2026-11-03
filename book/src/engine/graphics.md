@@ -12,7 +12,7 @@ allocated pages provide offscreen storage. Game code passes a `struct page`
 with the page number, origin, clipping bounds and text settings:
 
 ```c
-{{#include ../../../src/GRAPHICS.H:6:14}}
+{{#include ../../../src/GRAPHICS.H:6:12}}
 ```
 
 `blit()` copies rectangles between pages. `sprite_draw()` and its variants
