@@ -24,7 +24,6 @@
 #include "NOTES.H"
 #include "PATH.H"
 
-extern struct city townbuf[];
 extern char far place_name[][13];
 extern char far map_visible_to[];
 extern int debug;
@@ -95,18 +94,18 @@ int city_create(int player, int unused, int x, int y, int size)
         if (human_set & (1 << player)) {
             if (!rename_city(city))
                 return -1;
-            place_name[(unsigned char) townbuf[city].name_id][12] = 0;
+            place_name[townbuf[city].name_id][12] = 0;
         }
 
         i = 11;
         do {
-            ptr = &place_name[(unsigned char) townbuf[city].name_id][i];
+            ptr = &place_name[townbuf[city].name_id][i];
             if (*ptr != ' ')
                 break;
             *ptr = 0;
         } while (--i > 0);
 
-        post_event(1, 4, player, (unsigned char) townbuf[city].name_id, x, y);
+        post_event(1, 4, player, townbuf[city].name_id, x, y);
         unflag(36, x, y);
         flag_tile(9, x, y);
         if (work_rules[terrain_at(x, y)][WORK_IRRIGATE] < -1) {

@@ -39,8 +39,6 @@ extern int far portrait_offset[14][2];
 extern int far portrait_coords[7][4][2];
 extern int far portrait_origins[7][4][2];
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
 
 extern int treaties[8][8];
 

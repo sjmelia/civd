@@ -41,8 +41,6 @@
 
 extern int debug;
 
-extern struct unit armydata[4][128];
-extern struct city townbuf[];
 extern char far map_visible_to[];
 
 extern int abs(int);
@@ -1280,7 +1278,6 @@ fn:                            /* end of turn */
 
 
 extern char far map_visible_to[];
-extern struct unit armydata[4][128];
 
 
 void note_map(int x, int y)
@@ -1333,7 +1330,6 @@ int build_ok(int x, int y)
 #include <string.h>
 #include <stdlib.h>
 
-extern struct city townbuf[];
 
 
 void uinit(int player, int unit)
@@ -1441,7 +1437,6 @@ void uinit(int player, int unit)
 
 /* Original final control helpers; human_notice crosses physical F0866. */
 
-extern struct unit armydata[4][128];
 extern int kbhit(void);
 
 int in_view(int x, int y)

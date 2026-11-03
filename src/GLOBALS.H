@@ -2,6 +2,8 @@
  * LINK orders communals by name hash, with the last first-seen name first
  * on ties. Declaration order here controls MSC's external emission order;
  * retain it when editing names so equal-hash objects keep their layout. */
+#include "CIV.H"
+
 struct _iobuf;
 
 extern int warming;
@@ -40,9 +42,7 @@ extern int view_yorg;           /* world y at the overview map's top edge */
 extern int council_faces;       /* advisor face frame matching the leader (0..2) */
 extern int human_set;           /* mask of human-controlled civilizations */
 extern int civ_cont_attackers[8][16];   /* attack strength per civ and continent */
-#ifdef GLOBALS_STORAGE
 extern struct unit armydata[8][128];    /* unit records per civ */
-#endif
 extern char takeover_seen;
 extern int money[8];
 extern int sci[8];
@@ -119,9 +119,7 @@ extern int city_label_n;
 extern int city_glad_glyphs[9];
 extern int polluted;
 extern int marks_pics[4];
-#ifdef GLOBALS_STORAGE
 extern struct city townbuf[128];        /* city records */
-#endif
 extern int portrait_sprites[14][2];     /* leader eye [0] and mouth [1] tiles per frame */
 extern int custom_params[4];
 extern int nation_ratings[8];

@@ -11,7 +11,6 @@
 #include "CORE.H"
 #include "DRIVER.H"
 
-extern struct city townbuf[];
 
 
 

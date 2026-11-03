@@ -34,8 +34,6 @@ extern int debug;
 
 extern int treaties[8][8];
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
 extern int far advance_owners[];
 extern char far adv_source[];
 extern char far map_visible_to[];
@@ -95,7 +93,7 @@ void vanish(int idx, int x, int y)
 {
     int dist, u, nx, ny, j;
 
-    post_event(1, 4, -1, (unsigned char) townbuf[idx].name_id, x, y);
+    post_event(1, 4, -1, townbuf[idx].name_id, x, y);
     if (townbuf[idx].production >= 0)
         civ_units_ordered[townbuf[idx].owner][townbuf[idx].production]--;
     city_count[townbuf[idx].owner]--;

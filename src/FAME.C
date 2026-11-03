@@ -21,7 +21,6 @@ struct fame {
     char name[16];
 };
 
-extern struct city townbuf[];
 extern struct fame far fame_ranks[];
 extern char far hall_text[][25];
 

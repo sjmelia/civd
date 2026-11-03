@@ -27,8 +27,6 @@
 extern struct {
     char a, b;
 } treaties[8][8];
-extern struct city townbuf[];
-extern struct unit armydata[8][128];
 #define diplomat_improvements (improvements + 1)
 extern int debug;
 extern char far map_visible_to[];

@@ -32,29 +32,6 @@
 #include "DRIVER.H"
 #include "FADE.H"
 
-struct unit_record {
-    char x, y, type, size;
-    char unknown4, kind, unknown6, owner;
-    char pad[2];
-    int progress;
-    char rest[16];
-};
-struct unit_flag {
-    char flags;
-    char rest[27];
-};
-struct group_record {
-    char unknown[5];
-    unsigned char x, y;
-    char type;
-    char rest[4];
-};
-struct record_state {
-    char flags;
-    char pad[8];
-    char mark;
-    char pad2[2];
-};
 struct relation {
     char a, b;
 };
@@ -72,10 +49,6 @@ int player_screen_flag = 0;
 
 extern int debug;
 
-#define units ((struct unit_record *) ((char *) townbuf + 4))   /* city records from x */
-extern struct unit_flag townbuf[];
-#define group_records ((struct group_record (*)[128]) ((char *) armydata - 4))
-extern struct record_state armydata[];
 extern struct relation treaties[8][8];
 extern char far advance_owners[], far map_visible_to[], far power_history[];
 extern char far war_record[];
@@ -129,8 +102,8 @@ void game_turn(void)
         ++i;
     } while (i < 8);
     if (turn_tick == 0) {
-        map_x0 = group_records[civnow][0].x - 7;
-        map_y0 = group_records[civnow][0].y - 6;
+        map_x0 = armydata[civnow][0].x - 7;
+        map_y0 = armydata[civnow][0].y - 6;
         sel_player();
         if (cur_tier == 0) {
             uinit(civnow, 0);
@@ -187,7 +160,7 @@ void game_turn(void)
     if (turn_tick > 50) {
         for (i = 0; i < 2; i++) {
             i = rand_scaled(128);
-            if (!(units[i].type != -1 && city_count[units[i].owner] > 1 && units[i].size >= 5))
+            if (!(townbuf[i].status != -1 && city_count[townbuf[i].owner] > 1 && townbuf[i].size >= 5))
                 continue;
             city_disaster(i);
         }
@@ -257,7 +230,7 @@ void game_turn(void)
     i = 1;
     do {
         if (marvel_site[i] != -1 && marvel_site[i] != 0x80)
-            civ_ratings[units[marvel_site[i]].owner] += 25;
+            civ_ratings[townbuf[marvel_site[i]].owner] += 25;
         ++i;
     } while (i <= 21);
     if (fame_slot == -3)
@@ -269,7 +242,7 @@ void game_turn(void)
     }
     found = 0;
     for (i = 0; i < 128; i++)
-        if (units[i].type != -1 && units[i].owner == civnow && (townbuf[i].flags & 1))
+        if (townbuf[i].status != -1 && townbuf[i].owner == civnow && (*(char *) &townbuf[i].buildings & 1))
             found = 1;
     if (found && (debug & 0x80) && !(game_flags & 0x100)
         && civ_score(civnow, 0L) >= cost_sum(palace_stage + 1)) {
@@ -387,26 +360,26 @@ void uprising(void)
             if (i == count)
                 t = 26;
             dx = create_unit(0, t, x, y);
-            armydata[dx].flags |= 1;
+            armydata[0][dx].status |= 1;
         }
     }
     i = rand_scaled(128);
-    if (units[i].type == -1 || units[i].owner != civnow)
+    if (townbuf[i].status == -1 || townbuf[i].owner != civnow)
         return;
     count = unrest_chance(i);
     if (rand_scaled(100) >= count)
         return;
     dx = 0;
     do {
-        x = (unsigned char) units[i].x + rand_scaled(13) - 6;
-        y = (unsigned char) units[i].y + rand_scaled(13) - 6;
+        x = townbuf[i].x + rand_scaled(13) - 6;
+        y = townbuf[i].y + rand_scaled(13) - 6;
         i = near_city(x, y);
-        w = map_dist(x, (unsigned char) units[i].x, y, (unsigned char) units[i].y);
-    } while (++dx < 99 && (w < 6 || unit_blocked(p, x, y) || terrain_at(x, y) == 10 || map_owner(x, y) != -1 || region_key(x, y) != region_key((unsigned char) units[i].x, (unsigned char) units[i].y)));
+        w = map_dist(x, townbuf[i].x, y, townbuf[i].y);
+    } while (++dx < 99 && (w < 6 || unit_blocked(p, x, y) || terrain_at(x, y) == 10 || map_owner(x, y) != -1 || region_key(x, y) != region_key(townbuf[i].x, townbuf[i].y)));
     if (dx >= 99)
         return;
-    if (units[i].owner == civnow && (map_visible_to[50 * x + y] & (1 << civnow))) {
-        reveal(civnow, (unsigned char) units[i].x - 8, (unsigned char) units[i].y - 6);
+    if (townbuf[i].owner == civnow && (map_visible_to[50 * x + y] & (1 << civnow))) {
+        reveal(civnow, townbuf[i].x - 8, townbuf[i].y - 6);
         strcpy(msgtext, "Travellers report:\n");
         strcat(msgtext, advance_owners[0x46] & 7 ? "Guerrilla uprising\nnear " : advance_owners[0x44] & 7 ? "Native unrest\nnear " : "Barbarian uprising\nnear ");
         append_place_name(i);
@@ -414,7 +387,7 @@ void uprising(void)
         message_mode = 2;
         show_msg(msgtext, 100, 32);
     }
-    count = clamp(rand_scaled(units[i].size / 2), 2, 99);
+    count = clamp(rand_scaled(townbuf[i].size / 2), 2, 99);
     for (k = 0; k <= count; k++) {
         if (advance_owners[0x46] & 7)
             t = (k & 4) ? 9 : 4;
@@ -422,8 +395,8 @@ void uprising(void)
             t = (k & 4) ? 10 : 6;
         if (k == count)
             t = 26;
-        armydata[create_unit(0, t, x, y)].mark |= map_visible_to[50 * x + y];
-        if (units[i].owner == civnow)
+        armydata[0][create_unit(0, t, x, y)].visibility |= map_visible_to[50 * x + y];
+        if (townbuf[i].owner == civnow)
             map_note(x, y);
     }
 }
@@ -661,13 +634,13 @@ void ai_event(void)
             continue;
         if (cur_tier < 2) {
             for (unit = 0; unit < 128; unit++)
-                if (units[unit].owner == civnow && units[unit].type != -1 && -(leader + 24) == units[unit].kind)
+                if (townbuf[unit].owner == civnow && townbuf[unit].status != -1 && -(leader + 24) == townbuf[unit].production)
                     leader = 17;
         }
         unit = rand_scaled(128);
-        if (units[unit].type == -1)
+        if (townbuf[unit].status == -1)
             continue;
-        enemy = units[unit].owner;
+        enemy = townbuf[unit].owner;
         if (treaties[enemy][0].a & 4)
             continue;
         if (leader == 17 && !has_tech(enemy, 46))
@@ -680,9 +653,9 @@ void ai_event(void)
             continue;
         if (enemy == civnow)
             continue;
-        if (marvel_site[leader] == -1 && units[unit].size > wonders[leader].cost / 10 && has_tech(enemy, wonders[leader].prereq)) {
+        if (marvel_site[leader] == -1 && townbuf[unit].size > wonders[leader].cost / 10 && has_tech(enemy, wonders[leader].prereq)) {
             marvel_site[leader] = unit;
-            units[unit].progress = 0;
+            townbuf[unit].shield_box = 0;
             post_event(10, 2, enemy, leader);
             msgtext[0] = 0;
             append_place_name(unit);
@@ -691,7 +664,7 @@ void ai_event(void)
             strcat(msgtext, ")\nbuilds ");
             strcat(msgtext, wonders[leader].name);
             strcat(msgtext, ".\n");
-            money[enemy] -= clamp(money[enemy] / 3, 0, 10 * wonders[leader].cost - units[unit].progress);
+            money[enemy] -= clamp(money[enemy] / 3, 0, 10 * wonders[leader].cost - townbuf[unit].shield_box);
             if (still != 1) {
                 sound(civt[civ_tribe_of[enemy]].motif);
                 message_mode = (treaties[civnow][enemy].a & 64) ? 5 : 2;
@@ -705,7 +678,7 @@ void ai_event(void)
                 reduce_attitude(enemy, 0);
             }
             for (unit = 0; unit < 128; unit++)
-                if (units[unit].type != -1 && units[unit].owner == civnow && -(leader + 24) == units[unit].kind)
+                if (townbuf[unit].status != -1 && townbuf[unit].owner == civnow && -(leader + 24) == townbuf[unit].production)
                     kill(civnow, unit);
 
             break;

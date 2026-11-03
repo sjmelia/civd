@@ -14,16 +14,7 @@
 #include "TURN.H"
 #include "CORE.H"
 
-struct unit_record {
-    char flags, pad1[3];
-    unsigned char x, y;
-    char type, pad2[4];
-    char owner;
-    char rest[16];
-};
-
 extern int treaties[8][8];
-extern struct unit_record townbuf[];
 
 
 void city_phase(int civ)
@@ -352,7 +343,7 @@ int nearest_unit_distance(int civ, int x, int y)
 
     mind = 16;
     for (i = 0; i < 128; i++) {
-        if (townbuf[i].type != -1 && townbuf[i].owner == civ && (townbuf[i].flags & 1)) {
+        if (townbuf[i].status != -1 && townbuf[i].owner == civ && (*(char *) &townbuf[i].buildings & 1)) {
             d = map_dist(townbuf[i].x, x, townbuf[i].y, y);
             if (d < mind)
                 mind = d;

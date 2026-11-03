@@ -32,8 +32,6 @@ extern char filename[];
 extern int debug;
 
 extern int treaties[8][8];
-extern struct city townbuf[];
-extern struct unit armydata[8][128];
 extern char replay_length[], block_ground_way[];
 extern char ship_success[], ai_ship_success[];
 extern char far power_history[], far war_record[];

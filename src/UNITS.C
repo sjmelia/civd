@@ -32,8 +32,6 @@ extern int selected_score;
 extern int selected_stack_index;
 extern int total_limit;
 extern int total_mode;
-extern struct city townbuf[];
-extern struct unit armydata[][128];
 
 void unpack_garrison(int city)
 {                               /* turn stored city units back into units */
@@ -93,9 +91,7 @@ void garrison_in(int city)
 
 /* Exploration and contact around a unit. */
 
-extern struct unit armydata[][128];
 extern char far map_visible_to[];
-extern struct city townbuf[];
 extern struct {
     char a, b;
 } treaties[8][8];
@@ -237,7 +233,6 @@ next_radius:
 
 /* Unit/end-turn blink, 0866:[0AD6,0CF5); isolated diagnostic. */
 
-extern struct unit armydata[][128];
 extern int kbhit(void);
 
 
@@ -286,8 +281,6 @@ void blink_unit(int owner, int index, int x, int y)
 /* Genuine unit-creation body, 0866:[0CF5,0F10).
  * Isolated diagnostics only: its 01DC same-TU call needs the full unit. */
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
 extern char far map_visible_to[];
 
 
@@ -341,7 +334,6 @@ int create_unit(int owner, int type, int x, int y)
     return -1;
 }
 
-extern struct unit armydata[][128];
 extern int far unit_losses[][28];
 
 
@@ -365,7 +357,6 @@ void drop_u_stack(int group, int index)
 #undef record_type
 }
 
-extern struct unit armydata[][128];
 
 int select_location_record(int group, int index)
 {
@@ -411,7 +402,6 @@ void score_group_record(int group, int index)
     }
 }
 
-extern struct unit armydata[][128];
 
 int stack_len(int group, int index, int mode)
 {
@@ -443,7 +433,6 @@ void add_group_value(int group, int index)
     }
 }
 
-extern struct unit armydata[][128];
 
 int count_u(int group, int index, int value)
 {
@@ -513,7 +502,6 @@ void validate_record(int group, int index)
     armydata[group][index].status &= 0xfe;
 }
 
-extern struct unit armydata[][128];
 void unit_reset(int group, int index)
 {
     if (armydata[group][index].status & 1) {
@@ -525,7 +513,6 @@ void unit_reset(int group, int index)
     armydata[group][index].goto_x = armydata[group][index].f8 = -1;
 }
 
-extern struct unit armydata[][128];
 
 void reset_state(int group, int index)
 {
@@ -545,7 +532,6 @@ void kill_cb(int group, int index)
         unit_redraw(group, index);
 }
 
-extern struct unit armydata[][128];
 
 void remove_reset_kind_zero(int group, int index)
 {
@@ -565,7 +551,6 @@ void remove_reset_kind_one(int group, int index)
         drop_u_stack(group, index);
 }
 
-extern struct unit armydata[][128];
 
 void map_center(int group, int x, int y)
 {
@@ -659,8 +644,6 @@ int adj_grp(int group, int x, int y)
 /* Hut rewards and Barbarian encounters. */
 #include <string.h>
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
 
 
 
@@ -746,7 +729,6 @@ mercenaries:
  * record and direction offsets; inner direction_offset spills at BP-12.
  * Refresh computes its group offset inside the argument expression. */
 
-extern struct unit armydata[][128];
 
 
 
@@ -805,7 +787,6 @@ done:
 
 /* Stack selection dialog, 0866:[1F69,226D). */
 #include <string.h>
-extern struct unit armydata[][128];
 
 extern int kbhit(void);
 

@@ -194,7 +194,6 @@ void military_losses(int civ)
     advisor_close();
 }
 
-extern struct city townbuf[];
 
 
 void trade_rpt(int civ)

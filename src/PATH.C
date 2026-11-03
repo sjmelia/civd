@@ -18,7 +18,6 @@ extern char path_queue_y[256];
 extern int path_target_x;
 extern int path_target_y;
 
-extern struct unit armydata[8][128];
 /* Path searches run on a probe unit: civilization 0's last unit slot. */
 #define path_probe_x armydata[0][127].x
 #define path_probe_y armydata[0][127].y

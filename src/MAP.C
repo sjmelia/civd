@@ -20,8 +20,6 @@
 #include "DRIVER.H"
 #include "RASTER.H"
 
-extern struct city townbuf[];
-extern struct unit armydata[4][128];
 extern char far map_visible_to[];
 
 
@@ -118,8 +116,8 @@ void reveal(int player, int x, int y)
     }
     for (i = 0; i < 128; i++) {
         if (townbuf[i].status != -1 && (townbuf[i].visible_size != 0 || townbuf[i].owner == civnow)) {
-            cx_c = wrap_x((unsigned char) townbuf[i].x - rx_d);
-            ty = (int) (unsigned char) townbuf[i].y - by_c + dy;
+            cx_c = wrap_x(townbuf[i].x - rx_d);
+            ty = (int) townbuf[i].y - by_c + dy;
             if (ty >= 0 && ty < 50) {
                 plot_pixel(cx_c, ty + 8, civ_colours[townbuf[i].owner]);
             }

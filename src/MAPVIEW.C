@@ -10,7 +10,6 @@
 #include "TURN.H"
 
 extern char far map_visible_to[];
-extern struct unit armydata[8][128];
 extern int row_flag[8][16];
 
 

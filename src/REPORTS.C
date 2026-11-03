@@ -18,8 +18,6 @@
 #include "MESSAGE.H"
 #include "PATH.H"
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
 extern char far map_visible_to[][50];
 
 extern unsigned char far power_history[][8];

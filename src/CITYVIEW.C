@@ -24,7 +24,6 @@ struct rect {
     int x, y, w, h;
 };
 
-extern struct city townbuf[];
 extern struct rect far wonder_rects[];
 /* Only the segment of this second far array is observable. Its name and
    offset are unknown; the binding supplies F2767 with an arbitrary offset 0. */

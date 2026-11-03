@@ -12,17 +12,7 @@
 #include "UNITS.H"
 #include "NOTES.H"
 
-struct city_rec {
-    char pad[11];
-    signed char owner;
-    char rest[16];
-};
-struct player_rec {
-    char pad[0x38];
-};
 
-extern struct city_rec townbuf[];
-extern struct unit armydata[8][128];
 
 extern int civ_state[][28];
 extern char debug;

@@ -16,15 +16,6 @@ extern int edit_cursor;
 extern int edit_cursor_w;
 extern int edit_cursor_x;
 
-struct city_view {
-    unsigned long flags;
-    unsigned char x, y;
-    char status, f7, f8, f9, f10, owner;
-    char pad12[10];
-    unsigned char f22, slot[5];
-};
-
-extern struct city_view townbuf[];
 extern char far place_name[][13];
 extern char far map_visible_to[];
 
@@ -49,7 +40,7 @@ int rename_city(int city)
         ret = edit_line(88, 96, 12);
     } while (strlen(msgtext) == 0);
     if (ret)
-        copy_to_far(msgtext, place_name[townbuf[city].f22], 13);
+        copy_to_far(msgtext, place_name[townbuf[city].name_id], 13);
     menu_end();
     mouse_on();
     return ret;
@@ -131,7 +122,7 @@ int find_city(char *prompt)
         copy_from_far(place_name[k], name, 13);
         if (strnicmp(msgtext, name, strlen(msgtext)) == 0) {
             for (index = 0; index < 128; index++)
-                if (townbuf[index].status != -1 && townbuf[index].f22 == k)
+                if (townbuf[index].status != -1 && townbuf[index].name_id == k)
                     return index;
         }
     }

@@ -16,7 +16,6 @@
 #include "QUIZ.H"
 #include "TURN.H"
 
-extern struct unit armydata[8][128];
 
 extern char far advance_pages[];
 

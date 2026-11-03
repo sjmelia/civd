@@ -11,8 +11,6 @@
 #include "CORE.H"
 #include "TURN.H"
 
-extern struct city townbuf[];
-extern struct unit armydata[8][128];
 extern struct {
     char a, b;
 } treaties[8][8];

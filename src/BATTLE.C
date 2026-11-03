@@ -18,8 +18,6 @@
 #include "PATH.H"
 #include "DRAW.H"
 
-extern struct unit armydata[][128];
-extern struct city townbuf[];
 extern int treaties[8][8];
 
 

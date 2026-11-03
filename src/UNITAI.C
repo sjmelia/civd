@@ -25,8 +25,6 @@
 
 
 extern int treaties[8][8];
-extern struct unit armydata[8][128];
-extern struct city townbuf[128];
 extern char far map_visible_to[];
 extern char far fog_map[];
 

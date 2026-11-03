@@ -22,12 +22,10 @@
 
 extern int debug;
 extern char sound_driver[];
-extern struct city townbuf[];
 extern int far advance_owners[];
 extern char far map_visible_to[][50];
 extern signed char far adv_source[][72];
 extern int far unit_losses[][28];
-extern struct unit armydata[8][128];
 
 extern int treaties[8][8];
 

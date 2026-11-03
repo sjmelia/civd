@@ -51,7 +51,7 @@ struct city {
     int shield_box;             /* accumulated production */
     long workers;               /* worked tiles 0..20, specialist count 26..31 */
     int specialists;            /* eight two-bit specialist types */
-    char name_id;               /* unsigned index into place_name */
+    unsigned char name_id;      /* index into place_name */
     char routes[3];             /* destination city indices, -1 if empty */
     char garrison[2];           /* unit type plus veteran bit 0x40, -1 if empty */
 };
