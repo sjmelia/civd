@@ -1,6 +1,7 @@
 ; Included by RESIDENT.ASM and GRAPHICS.ASM: shared DS declarations.
 ; Shared DS storage for the F0000 helpers. Initialized state lives in
-; F0DATA.ASM; the remaining views name existing storage without allocating it.
+; F0DATA.ASM; the remaining views name existing storage without allocating it,
+; as offsets from its symbols so that LINK relocates them with the data.
 _DATA SEGMENT WORD PUBLIC 'DATA'
 EXTRN dr_pending:BYTE, dr_deferred:BYTE, dr_return_offset:WORD
 EXTRN dr_return_segment:WORD, ld_exec_block:WORD, ld_capacity:WORD
@@ -22,41 +23,48 @@ EXTRN f0_mouse_callback_segment:WORD, f0_mouse_result:WORD
 EXTRN f0_mouse_result_bx:WORD, f0_mouse_result_cx:WORD
 EXTRN f0_mouse_result_dx:WORD
 _DATA ENDS
+; RESIDENT.ASM defines f0_bss and f0_common; other includers set F0_EXTERN_BSS.
+IFDEF F0_EXTERN_BSS
+_BSS SEGMENT WORD PUBLIC 'BSS'
+EXTRN f0_bss:BYTE, f0_common:BYTE
+_BSS ENDS
+DGROUP GROUP _BSS
+ENDIF
 ; The high bytes of the clip deltas hold their signs.
 f0_clip_dx_sign EQU BYTE PTR f0_clip_dx+1
 f0_clip_dy_sign EQU BYTE PTR f0_clip_dy+1
 DGROUP GROUP _DATA
 ASSUME DS:DGROUP
-f0_driver_pending EQU 05402H
-f0_driver_deferred EQU 05403H
-f0_picture_width EQU 068E2H
-f0_picture_height EQU 068E4H
-f0_picture_size EQU 068E6H
-f0_decode_stack EQU 068E8H
-f0_decode_count EQU 068EAH
-f0_repeat_count EQU 068ECH
-f0_repeat_byte EQU 068EDH
-f0_decode_bits EQU 068EEH
-f0_decode_limit EQU 068EFH
-f0_decode_mask EQU 068F0H
-f0_decode_next_code EQU 068F2H
-f0_decode_word EQU 068F4H
-f0_decode_word_bits EQU 068F6H
-f0_decode_nibbles EQU 068F7H
-f0_decode_previous EQU 068F8H
-f0_decode_first_byte EQU 068FAH
-f0_decode_stack_top EQU 06AFBH
-f0_encode_next_code EQU 06AFCH
-f0_image_handle EQU 06AFEH
-f0_encode_string_end EQU 06B00H
-f0_encode_previous EQU 06B02H
-f0_encode_segment EQU 06B04H
-f0_encode_status EQU 06B06H
-f0_encode_bits EQU 06B08H
-f0_encode_byte EQU 06B09H
-f0_encode_width EQU 06B0AH
-f0_stream_pointer EQU 0B26EH
-f0_picture_table EQU 0BA06H
-f0_picture_byte EQU 0BA08H
-f0_stream_refill EQU 0D91AH
-f0_output_buffer EQU 0D936H
+f0_driver_pending EQU dr_pending
+f0_driver_deferred EQU dr_deferred
+f0_picture_width EQU WORD PTR f0_bss+03B4H
+f0_picture_height EQU WORD PTR f0_bss+03B6H
+f0_picture_size EQU WORD PTR f0_bss+03B8H
+f0_decode_stack EQU WORD PTR f0_bss+03BAH
+f0_decode_count EQU WORD PTR f0_bss+03BCH
+f0_repeat_count EQU BYTE PTR f0_bss+03BEH
+f0_repeat_byte EQU BYTE PTR f0_bss+03BFH
+f0_decode_bits EQU BYTE PTR f0_bss+03C0H
+f0_decode_limit EQU BYTE PTR f0_bss+03C1H
+f0_decode_mask EQU WORD PTR f0_bss+03C2H
+f0_decode_next_code EQU WORD PTR f0_bss+03C4H
+f0_decode_word EQU WORD PTR f0_bss+03C6H
+f0_decode_word_bits EQU BYTE PTR f0_bss+03C8H
+f0_decode_nibbles EQU BYTE PTR f0_bss+03C9H
+f0_decode_previous EQU WORD PTR f0_bss+03CAH
+f0_decode_first_byte EQU BYTE PTR f0_bss+03CCH
+f0_decode_stack_top EQU BYTE PTR f0_bss+05CDH
+f0_encode_next_code EQU WORD PTR f0_bss+05CEH
+f0_image_handle EQU WORD PTR f0_bss+05D0H
+f0_encode_string_end EQU WORD PTR f0_bss+05D2H
+f0_encode_previous EQU WORD PTR f0_bss+05D4H
+f0_encode_segment EQU WORD PTR f0_bss+05D6H
+f0_encode_status EQU WORD PTR f0_bss+05D8H
+f0_encode_bits EQU BYTE PTR f0_bss+05DAH
+f0_encode_byte EQU BYTE PTR f0_bss+05DBH
+f0_encode_width EQU BYTE PTR f0_bss+05DCH
+f0_stream_pointer EQU WORD PTR f0_common+0473EH
+f0_picture_table EQU BYTE PTR f0_common+04ED6H
+f0_picture_byte EQU BYTE PTR f0_common+04ED8H
+f0_stream_refill EQU DWORD PTR f0_common+06DEAH
+f0_output_buffer EQU BYTE PTR f0_common+06E06H
