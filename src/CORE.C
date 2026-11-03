@@ -82,15 +82,15 @@ next_unit:
     return index;
 }
 
-int nearest_record(int group, int excluded, int x, int y)
+int nearest_unit(int civ, int excluded, int x, int y)
 {
     int i, index, min_dist, dist;
     min_dist = 999;
     index = -1;
     for (i = 0; i < 128; i++) {
-        if (armydata[(int) (unsigned int) group][i].type == -1 || i == excluded)
+        if (armydata[(int) (unsigned int) civ][i].type == -1 || i == excluded)
             continue;
-        dist = map_dist(x, armydata[(int) (unsigned int) group][i].x, y, armydata[(int) (unsigned int) group][i].y);
+        dist = map_dist(x, armydata[(int) (unsigned int) civ][i].x, y, armydata[(int) (unsigned int) civ][i].y);
         if (dist < min_dist) {
             min_dist = dist;
             index = i;

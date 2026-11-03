@@ -38,7 +38,7 @@ helpers built on it are:
 ## Choosing the defender
 
 When a stack is attacked, `stack_other()` picks the defender with the
-highest score from `score_group_record()`:
+highest score from `score_defender()`:
 
 ```text
 land unit: (fortified ? 3 : 2) * defence * terrain defence * 8
