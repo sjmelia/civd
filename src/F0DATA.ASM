@@ -10,6 +10,7 @@ DGROUP GROUP _DATA
 ; references resolve group-relative rather than _DATA-relative.
 ASSUME DS:DGROUP
 _DATA SEGMENT BYTE PUBLIC 'DATA'
+EXTRN f0_common:BYTE
 PUBLIC dr_pending, dr_deferred, dr_return_offset, dr_return_segment
 PUBLIC ld_exec_block, ld_capacity, ld_error_prefix, ld_alloc_unexpected
 PUBLIC ld_alloc_failed, ld_file_error, ld_memory_error, ld_exec_error
@@ -51,7 +52,7 @@ ld_free_error DB 'Error releasing overlay memory$'
 ; read pointer starts at the end of the 512-byte input_block at DS:D936,
 ; so the first read refills it.
 _image_buffer LABEL WORD
-f0_stream_end DW 0D936H+0200H
+f0_stream_end DW OFFSET DGROUP:f0_common+07006H
 _archive_handle DW -1
 
 ; Line rasterizer and clipping state (RASTER.ASM).
