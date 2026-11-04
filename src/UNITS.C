@@ -54,7 +54,7 @@ void unpack_garrison(int city)
         }
     }
     quiz_busy = 0;
-    townbuf[city].status |= 4;
+    townbuf[city].status |= CITY_GARRISON;
 }
 
 void garrison_in(int city)
@@ -68,15 +68,15 @@ void garrison_in(int city)
     quiz_busy = 1;
     /* Keep the first fortified unit on the map; pack up to two more into the city. */
     for (unit_index_m = 0; unit_index_m < 128; unit_index_m++) {
-        if (armydata[owner_g][unit_index_m].type != -1 && armydata[owner_g][unit_index_m].x == townbuf[city].x && armydata[owner_g][unit_index_m].y == townbuf[city].y && armydata[owner_g][unit_index_m].home_city == city && (armydata[owner_g][unit_index_m].status & 8)) {
+        if (armydata[owner_g][unit_index_m].type != -1 && armydata[owner_g][unit_index_m].x == townbuf[city].x && armydata[owner_g][unit_index_m].y == townbuf[city].y && armydata[owner_g][unit_index_m].home_city == city && (armydata[owner_g][unit_index_m].status & UNIT_FORTIFIED)) {
             if (kept_unit_p) {
                 if (townbuf[city].garrison[0] == -1) {
                     townbuf[city].garrison[0] = armydata[owner_g][unit_index_m].type;
-                    if (armydata[owner_g][unit_index_m].status & 0x20)
+                    if (armydata[owner_g][unit_index_m].status & UNIT_VETERAN)
                         townbuf[city].garrison[0] |= 0x40;
                 } else if (townbuf[city].garrison[1] == -1) {
                     townbuf[city].garrison[1] = armydata[owner_g][unit_index_m].type;
-                    if (armydata[owner_g][unit_index_m].status & 0x20)
+                    if (armydata[owner_g][unit_index_m].status & UNIT_VETERAN)
                         townbuf[city].garrison[1] |= 0x40;
                 } else
                     break;
@@ -87,7 +87,7 @@ void garrison_in(int city)
     }
     quiz_busy = 0;
     see_fight_all = saved_fight_view_g;
-    townbuf[city].status &= ~4;
+    townbuf[city].status &= ~CITY_GARRISON;
 }
 
 /* Exploration and contact around a unit. */
@@ -151,7 +151,7 @@ next_radius:
                 diplomacy_event(owner, the_enemy, x, y);
                 if (!(treaty_low(owner, the_enemy) & 2)) {
                     c = 1;
-                    if (the_enemy != 0 && armydata[the_enemy][a].type != 26 && (!(armydata[the_enemy][a].status & 8) || utypes[armydata[the_enemy][a].type].role != 2))
+                    if (the_enemy != 0 && armydata[the_enemy][a].type != 26 && (!(armydata[the_enemy][a].status & UNIT_FORTIFIED) || utypes[armydata[the_enemy][a].type].role != 2))
                         c = 3;
                     add_target(owner, h, i, 1, c);
                 }
@@ -194,7 +194,7 @@ next_radius:
         if (a != -1 && owner != the_enemy && armydata[owner][index].type != 22) {
             b = armydata[the_enemy][a].type;
             if ((utypes[b].sight & 2) && (utypes[b].domain != 2 || terrain_at(x, y) == 10)) {
-                armydata[the_enemy][a].status &= 0xfe;
+                armydata[the_enemy][a].status &= ~UNIT_SENTRY;
                 armydata[the_enemy][a].goto_x = -1;
                 if (!(g & 1))
                     armydata[owner][index].visibility |= 1 << the_enemy;
@@ -375,10 +375,10 @@ void score_defender(int civ, int index)
     if (classification == 10 && utypes[type].domain != 2)
         return;
     if (utypes[type].domain == 0)
-        score = ((armydata[civ][index].status & 8) ? 3 : 2) * utypes[type].defense * terrains[classification].defense << 3;
+        score = ((armydata[civ][index].status & UNIT_FORTIFIED) ? 3 : 2) * utypes[type].defense * terrains[classification].defense << 3;
     else
         score = utypes[type].defense << 4;
-    if (armydata[civ][index].status & 0x20)
+    if (armydata[civ][index].status & UNIT_VETERAN)
         score += score / 2;
     if (score > selected_score) {
         selected_score = score;
@@ -481,13 +481,13 @@ void wake_unit(int civ, int index)
 {
     if (terrain_at(armydata[civ][index].x, armydata[civ][index].y) == 10 && utypes[armydata[civ][index].type].domain == 0)
         return;
-    armydata[civ][index].status &= 0xfe;
+    armydata[civ][index].status &= ~UNIT_SENTRY;
 }
 
 void unit_reset(int civ, int index)
 {
-    if (armydata[civ][index].status & 1) {
-        armydata[civ][index].status &= ~1;
+    if (armydata[civ][index].status & UNIT_SENTRY) {
+        armydata[civ][index].status &= ~UNIT_SENTRY;
         armydata[civ][index].moves = 3 * utypes[armydata[civ][index].type].moves;
         if (utypes[armydata[civ][index].type].fuel)
             armydata[civ][index].fuel = utypes[armydata[civ][index].type].fuel - 1;
@@ -784,7 +784,7 @@ redraw_list:
     do {
         draw_unit(owner, d, 106, e);
         strcpy(msgtext, utypes[armydata[owner][d].type].name);
-        if (armydata[owner][d].status & 0x20)
+        if (armydata[owner][d].status & UNIT_VETERAN)
             strcat(msgtext, " (V)");
         draw_string(msgtext, 128, e, 15);
         msgtext[0] = 0;

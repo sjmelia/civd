@@ -76,7 +76,28 @@ struct unit {
     char home_city;
 };
 
-#define UNIT_FORTIFIED  0x08
-#define UNIT_VETERAN    0x20
+/* Unit status flags */
+#define UNIT_SENTRY         0x01
+#define UNIT_ROAD           0x02
+#define UNIT_FORTIFYING     0x04
+#define UNIT_FORTIFIED      0x08
+#define UNIT_ASSIGNED       0x10
+#define UNIT_VETERAN        0x20
+#define UNIT_IRRIGATING     0x40
+#define UNIT_MINING         0x80
+#define UNIT_FORTRESS       (UNIT_IRRIGATING | UNIT_MINING)
+#define UNIT_POLLUTION      (UNIT_MINING | UNIT_ROAD)
+
+/* City status flags */
+#define CITY_DISORDER       0x01
+#define CITY_COASTAL        0x02
+#define CITY_GARRISON       0x04
+#define CITY_RIVER          0x08
+#define CITY_AUTO_BUILD     0x10
+#define CITY_TECH_STOLEN    0x20
+#define CITY_CELEBRATING    0x40
+#define CITY_SOLD_BUILDING  0x80
+#define CITY_CAPTURE_MASK   0xae
+#define CITY_TRANSFER_MASK  0x9b
 
 #endif

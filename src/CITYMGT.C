@@ -228,7 +228,7 @@ int mode;
         }
 
         if (mode == 0L) {
-            if (!(townbuf[city].status & 1)) {
+            if (!(townbuf[city].status & CITY_DISORDER)) {
                 city_experts_num = 0;
             } else {
                 townbuf[city].workers = 0;
@@ -285,7 +285,7 @@ label_render_restart:
 
     /* Resolve last turn's food shortage or growth before calculating new yields. */
     if (mode == 0L) {
-        townbuf[city].status &= 0x7f;
+        townbuf[city].status &= ~CITY_SOLD_BUILDING;
         if (townbuf[city].food_box < 0) {
             scratch_i = -1;
             for (index_i = 0; index_i < 128; index_i++) {
@@ -398,7 +398,7 @@ label_render_restart:
     worked_lo_k = worked_hi_e = 0;
 
     /* Preserve existing assignments; AI cities normally reconsider every fourth turn. */
-    if ((human_set & (1 << selected_owner)) || ((city + turn_tick) & 3) != 0 || (townbuf[city].status & 1) || town_human_unit_near != 0) {
+    if ((human_set & (1 << selected_owner)) || ((city + turn_tick) & 3) != 0 || (townbuf[city].status & CITY_DISORDER) || town_human_unit_near != 0) {
 
         for (index_i = 0; index_i < radius_tiles; index_i++) {
             if (townbuf[city].workers & (1L << index_i)) {
@@ -475,7 +475,7 @@ label_food_loop:
 
 label_prod_trade:
     if (selected_owner != civnow) {
-        if (townbuf[city].status & 1) {
+        if (townbuf[city].status & CITY_DISORDER) {
             city_experts_num++;
         }
     }
@@ -575,7 +575,7 @@ label_governor_done:
         townbuf[city].food_box += town_res_sums[0] - townbuf[city].size * 2 - colonist_homed * sett_food_j;
         scratch_i = town_res_sums[1];
         scratch_i -= city_keep;
-        if (townbuf[city].status & 1) {
+        if (townbuf[city].status & CITY_DISORDER) {
             scratch_i = 0;
         }
         townbuf[city].shield_box += scratch_i;
@@ -593,7 +593,7 @@ label_governor_done:
                     advance_owners[townbuf[city].production] |= 8;
                 }
                 if ((townbuf[city].buildings & 2) && unit != -1)
-                    armydata[selected_owner][unit].status |= 0x20;
+                    armydata[selected_owner][unit].status |= UNIT_VETERAN;
                 if (unit != -1 && townbuf[city].production == 0) {
                     if (townbuf[city].size > 1 || city_count[selected_owner] > 1) {
                         if (--townbuf[city].size == 0) {
@@ -626,7 +626,7 @@ label_governor_done:
                                 continue;
                             scratch_i = nearest_unit(selected_owner, unit, townbuf[city_index].x, townbuf[city_index].y);
                             town_gap = abs(town_gap - 3);
-                            if (townbuf[city_index].status & 0x20)
+                            if (townbuf[city_index].status & CITY_TECH_STOLEN)
                                 town_gap = 3;
                             if (ai_result_i > town_gap || (ai_result_i == town_gap && rand_scaled(++choice_f) == 0)) {
                                 if (terrain_at(armydata[selected_owner][scratch_i].x, armydata[selected_owner][scratch_i].y) != 10 && region_key(townbuf[city_index].x, townbuf[city_index].y) == region_key(armydata[selected_owner][scratch_i].x, armydata[selected_owner][scratch_i].y)) {
@@ -702,7 +702,7 @@ label_governor_done:
                         strcat(msgtext, " builds\n");
                         strcat(msgtext, improvements[scratch_i].name);
                         strcat(msgtext, ".\n");
-                        if (selected_owner == civnow && (debug & 8) && (scratch_i <= 21 || scratch_i > 24) && !(townbuf[city].status & 0x10) && scratch_i != 1 && disk_insert(1, 0L)) {
+                        if (selected_owner == civnow && (debug & 8) && (scratch_i <= 21 || scratch_i > 24) && !(townbuf[city].status & CITY_AUTO_BUILD) && scratch_i != 1 && disk_insert(1, 0L)) {
                             city_scene(city, scratch_i);
                         } else {
                             news_box(city);
@@ -777,7 +777,7 @@ label_governor_done:
 
         }
 
-        if (selected_owner == civnow && (townbuf[city].status & 0x10) && (townbuf[city].shield_box == 0 || (townbuf[city].production < 0 && scratch_i == -1))) {
+        if (selected_owner == civnow && (townbuf[city].status & CITY_AUTO_BUILD) && (townbuf[city].shield_box == 0 || (townbuf[city].production < 0 && scratch_i == -1))) {
             scratch_i = find_slot(selected_owner, city);
             *(int *) ((char *) scrbuf + 0x10) = 2;
             if (scratch_i != 99) {
@@ -788,13 +788,13 @@ label_governor_done:
                 if (townbuf[city].production >= 0)
                     civ_units_ordered[selected_owner][townbuf[city].production]++;
             } else {
-                townbuf[city].status &= 0xef;
+                townbuf[city].status &= ~CITY_AUTO_BUILD;
             }
         }
         /* AI rush spending buys shields at two treasury coins per shield. */
 label_ai_buy:
         if (!(human_set & (1 << selected_owner))) {
-            if (townbuf[city].status & 0x10)
+            if (townbuf[city].status & CITY_AUTO_BUILD)
                 city_retarget(city);
             yield_buy_k = 0;
             area_role_g = civ_area_plan[selected_owner][region_key(city_x, city_y_p)];
@@ -802,9 +802,9 @@ label_ai_buy:
                 yield_buy_k = money[selected_owner] / 64;
             if ((game_flags & (1 << (civnow + 8))) && -townbuf[city].production >= 22 && -townbuf[city].production <= 24)
                 yield_buy_k = money[selected_owner] / 128;
-            if ((townbuf[city].status & 1) && townbuf[city].production < 0 && townbuf[city].shield_box != 0)
+            if ((townbuf[city].status & CITY_DISORDER) && townbuf[city].production < 0 && townbuf[city].shield_box != 0)
                 yield_buy_k = clamp(improvements[-townbuf[city].production].cost * cost_scale - townbuf[city].shield_box, 0, money[selected_owner] / 8);
-            if ((map_owner(city_x, city_y_p) == -1 || (townbuf[city].status & 0x10)) && townbuf[city].production >= 0 && townbuf[city].shield_box != 0)
+            if ((map_owner(city_x, city_y_p) == -1 || (townbuf[city].status & CITY_AUTO_BUILD)) && townbuf[city].production >= 0 && townbuf[city].shield_box != 0)
                 yield_buy_k = clamp(utypes[townbuf[city].production].cost * cost_scale - townbuf[city].shield_box, 0, money[selected_owner] / 3);
             if (townbuf[city].production == -1 && townbuf[city].shield_box != 0)
                 yield_buy_k = clamp(utypes[townbuf[city].production].cost * cost_scale - townbuf[city].shield_box, 0, money[selected_owner] / 3);
@@ -814,7 +814,7 @@ label_ai_buy:
                 yield_buy_k += money[selected_owner] / 512;
             townbuf[city].shield_box += yield_buy_k;
             money[selected_owner] -= yield_buy_k * 2;
-            townbuf[city].status &= 0xef;
+            townbuf[city].status &= ~CITY_AUTO_BUILD;
         }
 
     }
@@ -1034,7 +1034,7 @@ label_support_restart:
                     city_keep++;
             }
             if (mode == 0L) {
-                if (town_res_sums[1] < city_keep || ((townbuf[city].status & 1) && ((index_i + turn_tick) & 7) == 0 && selected_owner != civnow && civ_gov[selected_owner] >= 4)) {
+                if (town_res_sums[1] < city_keep || ((townbuf[city].status & CITY_DISORDER) && ((index_i + turn_tick) & 7) == 0 && selected_owner != civnow && civ_gov[selected_owner] >= 4)) {
                     ai_result_i = best_idx_o = -1;
                     for (choice_f = 0; choice_f < 128; choice_f++) {
                         if (armydata[selected_owner][choice_f].type != -1 && armydata[selected_owner][choice_f].home_city == city && armydata[selected_owner][choice_f].type < 26) {
@@ -1050,7 +1050,7 @@ label_support_restart:
                             margin_democracy = -999;
                         } else if (ai_result_i > 0 && utypes[armydata[selected_owner][best_idx_o].type].domain == 0 && armydata[selected_owner][best_idx_o].type != 0) {
                             drop_u_stack(selected_owner, best_idx_o);
-                            townbuf[city].status &= 0xfe;
+                            townbuf[city].status &= ~CITY_DISORDER;
                         }
                     } else {
                         if (selected_owner == civnow) {
@@ -1173,7 +1173,7 @@ label_support_restart:
         draw_y_k = ((cost_h - 1) / scale_i) * 8 + 8;
         rect_fill(scrbuf, 230, 99, draw_x_l + 3, draw_y_k + 19, 1);
         if (selected_owner == civnow) {
-            draw_button(231, 106, 263, 114, (townbuf[city].status & 0x10) ? "AUTO." : "CHANGE", 9);
+            draw_button(231, 106, 263, 114, (townbuf[city].status & CITY_AUTO_BUILD) ? "AUTO." : "CHANGE", 9);
             draw_button(294, 106, 311, 114, "BUY", 9);
         }
         if (townbuf[city].production >= 0) {
@@ -1320,8 +1320,8 @@ label_input:
             }
             mouse_off();
             if ((mse_held == 2 && ptr_x >= 230 && ptr_x < 270 && ptr_y >= 106 && ptr_y <= 116) || key_h == 'A') {
-                townbuf[city].status ^= 0x10;
-                if (townbuf[city].status & 0x10) {
+                townbuf[city].status ^= CITY_AUTO_BUILD;
+                if (townbuf[city].status & CITY_AUTO_BUILD) {
                     auto_build_i = find_slot(selected_owner, city);
                     *(int *) ((char *) scrbuf + 0x10) = 2;
                     if (auto_build_i != 99) {
@@ -1365,7 +1365,7 @@ label_input:
                     strcat(msgtext, "\nTreasury: $");
                     strcat(msgtext, itoa(money[selected_owner], nstr, 10));
                     strcat(msgtext, "\n");
-                    if (townbuf[city].production >= 0 && (townbuf[city].status & 1))
+                    if (townbuf[city].production >= 0 && (townbuf[city].status & CITY_DISORDER))
                         strcat(msgtext, "CIVIL DISORDER\n");
                     else if (money[selected_owner] >= scratch_i)
                         strcat(msgtext, " Yes\n No\n");
@@ -1379,7 +1379,7 @@ label_input:
                     goto label_render_restart;
                 }
                 if ((ptr_x >= 230 && ptr_x < 270) || key_h == 'c') {
-                    townbuf[city].status &= 0xef;
+                    townbuf[city].status &= ~CITY_AUTO_BUILD;
                     mouse_on();
                     if (townbuf[city].production >= 0)
                         civ_units_ordered[selected_owner][townbuf[city].production]--;
@@ -1456,7 +1456,7 @@ label_after_tabs:;
                     }
                     choice_f = clamp(index_i, 0, unit_count_i - 1);
                     if (draw_y_k == 13 || draw_y_k == 32) {
-                        if (armydata[selected_owner][unit_list_f[choice_f]].status & 9)
+                        if (armydata[selected_owner][unit_list_f[choice_f]].status & (UNIT_FORTIFIED | UNIT_SENTRY))
                             armydata[selected_owner][unit_list_f[choice_f]].moves = utypes[armydata[selected_owner][unit_list_f[choice_f]].type].moves * 3;
                         armydata[selected_owner][unit_list_f[choice_f]].status &= 0x30;
                         armydata[selected_owner][unit_list_f[choice_f]].goto_x = -1;
@@ -1466,7 +1466,7 @@ label_after_tabs:;
                 town_res_sums[2] = raw_trade_h;
                 goto label_citizens_refresh;
             }
-            if (key_h == 's' && !(townbuf[city].status & 0x80)) {
+            if (key_h == 's' && !(townbuf[city].status & CITY_SOLD_BUILDING)) {
                 choice_f = 0;
                 do {
                     do {
@@ -1594,7 +1594,7 @@ label_after_tabs:;
                     choice_f = (ptr_y - 2) / 6 - wonders_o;
 label_sell:
                     for (item_b = first_bld_h; item_b < 24; item_b++) {
-                        if ((townbuf[city].buildings & (1L << item_b)) && choice_f-- == 0 && !(townbuf[city].status & 0x80)) {
+                        if ((townbuf[city].buildings & (1L << item_b)) && choice_f-- == 0 && !(townbuf[city].status & CITY_SOLD_BUILDING)) {
                             strcpy(msgtext, "Do you want to sell\nyour ");
                             strcat(msgtext, improvements[item_b + 1].name);
                             strcat(msgtext, " for ");
@@ -1605,7 +1605,7 @@ label_sell:
                             if (menu_dialog(msgtext, 128, 80) == 1) {
                                 money[selected_owner] += improvements[item_b + 1].cost * 10;
                                 townbuf[city].buildings -= 1L << item_b;
-                                townbuf[city].status |= 0x80;
+                                townbuf[city].status |= CITY_SOLD_BUILDING;
                                 if (item_b + 1 == 8)
                                     map_view_changed = 1;
                             }
@@ -1637,7 +1637,7 @@ label_sell:
                 if (ptr_x >= 100 && ptr_x < 9600 && ptr_y >= 116) {
                     choice_f = (ptr_y - 116) / 16 * 6 + (ptr_x - 100) / 16;
                     if (choice_f < unit_count_i) {
-                        if (armydata[selected_owner][unit_list_f[choice_f]].status & 9)
+                        if (armydata[selected_owner][unit_list_f[choice_f]].status & (UNIT_FORTIFIED | UNIT_SENTRY))
                             armydata[selected_owner][unit_list_f[choice_f]].moves = utypes[armydata[selected_owner][unit_list_f[choice_f]].type].moves * 3;
                         armydata[selected_owner][unit_list_f[choice_f]].status &= 0x30;
                         armydata[selected_owner][unit_list_f[choice_f]].goto_x = -1;
@@ -1701,7 +1701,7 @@ label_tile_toggle:
                     append_place_name(city);
                     strcat(msgtext, "! Mayor\nflees in panic.\n");
                     sound(36);
-                    if ((debug & 8) && !(townbuf[city].status & 1) && human_counts == 0) {
+                    if ((debug & 8) && !(townbuf[city].status & CITY_DISORDER) && human_counts == 0) {
                         city_scene(city, -2);
                         riot_anim();
                         disk_insert(0, 1L);
@@ -1712,14 +1712,14 @@ label_tile_toggle:
                         show_msg(msgtext, 100, 80);
                     }
                     sound(1);
-                    if (!(townbuf[city].status & 1)) {
+                    if (!(townbuf[city].status & CITY_DISORDER)) {
                         show_city_display = 1;
                         if (debug & 1)
                             notice_a("*DISORDER");
                     }
                 }
-                if (!(townbuf[city].status & 1)) {
-                    townbuf[city].status |= 1;
+                if (!(townbuf[city].status & CITY_DISORDER)) {
+                    townbuf[city].status |= CITY_DISORDER;
                     if (!(human_set & (1 << selected_owner))) {
                         if (townbuf[city].production >= 0)
                             civ_units_ordered[selected_owner][townbuf[city].production]--;
@@ -1741,8 +1741,8 @@ label_tile_toggle:
                     sound(1);
                 }
             } else {
-                if (scratch_i >= 0 && (townbuf[city].status & 1)) {
-                    townbuf[city].status &= 0xfe;
+                if (scratch_i >= 0 && (townbuf[city].status & CITY_DISORDER)) {
+                    townbuf[city].status &= ~CITY_DISORDER;
                     if (human_set & (1 << selected_owner)) {
                         advisor = 4;
                         strcpy(msgtext, "Order restored\nin ");
@@ -1763,7 +1763,7 @@ label_tile_toggle:
             }
             /* Celebration requires no unhappy citizens and at least half happy. */
             if (town_unhappy_counts == 0 && townbuf[city].size > 2 && (townbuf[city].size + 1) / 2 <= town_happy_ones_num && civ_gov[selected_owner] != 0) {
-                if (!(townbuf[city].status & 0x40)) {
+                if (!(townbuf[city].status & CITY_CELEBRATING)) {
                     if ((human_set & (1 << selected_owner)) && civ_gov[selected_owner] != 0) {
                         strcpy(msgtext, "'We love the ");
                         strcat(msgtext, leader_titles[civ_gov[selected_owner]]);
@@ -1781,11 +1781,11 @@ label_tile_toggle:
                         }
                         sound(1);
                     }
-                    townbuf[city].status |= 0x40;
+                    townbuf[city].status |= CITY_CELEBRATING;
                 } else if (civ_gov[selected_owner] >= 4 && townbuf[city].size * 2 + colonist_homed * sett_food_j < town_res_sums[0] && (townbuf[city].size < 10 || (townbuf[city].buildings & 0x100))) {
                     townbuf[city].size++;
                 }
-            } else if (scratch_i >= 0 && (townbuf[city].status & 0x40)) {
+            } else if (scratch_i >= 0 && (townbuf[city].status & CITY_CELEBRATING)) {
                 if ((human_set & (1 << selected_owner)) && civ_gov[selected_owner] != 0) {
                     sound(35);
                     strcpy(msgtext, "'We love the ");
@@ -1796,7 +1796,7 @@ label_tile_toggle:
                     news_box(city);
                     sound(1);
                 }
-                townbuf[city].status &= 0xbf;
+                townbuf[city].status &= ~CITY_CELEBRATING;
             }
         }
         scratch_i = learning_yield;
@@ -1853,7 +1853,7 @@ label_tile_toggle:
                 }
             }
             /* Disorder can cause a nuclear meltdown until Fusion Power is known. */
-            if ((townbuf[city].status & 1) && (townbuf[city].buildings & 0x100000L) && rand_scaled(3) == 0 && has_tech(selected_owner, 66) == 0) {
+            if ((townbuf[city].status & CITY_DISORDER) && (townbuf[city].buildings & 0x100000L) && rand_scaled(3) == 0 && has_tech(selected_owner, 66) == 0) {
                 reveal(civnow, city_x - 8, city_y_p - 6);
                 nuke_animation(city_x, city_y_p);
                 nuke_fallout(city_x, city_y_p);
@@ -1894,7 +1894,8 @@ label_tile_toggle:
             }
         }
     }
-    if ((townbuf[city].status & 4) && adj_civ(townbuf[city].x, townbuf[city].y) == 0)
+    /* Original quirk: adj_civ expects (civ, x, y); two arguments pass (x, y) into (civ, x). */
+    if ((townbuf[city].status & CITY_GARRISON) && adj_civ(townbuf[city].x, townbuf[city].y) == 0)
         garrison_in(city);
     *(int *) ((char *) scrbuf + 0x10) = 1;
     mouse_on();
@@ -1977,7 +1978,7 @@ int tile_yield(int x, int y, int kind)
         yield_value_n++;
     if (tile_flags_g & 16)
         yield_value_n += yield_value_n / 2;
-    if (yield_value_n > 2 && !(townbuf[selected_city].status & 0x40)) {
+    if (yield_value_n > 2 && !(townbuf[selected_city].status & CITY_CELEBRATING)) {
         if (civ_gov[selected_owner] <= 1)
             yield_value_n--;
         if (working_tiles)
@@ -1986,7 +1987,7 @@ int tile_yield(int x, int y, int kind)
     if (yield_value_n && kind == 2) {
         if (working_tiles)
             margin_democracy++;
-        if ((townbuf[selected_city].status & 0x40 ? 2 : 4) <= civ_gov[selected_owner])
+        if ((townbuf[selected_city].status & CITY_CELEBRATING ? 2 : 4) <= civ_gov[selected_owner])
             yield_value_n++;
     }
     if (tile_flags_g & 0x40)

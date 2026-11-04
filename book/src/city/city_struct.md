@@ -33,6 +33,25 @@ references to it from trade routes and supported units.
 | `0x17–19` | `routes` | Up to three destination cities; −1 means empty |
 | `0x1a–1b` | `garrison` | Two stored unit types, with veteran bit `0x40`; −1 means empty |
 
+## Status flags
+
+The `status` byte holds individual state flags for an active city (`-1` indicates an unused city record).
+
+| Bit | Mask | Macro | Meaning |
+| ---: | ---: | --- | --- |
+| 0 | `0x01` | `CITY_DISORDER` | Civil disorder is occurring |
+| 1 | `0x02` | `CITY_COASTAL` | Coastal city: adjacent to ocean, permits sea units and coastal improvements |
+| 2 | `0x04` | `CITY_GARRISON` | Fortified garrison stored in `garrison[0..1]` |
+| 3 | `0x08` | `CITY_RIVER` | Adjacent to a river tile, permits Hydro Plant |
+| 4 | `0x10` | `CITY_AUTO_BUILD` | Automated production / governor mode active |
+| 5 | `0x20` | `CITY_TECH_STOLEN` | Diplomat has already stolen technology from this city |
+| 6 | `0x40` | `CITY_CELEBRATING` | "We Love the Leader Day" celebration active |
+| 7 | `0x80` | `CITY_SOLD_BUILDING` | An improvement was sold this turn (limit of one per turn) |
+
+When a city is captured, `CAPTURE.C` applies combined masks to clear several flags at once:
+- `&= 0xae`: Clears `CITY_DISORDER`, `CITY_AUTO_BUILD`, and `CITY_CELEBRATING`.
+- `&= 0x9b`: Clears `CITY_GARRISON`, `CITY_TECH_STOLEN`, and `CITY_CELEBRATING`.
+
 ## Workers and specialists
 
 `radius_dx` and `radius_dy` give the 21 tile offsets around a city. The

@@ -134,7 +134,7 @@ int civil_war(int old)
                     drop_u_stack(old, i);
                     occupy(armydata[old][i].x, armydata[old][i].y);
                     rc = create_unit(new_civ, type, armydata[old][i].x, armydata[old][i].y);
-                    armydata[new_civ][rc].status = armydata[old][i].status & 0xfe;
+                    armydata[new_civ][rc].status = armydata[old][i].status & ~UNIT_SENTRY;
                 }
             }
         } else {
@@ -145,7 +145,7 @@ int civil_war(int old)
                 map_refresh(new_civ, armydata[old][i].x, armydata[old][i].y);
                 occupy(armydata[old][i].x, armydata[old][i].y);
                 rc = create_unit(new_civ, type, armydata[old][i].x, armydata[old][i].y);
-                armydata[new_civ][rc].status = armydata[old][i].status & 0xfe;
+                armydata[new_civ][rc].status = armydata[old][i].status & ~UNIT_SENTRY;
                 armydata[new_civ][rc].home_city = armydata[old][i].home_city;
                 for (;;) {
                     if (nxt1 == -1)
@@ -159,7 +159,7 @@ int civil_war(int old)
                     if (type != -1) {
                         occupy(armydata[old][i].x, armydata[old][i].y);
                         rc = create_unit(new_civ, type, armydata[old][i].x, armydata[old][i].y);
-                        armydata[new_civ][rc].status = armydata[old][i].status & 0xfe;
+                        armydata[new_civ][rc].status = armydata[old][i].status & ~UNIT_SENTRY;
                         if (townbuf[armydata[old][nxt1].home_city].owner != owner)
                             armydata[new_civ][rc].home_city = armydata[old][i].home_city;
                     }

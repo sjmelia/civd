@@ -63,7 +63,7 @@ void dip_menu(int city_id, int player, int unit_id)
     if (player == civnow) {
         if ((treaty_low(civnow, target_civ) & 0x40) || target_civ == 0)
             dialog_dim = 1;
-        if (townbuf[city_id].status & 0x20)
+        if (townbuf[city_id].status & CITY_TECH_STOLEN)
             dialog_dim |= 4;
         if (townbuf[city_id].buildings & HAS_PALACE)
             dialog_dim |= 0x10;
@@ -92,13 +92,13 @@ void dip_menu(int city_id, int player, int unit_id)
 
     case 2:
         if (player == civnow) {
-            if (townbuf[city_id].status & 0x20)
+            if (townbuf[city_id].status & CITY_TECH_STOLEN)
                 return;
             if (attack_ok(townbuf[city_id].owner) == -1)
                 return;
             accord(civnow, townbuf[city_id].owner, 2);
         } else {
-            if (townbuf[city_id].status & 0x20)
+            if (townbuf[city_id].status & CITY_TECH_STOLEN)
                 goto sabotage;
         }
         msgtext[0] = 0;
@@ -118,7 +118,7 @@ void dip_menu(int city_id, int player, int unit_id)
             strcat(msgtext, ".\n");
             message_mode = 0;
             show_msg(msgtext, 80, 80);
-            townbuf[city_id].status |= 0x20;
+            townbuf[city_id].status |= CITY_TECH_STOLEN;
             break;
         }
         if (msgtext[0] != 0) {
@@ -168,7 +168,7 @@ sabotage:
         if (dist == 0)
             return;
         cost = (money[target_civ] + 1000) / (dist + 3) * townbuf[city_id].size;
-        if (townbuf[city_id].status & 1)
+        if (townbuf[city_id].status & CITY_DISORDER)
             cost /= 2;
         strcpy(msgtext, "Dissidents in ");
         append_place_name(city_id);

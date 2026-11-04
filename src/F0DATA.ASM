@@ -49,7 +49,7 @@ ld_resize_error DB 'Unable to shrink overlay memory allocation$'
 ld_free_error DB 'Error releasing overlay memory$'
 
 ; Picture input stream (PICTURE.ASM; C image_buffer/archive_handle). The
-; read pointer starts at the end of the 512-byte input_block at DS:D936,
+; read pointer starts at the end of the 512-byte input_block at DS:DB36,
 ; so the first read refills it.
 _image_buffer LABEL WORD
 f0_stream_end DW OFFSET DGROUP:f0_common+07006H
