@@ -357,7 +357,7 @@ int square_defender(int civ, int index)
     return selected_stack_index;
 }
 
-int stack_other(int civ, int index)
+int stack_top(int civ, int index)
 {
     if (armydata[civ][index].next == -1)
         return index;

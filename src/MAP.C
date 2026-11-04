@@ -406,7 +406,7 @@ int redraw_stack(int player, int unit)
         if (a == b)
             unit_redraw(player, unit);
     } else
-        unit_redraw(player, stack_other(player, unit));
+        unit_redraw(player, stack_top(player, unit));
 }
 
 int map_in_bounds(int x, int y)

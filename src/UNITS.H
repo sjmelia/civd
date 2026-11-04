@@ -7,7 +7,7 @@ extern void garrison_in(int);
 extern void unit_sight();
 extern void blink_unit(int, int, int, int);
 extern int square_defender(int, int);
-extern int stack_other(int, int);
+extern int stack_top(int, int);
 extern void score_defender(int, int);
 extern int stack_len(int, int, int);
 extern void add_stack_value(int, int);
