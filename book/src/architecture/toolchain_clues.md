@@ -39,3 +39,11 @@ raw and final executables, plus the separate graphics driver, sound driver
 and `MISC.EXE`. Matching those bytes establishes the build result. It does
 not establish the original spelling of symbols or the historical build
 procedure.
+
+## Common storage and layout sensitivity
+
+The assembly graphics, raster and picture routines reach communal buffers and
+tables by fixed offsets from `f0_common` in `c_common`. Introducing a new C
+global can move what assembly reaches through `f0_common`. Furthermore,
+`CRTEDIT` expects the startup call at an exact file offset (`0x204ca`) and
+validates the length and CRC of `CIVRAW.EXE`, refusing any modified layout.

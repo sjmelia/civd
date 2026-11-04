@@ -227,7 +227,7 @@ void trade_rpt(int civ)
             }
 
             msgtext[0] = 0;
-            if (townbuf[city].status & 1) {
+            if (townbuf[city].status & CITY_DISORDER) {
                 strcat(msgtext, " \x8c(Disorder)");
             } else {
                 strcat(msgtext, " ");

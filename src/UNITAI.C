@@ -62,15 +62,15 @@ void unit_phase(int player)
             else
                 troops_total[player]++;
             military_table[player] += utypes[armydata[player][i].type].attack + utypes[armydata[player][i].type].defense;
-            armydata[player][i].status &= ~0x10;
+            armydata[player][i].status &= ~UNIT_ASSIGNED;
             if (unit_blocked(player, armydata[player][i].x, armydata[player][i].y))
-                armydata[player][i].status |= 0x10;
+                armydata[player][i].status |= UNIT_ASSIGNED;
             if (terrain_at(armydata[player][i].x, armydata[player][i].y) != 10) {
                 island = region_key(armydata[player][i].x, armydata[player][i].y);
                 defenders_island[player][island] += utypes[armydata[player][i].type].defense;
                 civ_cont_attackers[player][island] += utypes[armydata[player][i].type].attack;
             } else if (utypes[armydata[player][i].type].domain == 0)
-                armydata[player][i].status |= 0x10;
+                armydata[player][i].status |= UNIT_ASSIGNED;
             fog_map[armydata[player][i].x >> 2][armydata[player][i].y >> 2]
                 |= 2 << utypes[armydata[player][i].type].role;
         }
@@ -182,7 +182,7 @@ void unit_phase(int player)
     for (j = 0; j < 32; j++)
         slots[j] = cap;
     for (i = 0; i < 128; i++) {
-        if (armydata[player][i].type == -1 || (armydata[player][i].status & 0x10)
+        if (armydata[player][i].type == -1 || (armydata[player][i].status & UNIT_ASSIGNED)
             || armydata[player][i].type == 0x19)
             continue;
         best_cost = 9999;
@@ -214,7 +214,7 @@ void unit_phase(int player)
                 } else
                     rating = slots[j] * map_dist(x, civ_targets_x[player][j], y, civ_targets_y[player][j])
                         / (aim_count[player][j] + 1);
-                if (armydata[player][i].status & 0xc) {
+                if (armydata[player][i].status & (UNIT_FORTIFIED | UNIT_FORTIFYING)) {
                     if (aim_count[player][j] < 2 || (aim_count[player][j] * cap < rating && slots[j] != cap))
                         continue;
                     if (map_flags(armydata[player][i].x, armydata[player][i].y) & 1)
@@ -232,7 +232,7 @@ void unit_phase(int player)
             continue;
         armydata[player][i].goto_x = civ_targets_x[player][flags];
         armydata[player][i].goto_y = civ_targets_y[player][flags];
-        armydata[player][i].status |= 0x10;
+        armydata[player][i].status |= UNIT_ASSIGNED;
         armydata[player][i].status &= 0xf0;
         slots[flags]++;
     }
@@ -476,7 +476,7 @@ int ai_order(int player, int unit)
             if (townbuf[home].size / divisor + 1 >= sc_d)
                 return 0x66;
             sc_d = armydata[player][unit].status;
-            armydata[player][unit].status |= 8;
+            armydata[player][unit].status |= UNIT_FORTIFIED;
             if (square_defender(player, unit) == unit && townbuf[home].size / divisor + 1 > stack_len(player, unit, 4)) {
                 armydata[player][unit].status = sc_d;
                 return 0x66;
@@ -494,12 +494,12 @@ int ai_order(int player, int unit)
         count_f = roles = result_i = 0;
         own_b = armydata[player][unit].next;
         while (own_b != -1 && own_b != unit) {
-            if (!(armydata[player][own_b].status & 8)) {
+            if (!(armydata[player][own_b].status & UNIT_FORTIFIED)) {
                 roles |= 1 << utypes[armydata[player][own_b].type].role;
                 if (utypes[armydata[player][own_b].type].domain == 0)
                     count_f++;
             } else if (rstatem == 5 && townbuf[cn].size / 5 < result_i++) {
-                armydata[player][own_b].status &= ~8;
+                armydata[player][own_b].status &= ~UNIT_FORTIFIED;
                 count_f++;
             }
             own_b = armydata[player][own_b].next;
@@ -507,7 +507,7 @@ int ai_order(int player, int unit)
         if (((city_distj ? 1 : 3) > count_f || roles == 1) && rolel == 5) {
             best_d_c = 999;
             for (cn = 0; cn < 128; cn++) {
-                if (townbuf[cn].status == -1 || townbuf[cn].owner != player || !(townbuf[cn].status & 2))
+                if (townbuf[cn].status == -1 || townbuf[cn].owner != player || !(townbuf[cn].status & CITY_COASTAL))
                     continue;
                 dn = map_dist(uxk, townbuf[cn].x, uyk, townbuf[cn].y);
                 regn = region_key(townbuf[cn].x, townbuf[cn].y);
@@ -830,13 +830,13 @@ int ai_order(int player, int unit)
                         vl += odds_f * 4;
                     } else {
                         vl -= 999;
-                        if (rolel == 1 && rstatem == 1 && utypes[armydata[player][unit].type].domain == 0 && (armydata[cowner][stk_d].status & 0x28)
+                        if (rolel == 1 && rstatem == 1 && utypes[armydata[player][unit].type].domain == 0 && (armydata[cowner][stk_d].status & (UNIT_VETERAN | UNIT_FORTIFIED))
                             && terrains[tern].defense >= 4 && stack_len(cowner, stk_d, 2) < 2 && !rand_scaled(4)
                             && !(map_flags(nx, ny) & 1))
                             buy_u(cowner, stk_d, player);
                     }
                 } else {
-                    if (rolel == 1 && rstatem == 1 && utypes[armydata[player][unit].type].domain == 0 && (armydata[cowner][stk_d].status & 8)
+                    if (rolel == 1 && rstatem == 1 && utypes[armydata[player][unit].type].domain == 0 && (armydata[cowner][stk_d].status & UNIT_FORTIFIED)
                         && (treaties[player][civnow] & 3) == 1 && (treaties[cowner][civnow] & 3) != 1 && ai_continent_towns[civnow][region] != 0 && stack_len(cowner, stk_d, 2) < 2 && (!rand_scaled(8) || townbuf[home].owner == civnow)
                         && !(map_flags(nx, ny) & 1))
                         buy_u(cowner, stk_d, player);
@@ -918,7 +918,7 @@ void add_target(int player, int x, int y, int kind, int count)
                 if (armydata[player][i].moves >= d * 2) {
                     armydata[player][i].goto_x = x;
                     armydata[player][i].goto_y = y;
-                    armydata[player][i].status |= 0x10;
+                    armydata[player][i].status |= UNIT_ASSIGNED;
                     armydata[player][i].status &= 0xF0;
                     break;
                 }

@@ -139,10 +139,10 @@ int city_create(int player, int unused, int x, int y, int size)
         for (i = 1; i <= 8; i++) {
             terrain = terrain_at(x + spiral_x[i], y + spiral_y[i]);
             if (terrain == 10 && (map_region(x + spiral_x[i], y + spiral_y[i]) > 256 || player == civnow)) {
-                townbuf[city].status |= 2;
+                townbuf[city].status |= CITY_COASTAL;
             }
             if (terrain == 11 || terrain == 5) {
-                townbuf[city].status |= 8;
+                townbuf[city].status |= CITY_RIVER;
             }
         }
 

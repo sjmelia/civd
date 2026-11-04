@@ -342,7 +342,7 @@ void uprising(void)
             if (i == count)
                 t = 26;
             dx = create_unit(0, t, x, y);
-            armydata[0][dx].status |= 1;
+            armydata[0][dx].status |= UNIT_SENTRY;
         }
     }
     i = rand_scaled(128);
