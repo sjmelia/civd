@@ -22,7 +22,7 @@ void news_box(int city)
     first = city;
     if (city < 0) {
         for (idx = 0; idx < 128; idx++) {
-            if (townbuf[idx].status != -1 && townbuf[idx].owner == civnow && ((townbuf[idx].buildings & 1) || city == -1))
+            if (townbuf[idx].status != -1 && townbuf[idx].owner == civnow && ((townbuf[idx].buildings & HAS_PALACE) || city == -1))
                 city = idx;
         }
     }

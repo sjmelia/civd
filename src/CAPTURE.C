@@ -38,8 +38,8 @@ int a, b, c;
         old = old;
     }
     if (old != civnow) {
-        if (((townbuf[b].buildings & 1) || townbuf[b].production == -1) && c == 0) {
-            if ((townbuf[b].buildings & 1) && city_count[old] > 4 && nation_ratings[civnow] < nation_ratings[old]) {
+        if (((townbuf[b].buildings & HAS_PALACE) || townbuf[b].production == -1) && c == 0) {
+            if ((townbuf[b].buildings & HAS_PALACE) && city_count[old] > 4 && nation_ratings[civnow] < nation_ratings[old]) {
                 if (civil_war(old) == 0) {
                     townbuf[b].owner = a;
                     r = central_city(old);
@@ -49,7 +49,7 @@ int a, b, c;
             }
         }
     }
-    if (townbuf[b].buildings & 1) {
+    if (townbuf[b].buildings & HAS_PALACE) {
         strcpy(msgtext, civ_adjectives[old]);
         strcat(msgtext, " spaceship\n");
         if (game_flags & (1 << (old + 8))) {
@@ -69,7 +69,7 @@ int a, b, c;
     } else {
         townbuf[b].shield_box = 0;
         townbuf[b].status &= CITY_CAPTURE_MASK;
-        townbuf[b].buildings &= ~0x449;
+        townbuf[b].buildings &= ~(HAS_PALACE | HAS_TEMPLE | HAS_COURTHOUSE | HAS_CATHEDRAL);
         if (c == 0)
             townbuf[b].buildings &= 0xaaaau >> rand_scaled(2);
         if (c == 0 || townbuf[b].size > 1)

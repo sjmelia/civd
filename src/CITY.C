@@ -126,7 +126,7 @@ int city_create(int player, int unused, int x, int y, int size)
             }
         }
         if (is_first) {
-            townbuf[city].buildings = 1;
+            townbuf[city].buildings = HAS_PALACE;
         }
 
         townbuf[city].trade = 0;
@@ -265,7 +265,7 @@ void city_disaster(int city)
 
     case 1:
         if (!has_tech(townbuf[city].owner, 10)) {
-            if (!(townbuf[city].buildings & 0x100)) {
+            if (!(townbuf[city].buildings & HAS_AQUEDUCT)) {
                 if (has_tech(townbuf[city].owner, improvements[9].prereq)) {
                     named_msg("*D1");
                     if (townbuf[city].size != 0) {
@@ -278,7 +278,7 @@ void city_disaster(int city)
 
     case 2:
         if (neighborhood & 0x800) {
-            if (!(townbuf[city].buildings & 0x80)) {
+            if (!(townbuf[city].buildings & HAS_CITY_WALLS)) {
                 if (has_tech(townbuf[city].owner, improvements[8].prereq)) {
                     named_msg("*D2");
                     if (townbuf[city].size > 1) {
@@ -291,7 +291,7 @@ void city_disaster(int city)
 
     case 3:
         if (neighborhood & 0x20) {
-            if (!(townbuf[city].buildings & 0x8)) {
+            if (!(townbuf[city].buildings & HAS_TEMPLE)) {
                 if (has_tech(townbuf[city].owner, improvements[4].prereq)) {
                     named_msg("*D3");
                     if (townbuf[city].size > 1) {
@@ -304,7 +304,7 @@ void city_disaster(int city)
 
     case 4:
         if (townbuf[city].size != 0) {
-            if (!(townbuf[city].buildings & 0x4)) {
+            if (!(townbuf[city].buildings & HAS_GRANARY)) {
                 if (has_tech(townbuf[city].owner, improvements[3].prereq)) {
                     named_msg("*D4");
                     city_food(city) = 0;
@@ -317,7 +317,7 @@ void city_disaster(int city)
 
     case 5:
         if (townbuf[city].buildings & 0xfffe) {
-            if (!(townbuf[city].buildings & 0x100)) {
+            if (!(townbuf[city].buildings & HAS_AQUEDUCT)) {
                 if (has_tech(townbuf[city].owner, improvements[9].prereq)) {
                     do {
                         building = rand_scaled(24);
@@ -332,7 +332,7 @@ void city_disaster(int city)
 
     case 6:
         if (neighborhood & 0x400) {
-            if (!(townbuf[city].buildings & 0x2)) {
+            if (!(townbuf[city].buildings & HAS_BARRACKS)) {
                 named_msg("*D6");
                 city_food(city) = 0;
                 city_shields(city) = 0;
@@ -359,13 +359,13 @@ void city_disaster(int city)
             }
             append_place_name(city);
             strcat(msgtext, "!\nCitizens demand ");
-            if (!(townbuf[city].buildings & 0x8)) {
+            if (!(townbuf[city].buildings & HAS_TEMPLE)) {
                 strcat(msgtext, "TEMPLE\n");
-            } else if (!(townbuf[city].buildings & 0x40)) {
+            } else if (!(townbuf[city].buildings & HAS_COURTHOUSE)) {
                 strcat(msgtext, "COURTHOUSE\n");
-            } else if (!(townbuf[city].buildings & 0x10)) {
+            } else if (!(townbuf[city].buildings & HAS_MARKETPLACE)) {
                 strcat(msgtext, "MARKETPLACE\n");
-            } else if (has_tech(townbuf[city].owner, 29) && !(townbuf[city].buildings & 0x400)) {
+            } else if (has_tech(townbuf[city].owner, 29) && !(townbuf[city].buildings & HAS_CATHEDRAL)) {
                 strcat(msgtext, "CATHEDRAL\n");
             } else {
                 strcat(msgtext, "lower taxes.\n");
@@ -380,7 +380,7 @@ void city_disaster(int city)
             best_weight = 4;
             best_city = -1;
             if (town_happy_ones_num <= town_unhappy_counts) {
-                if (!(townbuf[city].buildings & 1)) {
+                if (!(townbuf[city].buildings & HAS_PALACE)) {
                     if (city_count[townbuf[city].owner] > 3) {
                         other_city = 0;
                         goto check_city;

@@ -465,16 +465,16 @@ city_body:
     if (excess > 0) {
         pol[townbuf[i].owner] += excess;
     }
-    if (townbuf[i].buildings & 0x4) {
+    if (townbuf[i].buildings & HAS_GRANARY) {
         life[townbuf[i].owner] += townbuf[i].size;
     }
-    if (townbuf[i].buildings & 0x100) {
+    if (townbuf[i].buildings & HAS_AQUEDUCT) {
         life[townbuf[i].owner] += townbuf[i].size;
     }
-    if (townbuf[i].buildings & 0x20) {
+    if (townbuf[i].buildings & HAS_LIBRARY) {
         lib[townbuf[i].owner] += townbuf[i].size;
     }
-    if (townbuf[i].buildings & 0x800) {
+    if (townbuf[i].buildings & HAS_UNIVERSITY) {
         lib[townbuf[i].owner] += townbuf[i].size;
     }
 next_city:

@@ -224,7 +224,7 @@ void game_turn(void)
     }
     found = 0;
     for (i = 0; i < 128; i++)
-        if (townbuf[i].status != -1 && townbuf[i].owner == civnow && (*(char *) &townbuf[i].buildings & 1))
+        if (townbuf[i].status != -1 && townbuf[i].owner == civnow && (*(char *) &townbuf[i].buildings & HAS_PALACE))
             found = 1;
     if (found && (debug & 0x80) && !(game_flags & 0x100)
         && civ_score(civnow, 0L) >= cost_sum(palace_stage + 1)) {
