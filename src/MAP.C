@@ -276,7 +276,7 @@ int seen_map(int x, int y)
             size = (townbuf[k].owner == civnow || xray_on) ? townbuf[k].size : townbuf[k].visible_size;
             msgtext[0] = 0;
             strcat(msgtext, itoa(size, nstr, 10));
-            if (townbuf[k].status & 1)
+            if (townbuf[k].status & CITY_DISORDER)
                 sprite_draw(scrbuf, sx + 5, y2 + 2, city_angry_images[0]);
             else
                 draw_string(msgtext, (size < 10 ? 6 : 3) + sx, y2 + 5, 0);
@@ -316,7 +316,7 @@ int unit_redraw(int player, int unit)
             return 0;
         dom = armydata[player][unit].type;
         terr = terrain_at(armydata[player][unit].x, armydata[player][unit].y);
-        if (terr == 10 && (armydata[player][unit].status & 1) && utypes[armydata[player][unit].type].domain != 2)
+        if (terr == 10 && (armydata[player][unit].status & UNIT_SENTRY) && utypes[armydata[player][unit].type].domain != 2)
             return 0;
         mouse_off();
         if (armydata[player][unit].next != -1)
@@ -333,22 +333,22 @@ int draw_unit(int player, int unit, int sx, int sy)
     char st;
 
     label_with_style(armydata[player][unit].type + player * 32 + 0x40, sx, sy);
-    if (armydata[player][unit].status & 8)
+    if (armydata[player][unit].status & UNIT_FORTIFIED)
         label_with_style(0x1d, sx, sy);
-    else if (armydata[player][unit].status & 4)
+    else if (armydata[player][unit].status & UNIT_FORTIFYING)
         draw_shadowed("F", sx + 4, sy + 7, player == 1 ? 9 : 15);
     if (player == civnow && armydata[player][unit].goto_x != -1)
         draw_shadowed("G", sx + 4, sy + 7, player == 1 ? 9 : 15);
     if ((armydata[player][unit].status & 0xc2) && utypes[armydata[player][unit].type].domain != 1) {
         t = 0x52;
-        if (armydata[player][unit].status & 0x40)
+        if (armydata[player][unit].status & UNIT_IRRIGATING)
             t = armydata[player][unit].type ? 0x3f : 0x49;
         st = armydata[player][unit].status;
-        if (st & 0x80) {
+        if (st & UNIT_MINING) {
             t = 0x4d;
-            if (st & 0x40)
+            if (st & UNIT_IRRIGATING)
                 t = 0x46;
-            if (armydata[player][unit].status & 2)
+            if (armydata[player][unit].status & UNIT_ROAD)
                 t = 0x50;
         }
         strcpy(msgtext, " ");
@@ -356,7 +356,7 @@ int draw_unit(int player, int unit, int sx, int sy)
         draw_shadowed(msgtext, sx + 4, sy + 7, player == 1 ? 9 : 15);
         draw_box(sx - 1, sy - 1, 15, 15, 7);
     }
-    if (armydata[player][unit].status & 1) {
+    if (armydata[player][unit].status & UNIT_SENTRY) {
         recolour_rect(scrbuf, sx, sy, 16, 16, 5, 7);
         recolour_rect(scrbuf, sx, sy, 16, 16, 8, 7);
     }

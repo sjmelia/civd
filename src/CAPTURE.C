@@ -59,7 +59,7 @@ int a, b, c;
         townbuf[b].size = 0;
     } else {
         townbuf[b].shield_box = 0;
-        townbuf[b].status &= 0xae;
+        townbuf[b].status &= CITY_CAPTURE_MASK;
         townbuf[b].buildings &= ~0x449;
         if (c == 0)
             townbuf[b].buildings &= 0xaaaau >> rand_scaled(2);
@@ -73,7 +73,7 @@ int a, b, c;
     if (townbuf[b].size != 0) {
         post_event(9, 4, a, townbuf[b].name_id, x, y);
         clear_sites_near(a, 0, x, y, 4);
-        townbuf[b].status &= 0x9b;
+        townbuf[b].status &= CITY_TRANSFER_MASK;
         n = 0;
         do {
             sx = wrap_x(spiral_x[n] + x);
@@ -128,7 +128,7 @@ int a, b, c;
         ++n;
     } while (n < 128);
     if (a == civnow && civ_gov[civnow] < 4)
-        townbuf[b].status |= 1;
+        townbuf[b].status |= CITY_DISORDER;
     if (townbuf[b].size != 0) {
         if (townbuf[b].production >= 0)
             --civ_units_ordered[old][townbuf[b].production];

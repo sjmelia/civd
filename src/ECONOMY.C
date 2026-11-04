@@ -41,7 +41,7 @@ void civ_economy(int civ)
             for (;;) {
                 if (!city_process(i, 0L) && townbuf[i].size > 5)
                     flags |= 1;
-                if (townbuf[i].status & 1)
+                if (townbuf[i].status & CITY_DISORDER)
                     flags |= 2;
                 if (show_city_display) {
                     city_process(i, 1L);
@@ -171,7 +171,7 @@ int find_slot(int civ, int city)
             for (i = 0; i < 28; i++) {
                 if (i == 25 && (marvel_site[17] == -1 || !has_tech(civ, 27)))
                     continue;
-                if (has_tech(civ, utypes[i].prereq) && !has_tech(civ, utypes[i].obsolete_by) && ((townbuf[city].status & 2) || utypes[i].domain != 2)) {
+                if (has_tech(civ, utypes[i].prereq) && !has_tech(civ, utypes[i].obsolete_by) && ((townbuf[city].status & CITY_COASTAL) || utypes[i].domain != 2)) {
                     strcat(msgtext, utypes[i].name);
                     turns_text(city, utypes[i].cost);
                     strcat(msgtext, ", ADM:");
@@ -197,7 +197,7 @@ int find_slot(int civ, int city)
             for (i = 1; i <= 24; i++) {
                 long bld;
 
-                if (!has_tech(civ, improvements[i].prereq) || ((bld = townbuf[city].buildings), (bld & (1L << (i - 1)))) || (i == 7 && (bld & 1)) || (i == 15 && (townbuf[city].buildings & 0x8000L)) || (i == 10 && !(townbuf[city].buildings & 0x10L) && has_tech(civ, improvements[5].prereq)) || (i == 12 && !(townbuf[city].buildings & 0x20L) && has_tech(civ, improvements[6].prereq)) || (i == 20 && !(townbuf[city].status & 8)) || (i == 19 && !(townbuf[city].buildings & 0x4000L)) || ((i == 19 || i == 20 || i == 21) && (hoover_power_c || (townbuf[city].buildings & 0x1c0000L))))
+                if (!has_tech(civ, improvements[i].prereq) || ((bld = townbuf[city].buildings), (bld & (1L << (i - 1)))) || (i == 7 && (bld & 1)) || (i == 15 && (townbuf[city].buildings & 0x8000L)) || (i == 10 && !(townbuf[city].buildings & 0x10L) && has_tech(civ, improvements[5].prereq)) || (i == 12 && !(townbuf[city].buildings & 0x20L) && has_tech(civ, improvements[6].prereq)) || (i == 20 && !(townbuf[city].status & CITY_RIVER)) || (i == 19 && !(townbuf[city].buildings & 0x4000L)) || ((i == 19 || i == 20 || i == 21) && (hoover_power_c || (townbuf[city].buildings & 0x1c0000L))))
                     continue;
                 if (i > 21 && (marvel_site[19] == -1 || (game_flags & (1 << civ))))
                     continue;
@@ -219,7 +219,7 @@ int find_slot(int civ, int city)
                 cand[ncand++] = -i;
             }
         }
-        if (civ == civnow && !(townbuf[city].status & 0x10) && ncand > 30) {
+        if (civ == civnow && !(townbuf[city].status & CITY_AUTO_BUILD) && ncand > 30) {
             if (menu_page_o == 0) {
                 menu_page_o = 1;
                 continue;
@@ -289,18 +289,18 @@ int find_slot(int civ, int city)
                 military_build_c = 0;
                 switch (-what) {
                 case 4:
-                    if (townbuf[city].status & 1)
+                    if (townbuf[city].status & CITY_DISORDER)
                         rank = -4;
                     break;
                 case 7:
                     rank = 12 - city_leak * 2;
                     break;
                 case 11:
-                    if (townbuf[city].status & 1)
+                    if (townbuf[city].status & CITY_DISORDER)
                         rank = -2;
                     break;
                 case 14:
-                    if (townbuf[city].status & 1)
+                    if (townbuf[city].status & CITY_DISORDER)
                         rank = -1;
                     break;
                 case 2:
@@ -324,7 +324,7 @@ int find_slot(int civ, int city)
                     break;
                 case 5:
                     rank = 10 - town_res_sums[2] / 2;
-                    if (townbuf[city].status & 1)
+                    if (townbuf[city].status & CITY_DISORDER)
                         rank = -3;
                     break;
                 case 6:
@@ -358,7 +358,7 @@ int find_slot(int civ, int city)
                         if (rank < 3)
                             rank = 3;
                     }
-                    if (civ == civnow && (townbuf[city].status & 0x10))
+                    if (civ == civnow && (townbuf[city].status & CITY_AUTO_BUILD))
                         rank = 999;
                     break;
                 case -26:
@@ -458,7 +458,7 @@ int find_slot(int civ, int city)
                 return -1;
             return cand[best_any_index_d];
         }
-        if (townbuf[city].status & 0x10) {
+        if (townbuf[city].status & CITY_AUTO_BUILD) {
             if (best_i != -1 && is <= 500)
                 return cand[best_i];
             return 99;

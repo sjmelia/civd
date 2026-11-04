@@ -89,13 +89,13 @@ void ai_turn(int civ)
                 U.type = 1;
             if (wy == 0)
                 unit_sight(U.x, U.y, civ, jf, 0L);
-            if (U.status & 9)
+            if (U.status & (UNIT_FORTIFIED | UNIT_SENTRY))
                 continue;
             if (U.moves == 0)
                 continue;
-            if (U.status & 4) {
-                U.status &= ~4;
-                U.status |= 8;
+            if (U.status & UNIT_FORTIFYING) {
+                U.status &= ~UNIT_FORTIFYING;
+                U.status |= UNIT_FORTIFIED;
                 U.moves = 0;
                 unit_note(civ, jf);
                 if (civ != civnow) {
@@ -150,13 +150,13 @@ rd:                            /* redraw map and units */
                 {
                     if (jf < 128 && ((U.status & 0xc2) || U.goto_x != -1)) {
                         ek = 'r';
-                        if (U.status & 0x40)
+                        if (U.status & UNIT_IRRIGATING)
                             ek = U.type != 0 ? 'm' : 'i';
-                        if (U.status & 0x80) {
+                        if (U.status & UNIT_MINING) {
                             ek = 'm';
-                            if (U.status & 0x40)
+                            if (U.status & UNIT_IRRIGATING)
                                 ek = 'f';
-                            if (U.status & 2)
+                            if (U.status & UNIT_ROAD)
                                 ek = 'p';
                         }
                         if (utypes[U.type].domain == 1)
@@ -288,7 +288,7 @@ ck:                            /* mouse click */
                                     report_unit(the_enemy, ek);
                                 if (ek != -1 && civ == the_enemy) {
                                     hh = pick_unit(the_enemy, ek);
-                                    if (!(armydata[civ][hh].status & 9)) {
+                                    if (!(armydata[civ][hh].status & (UNIT_FORTIFIED | UNIT_SENTRY))) {
                                         jf = hh;
                                         dl = (hh - 1) & 127;
                                         ke = 0;
@@ -359,7 +359,7 @@ uc:                            /* unit command */
                         ke = 1;
                         break;
                     case 's':
-                        U.status |= 1;
+                        U.status |= UNIT_SENTRY;
                         U.moves = 0;
                         unit_note(civ, jf);
                         break;
@@ -401,11 +401,11 @@ uc:                            /* unit command */
                             if (utypes[U.type].domain == 1) {
                                 ms = near_base(civ, jf);
                                 if (ms != 0) {
-                                    U.status |= 2;
+                                    U.status |= UNIT_ROAD;
                                     goto mv;
                                 } else {
                                     if (civ == civnow)
-                                        U.status &= ~2;
+                                        U.status &= ~UNIT_ROAD;
                                     else {
                                         U.moves = 0;
                                         drop_u_stack(civ, jf);
@@ -421,12 +421,12 @@ uc:                            /* unit command */
                         }
                         fz = map_flags(ku, jv);
                         if (!(fz & 64)) {
-                            U.status &= 0x7d;
+                            U.status &= ~UNIT_POLLUTION;
                             U.fuel = 0;
                             map_center(civ, ku, jv);
                             break;
                         }
-                        U.status |= 0x82;
+                        U.status |= UNIT_POLLUTION;
                         unit_note(civ, jf);
                         U.moves = 0;
                         U.goto_x = U.last_dir = -1;
@@ -436,32 +436,32 @@ uc:                            /* unit command */
                         map_mark(ku, jv);
                         --polluted;
                         unit_note(civ, jf);
-                        U.status &= 0x7d;
+                        U.status &= ~UNIT_POLLUTION;
                         U.fuel = 0;
                         break;
                     case 'f':
                         if (utypes[U.type].domain == 0) {
                             if (U.type != 0) {
-                                U.status |= 4;
+                                U.status |= UNIT_FORTIFYING;
                                 U.moves = 0;
                                 unit_note(civ, jf);
                                 if (civ != civnow && (map_flags(ku, jv) & 1))
                                     U.home_city = city_at(ku, jv);
                             } else {
                                 if ((map_flags(ku, jv) & 0x21) || has_tech(civ, 45) == 0) {
-                                    U.status &= 0x3f;
+                                    U.status &= ~UNIT_FORTRESS;
                                     U.fuel = 0;
                                     map_center(civ, ku, jv);
                                     break;
                                 }
-                                U.status |= 0xc0;
+                                U.status |= UNIT_FORTRESS;
                                 U.moves = 0;
                                 unit_note(civ, jf);
                                 if (terrains[gi].move_cost + 4 > ++U.fuel)
                                     break;
                                 flag_tile(32, ku, jv);
                                 unit_sight(ku, jv, civ, jf, 1L);
-                                U.status &= 0x3f;
+                                U.status &= ~UNIT_FORTRESS;
                                 U.fuel = 0;
                             }
                         }
@@ -473,7 +473,7 @@ uc:                            /* unit command */
                         }
                         fz = map_flags(ku, jv);
                         if (((fz & 8) && (has_tech(civ, 49) == 0 || (fz & 1))) || (fz & 16)) {
-                            U.status &= ~2;
+                            U.status &= ~UNIT_ROAD;
                             U.fuel = 0;
                             map_center(civ, ku, jv);
                             break;
@@ -481,14 +481,14 @@ uc:                            /* unit command */
                         gi = terrain_at(ku, jv);
                         if (gi == 11 && has_tech(civ, 19) == 0)
                             break;
-                        U.status |= 2;
+                        U.status |= UNIT_ROAD;
                         U.moves = 0;
                         unit_note(civ, jf);
                         if ((fz & 8 ? 4 : 2) * terrains[gi].move_cost > ++U.fuel)
                             break;
                         flag_tile(fz & 8 ? 16 : 8, ku, jv);
                         unit_sight(ku, jv, civ, jf, 1L);
-                        U.status &= ~2;
+                        U.status &= ~UNIT_ROAD;
                         U.fuel = 0;
                         break;
                     case 'i':
@@ -498,7 +498,7 @@ uc:                            /* unit command */
                                 human_msg("*SETTLERS");
                             else
                                 U.fuel = 0;
-                            U.status &= 0xbf;
+                            U.status &= ~UNIT_IRRIGATING;
                             break;
                         }
                         gi = terrain_at(ku, jv);
@@ -506,16 +506,16 @@ uc:                            /* unit command */
                         if (hh == -1) {
                             map_center(civ, ku, jv);
                             human_msg("*NOIRR");
-                            U.status &= 0xbf;
+                            U.status &= ~UNIT_IRRIGATING;
                             break;
                         }
                         if (hh == -2 && build_ok(ku, jv) == 0) {
                             map_center(civ, ku, jv);
                             human_msg("*NOWATER");
-                            U.status &= 0xbf;
+                            U.status &= ~UNIT_IRRIGATING;
                             break;
                         }
-                        U.status |= 0x40;
+                        U.status |= UNIT_IRRIGATING;
                         unit_note(civ, jf);
                         U.moves = 0;
                         U.goto_x = U.last_dir = -1;
@@ -530,7 +530,7 @@ uc:                            /* unit command */
                             flag_tile(2, ku, jv);
                         }
                         unit_note(civ, jf);
-                        U.status &= 0xbf;
+                        U.status &= ~UNIT_IRRIGATING;
                         U.fuel = 0;
                         break;
                     case 'm':
@@ -540,7 +540,7 @@ uc:                            /* unit command */
                                 human_msg("*SETTLERS");
                             else
                                 U.fuel = 0;
-                            U.status &= 0x7f;
+                            U.status &= ~UNIT_MINING;
                             break;
                         }
                         gi = terrain_at(ku, jv);
@@ -548,10 +548,10 @@ uc:                            /* unit command */
                         if (hh == -1) {
                             map_center(civ, ku, jv);
                             human_msg("*NOMINE");
-                            U.status &= 0x7f;
+                            U.status &= ~UNIT_MINING;
                             break;
                         }
-                        U.status |= 0x80;
+                        U.status |= UNIT_MINING;
                         unit_note(civ, jf);
                         U.moves = 0;
                         U.goto_x = U.last_dir = -1;
@@ -568,7 +568,7 @@ uc:                            /* unit command */
                             flag_tile(4, ku, jv);
                         }
                         unit_note(civ, jf);
-                        U.status &= 0x7f;
+                        U.status &= ~UNIT_MINING;
                         U.fuel = 0;
                         break;
                     case 'b':
@@ -731,7 +731,7 @@ mv:                            /* move unit */
                         }
                         if (gi == 10 && utypes[U.type].domain == 0) {
                             if (civ == stk_plr && qo != -1 && stack_cap(civ, qo) > 0) {
-                                U.status |= 1;
+                                U.status |= UNIT_SENTRY;
                                 U.status &= 0xf3;
                                 U.moves = 3;
                             } else
@@ -791,7 +791,7 @@ mv:                            /* move unit */
                                 if (fz & 1) {
                                     uk = city_at(oq, mc);
                                     if (townbuf[uk].owner != civnow)
-                                        townbuf[uk].status |= 0x10;
+                                        townbuf[uk].status |= CITY_AUTO_BUILD;
                                     if (U.type != -1 && !(townbuf[uk].buildings & 0x80L) && iw != 10 && (cur_tier != 0 || stk_plr != civnow))
                                         --townbuf[uk].size;
                                     if (townbuf[uk].size == 0) {
@@ -926,7 +926,7 @@ mv:                            /* move unit */
                                     armydata[civ][sm].visibility = 0;
                                     armydata[civ][sm].last_dir = -1;
                                     if (utypes[U.type].capacity != 0)
-                                        armydata[civ][sm].status |= 1;
+                                        armydata[civ][sm].status |= UNIT_SENTRY;
                                     if (utypes[armydata[civ][sm].type].fuel != 0)
                                         armydata[civ][sm].fuel = utypes[armydata[civ][sm].type].fuel - 1;
                                     ++gy;
@@ -964,12 +964,12 @@ mv:                            /* move unit */
                         }
                         wi = 0;
                         if ((fz & 1) && utypes[U.type].fuel != 0) {
-                            U.status &= ~2;
+                            U.status &= ~UNIT_ROAD;
                             U.moves = 0;
                             U.goto_x = -1;
                         }
                         if (utypes[U.type].fuel != 0 && utypes[U.type].domain == 1 && count_u(civ, jf, 23) != 0) {
-                            U.status &= ~2;
+                            U.status &= ~UNIT_ROAD;
                             U.moves = 0;
                             U.fuel = utypes[U.type].fuel;
                         }
@@ -1327,7 +1327,7 @@ void uinit(int player, int unit)
         strcpy(msgtext, utypes[armydata[player][unit].type].name);
         draw_string(msgtext, 4, y29, 0);
         y29 += 8;
-        if (armydata[player][unit].status & 32) {
+        if (armydata[player][unit].status & UNIT_VETERAN) {
             draw_string("Veteran", 8, y29, 0);
             y29 += 8;
         }
@@ -1385,7 +1385,7 @@ void uinit(int player, int unit)
                 if (cargo_m != -1) {
                     /* Reserved slot: preserve status/goto fields and partial reset. */
                     armydata[player][127].type = cargo_m & 63;
-                    armydata[player][127].status = 8;
+                    armydata[player][127].status = UNIT_FORTIFIED;
                     armydata[player][127].goto_x = -1;
                     draw_unit(player, 127, x29, y29);
                     armydata[player][127].type = -1;
