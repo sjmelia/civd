@@ -1894,6 +1894,7 @@ label_tile_toggle:
             }
         }
     }
+    /* Original quirk: adj_civ expects (civ, x, y); two arguments pass (x, y) into (civ, x). */
     if ((townbuf[city].status & 4) && adj_civ(townbuf[city].x, townbuf[city].y) == 0)
         garrison_in(city);
     *(int *) ((char *) scrbuf + 0x10) = 1;

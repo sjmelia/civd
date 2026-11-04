@@ -107,6 +107,7 @@ void ai_turn(int civ)
                 }
                 if (map_flags(U.x, U.y) & 1) {
                     hh = city_at(U.x, U.y);
+                    /* Original quirk: adj_civ expects (civ, x, y); two arguments pass (x, y) into (civ, x). */
                     if (U.home_city == hh && adj_civ(U.x, U.y) == 0)
                         garrison_in(hh);
                 }
