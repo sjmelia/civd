@@ -51,7 +51,7 @@ _rect_fill:
     add cx,[bp+0EH]
     dec cx
     mov DS:[f0_last_row],cx
-    mov bx,054D6H
+    mov bx,OFFSET DGROUP:f0_left_edges
     call FAR PTR raster_spans
     call FAR PTR raster_flush
 rs_fill_done:
@@ -66,7 +66,7 @@ rs_flush_edges:
     push bp
     mov ax,DS:[f0_first_row]
     mov cx,DS:[f0_last_row]
-    mov bx,054D6H
+    mov bx,OFFSET DGROUP:f0_left_edges
     call FAR PTR raster_spans
     pop bp
     pop si
@@ -89,13 +89,13 @@ rs_reset_edges:
     shl di,1
     mov bx,cx
     mov dx,di
-    add di,054D6H
+    add di,OFFSET DGROUP:f0_left_edges
     mov ax,0FFFFH
     rep stosw
     mov DS:[f0_first_row],ax
     mov cx,bx
     mov di,dx
-    add di,05666H
+    add di,OFFSET DGROUP:f0_right_edges
     sub ax,ax
     rep stosw
     mov DS:[f0_last_row],ax
@@ -206,17 +206,17 @@ rs_edge_slope:
     jmp SHORT rs_xmajor_left
     nop
 rs_xmajor_right:
-    cmp ax,[di+05666H]
+    cmp ax,[di+f0_right_edges]
     jna SHORT rs_xmajor_step
-    mov [di+05666H],ax
+    mov [di+f0_right_edges],ax
 rs_xmajor_step:
     inc ax
     sub bx,dx
     add di,bp
 rs_xmajor_left:
-    cmp ax,[di+054D6H]
+    cmp ax,[di+f0_left_edges]
     jnc SHORT rs_xmajor_next
-    mov [di+054D6H],ax
+    mov [di+f0_left_edges],ax
 rs_xmajor_next:
     dec cx
     js SHORT rs_xmajor_end
@@ -225,9 +225,9 @@ rs_xmajor_next:
     inc ax
     jmp SHORT rs_xmajor_next
 rs_xmajor_end:
-    cmp ax,[di+05666H]
+    cmp ax,[di+f0_right_edges]
     jna SHORT rs_xmajor_done
-    mov [di+05666H],ax
+    mov [di+f0_right_edges],ax
 rs_xmajor_done:
     ret
 rs_ymajor:
@@ -242,13 +242,13 @@ rs_ymajor:
     neg bx
     mov si,DS:[f0_raster_dx]
 rs_ymajor_left:
-    cmp ax,[di+054D6H]
+    cmp ax,[di+f0_left_edges]
     jnc SHORT rs_ymajor_right
-    mov [di+054D6H],ax
+    mov [di+f0_left_edges],ax
 rs_ymajor_right:
-    cmp ax,[di+05666H]
+    cmp ax,[di+f0_right_edges]
     jna SHORT rs_ymajor_next
-    mov [di+05666H],ax
+    mov [di+f0_right_edges],ax
 rs_ymajor_next:
     dec cx
     js SHORT rs_ymajor_done

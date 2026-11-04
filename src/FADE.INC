@@ -1,6 +1,8 @@
 ; Included by RESIDENT.ASM in F0000: palette fading [04AA,0668).
 ; Capture, calibrate and interpolate VGA DAC entries during timer ticks.
 ; Low DS offsets and shared palette buffers name existing storage only.
+DGROUP GROUP _DATA
+ASSUME DS:DGROUP
 ASSUME CS:F0000
 .186
 PUBLIC _install_palette, _set_palette
@@ -11,9 +13,9 @@ fd_rate EQU 066H
 fd_pending EQU 068H
 fd_fraction EQU 06AH
 fd_fraction_step EQU 06CH
-fd_target EQU 0C926H
-fd_initial EQU 0CC26H
-fd_mixed EQU 0CF26H
+fd_target EQU f0_common+05E76H
+fd_initial EQU f0_common+06176H
+fd_mixed EQU f0_common+06476H
 _install_palette:
     push bp
     mov bp,sp

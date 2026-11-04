@@ -255,14 +255,14 @@ pic_reset_codes:
     xor bx,bx
     mov cx,0800H
 pic_clear_prefix:
-    mov [bx-036DAH],ax
+    mov WORD PTR [bx+f0_common+05E76H],ax
     add bx,03H
     loop SHORT pic_clear_prefix
     mov al,00H
     xor bx,bx
     mov cx,0100H
 pic_set_suffix:
-    mov [bx-036D8H],al
+    mov [bx+f0_common+05E78H],al
     inc al
     add bx,03H
     loop SHORT pic_set_suffix
@@ -323,7 +323,7 @@ pic_bytes_done:
     ret
 pc_decode_next:
     pop bp
-    cmp sp,06A7DH
+    cmp sp,OFFSET DGROUP:f0_bss+05CBH
     jz SHORT pic_next_code
 pic_next_pop:
     pop ax
@@ -371,23 +371,23 @@ pic_walk_chain:
     mov bx,ax
     add bx,ax
     add bx,ax
-    mov ax,[bx-036DAH]
+    mov ax,WORD PTR [bx+f0_common+05E76H]
     inc ax
     jz SHORT pic_chain_root
     dec ax
-    mov bl,[bx-036D8H]
+    mov bl,[bx+f0_common+05E78H]
     push bx
     jmp SHORT pic_walk_chain
 pic_chain_root:
-    mov al,[bx-036D8H]
+    mov al,[bx+f0_common+05E78H]
     mov DS:[f0_decode_first_byte],al
     push ax
     mov bx,dx
     add bx,dx
     add bx,dx
-    mov [bx-036D8H],al
+    mov [bx+f0_common+05E78H],al
     mov ax,DS:[f0_decode_previous]
-    mov [bx-036DAH],ax
+    mov WORD PTR [bx+f0_common+05E76H],ax
     inc dx
     cmp dx,DS:[f0_decode_mask]
     jng SHORT pic_check_limit
