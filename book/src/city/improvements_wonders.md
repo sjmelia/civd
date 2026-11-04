@@ -6,7 +6,7 @@ three 16-bit integers: cost, maintenance and prerequisite. Costs are in
 tens of shields for the human player.
 
 Buildings use bits in the city's `buildings` field. Improvement n uses bit
-n−1. `CIV.H` names the Palace, City Walls and SDI masks. Spaceship parts
+n−1. `CIV.H` defines the improvement masks (`HAS_PALACE`, `HAS_CITY_WALLS`, `HAS_SDI`, etc.). Spaceship parts
 and wonders have separate state; they are not extra city-building bits.
 
 A wonder can be built once. Improvement IDs 25–45 map to wonder IDs 1–21

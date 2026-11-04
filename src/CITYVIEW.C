@@ -227,13 +227,13 @@ void city_scene(int city, int mode)
                 g[x + 1][y + 2] = -1;
         }
     }
-    if (townbuf[city].buildings & 0x80000L) {
+    if (townbuf[city].buildings & HAS_HYDRO_PLANT) {
         g[18][8] = 15;
         g[18][7] = 15;
         g[17][8] = 15;
         g[17][7] = 34;
     }
-    if (townbuf[city].buildings & 0x100L) {
+    if (townbuf[city].buildings & HAS_AQUEDUCT) {
         g[0][row - 1] = 23;
         g[1][row - 1] = 15;
         g[2][row - 1] = 15;
@@ -256,7 +256,7 @@ again:
             continue;
         sprite_draw(back_page, wonder_rects[wn].x + (wonder_rects[wn].x < 10 ? -1 : 2) + (wn == 3 ? 80 : 0), wn <= 7 ? 0 : wonder_rects[wn].y - 6, city_wonder_tiles[wn]);
     }
-    if ((townbuf[city].buildings & 0x40000L) && mode != 19)
+    if ((townbuf[city].buildings & HAS_POWER_PLANT) && mode != 19)
         for (i = city == marvel_site[7] ? 45 : 0; i < 310; i += 45)
             sprite_draw_clipped(back_page, i, 2, city_structure_glyphs[17]);
     for (y = 0; y < 12; y++)
@@ -307,7 +307,7 @@ again:
             } else if (mode + 14 != code && mode + 40 != code)
                 city_building(x, y, code - 16);
         }
-    if ((townbuf[city].buildings & 0x80L) && mode != 8) {
+    if ((townbuf[city].buildings & HAS_CITY_WALLS) && mode != 8) {
         for (i = 0; i < 320; i += 43) {
             if (i == 172)
                 i += 19;
@@ -315,7 +315,7 @@ again:
         }
         sprite_draw(back_page, 142, 108, city_structure_glyphs[6]);
     }
-    if ((townbuf[city].buildings & 0x1000L) && mode != 13) {
+    if ((townbuf[city].buildings & HAS_MASS_TRANSIT) && mode != 13) {
         for (i = 0; i < 310; i += 46)
             sprite_draw_clipped(back_page, i, 115, city_structure_glyphs[21]);
         sprite_draw(back_page, 0, 115, city_structure_glyphs[11]);

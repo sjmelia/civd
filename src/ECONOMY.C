@@ -197,7 +197,7 @@ int find_slot(int civ, int city)
             for (i = 1; i <= 24; i++) {
                 long bld;
 
-                if (!has_tech(civ, improvements[i].prereq) || ((bld = townbuf[city].buildings), (bld & (1L << (i - 1)))) || (i == 7 && (bld & 1)) || (i == 15 && (townbuf[city].buildings & 0x8000L)) || (i == 10 && !(townbuf[city].buildings & 0x10L) && has_tech(civ, improvements[5].prereq)) || (i == 12 && !(townbuf[city].buildings & 0x20L) && has_tech(civ, improvements[6].prereq)) || (i == 20 && !(townbuf[city].status & CITY_RIVER)) || (i == 19 && !(townbuf[city].buildings & 0x4000L)) || ((i == 19 || i == 20 || i == 21) && (hoover_power_c || (townbuf[city].buildings & 0x1c0000L))))
+                if (!has_tech(civ, improvements[i].prereq) || ((bld = townbuf[city].buildings), (bld & (1L << (i - 1)))) || (i == 7 && (bld & HAS_PALACE)) || (i == 15 && (townbuf[city].buildings & HAS_MFG_PLANT)) || (i == 10 && !(townbuf[city].buildings & HAS_MARKETPLACE) && has_tech(civ, improvements[5].prereq)) || (i == 12 && !(townbuf[city].buildings & HAS_LIBRARY) && has_tech(civ, improvements[6].prereq)) || (i == 20 && !(townbuf[city].status & CITY_RIVER)) || (i == 19 && !(townbuf[city].buildings & HAS_FACTORY)) || ((i == 19 || i == 20 || i == 21) && (hoover_power_c || (townbuf[city].buildings & (HAS_POWER_PLANT | HAS_HYDRO_PLANT | HAS_NUCLEAR_PLANT)))))
                     continue;
                 if (i > 21 && (marvel_site[19] == -1 || (game_flags & (1 << civ))))
                     continue;
@@ -336,7 +336,7 @@ int find_slot(int civ, int city)
                     break;
                 case 8:
                     rank = 10 - townbuf[city].size / 2;
-                    if (townbuf[city].buildings & 1)
+                    if (townbuf[city].buildings & HAS_PALACE)
                         rank -= 4;
                     military_build_c = 1;
                     break;
@@ -378,7 +378,7 @@ int find_slot(int civ, int city)
                 }
                 rank *= (military_area_m != military_build_c) ? 20 : 10;
                 rank = 3 * rank / (civt[civ_tribe_of[civ]].civilized + 3);
-                if (townbuf[city].buildings & 2)
+                if (townbuf[city].buildings & HAS_BARRACKS)
                     rank += rank / 4;
             } else {
                 if (what == 23)
@@ -423,7 +423,7 @@ int find_slot(int civ, int city)
                         continue;
                     rank = 3 * rank / 2;
                 }
-                rank = (what == 0 ? ((townbuf[city].buildings & 4) ? 4 : 6) - civt[civ_tribe_of[civ]].civilized : 16) * (utypes[what].cost + 2) * rank / ((utypes[what].attack + utypes[what].defense) * (utypes[what].moves + 1));
+                rank = (what == 0 ? ((townbuf[city].buildings & HAS_GRANARY) ? 4 : 6) - civt[civ_tribe_of[civ]].civilized : 16) * (utypes[what].cost + 2) * rank / ((utypes[what].attack + utypes[what].defense) * (utypes[what].moves + 1));
                 if (utypes[what].role == 3)
                     rank *= military_area_m ? 4 : 2;
                 if (utypes[what].domain == 1)
@@ -806,7 +806,7 @@ void give_advance(int civ, int adv, int src)
     if (adv == 34 || adv == 37) {
         for (k = 0; k < 128; k++) {
             if (townbuf[k].status != -1 && townbuf[k].owner == civ)
-                townbuf[k].buildings &= ~2L;
+                townbuf[k].buildings &= ~HAS_BARRACKS;
         }
         if (civ == civnow && mouse_mode == -1) {
             strcpy(msgtext, "Development of ");

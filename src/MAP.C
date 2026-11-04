@@ -282,7 +282,7 @@ int seen_map(int x, int y)
                 draw_string(msgtext, (size < 10 ? 6 : 3) + sx, y2 + 5, 0);
             if (map_stack(x, y) != -1 || townbuf[k].garrison[0] != -1)
                 draw_box(sx, y2, 15, 15, 0);
-            if (townbuf[k].buildings & 0x80L)
+            if (townbuf[k].buildings & HAS_CITY_WALLS)
                 label_with_style(29, sx + 1, y2 + 1);
             if (city_label_n < 32) {
                 map_label_xorg[city_label_n] = sx;

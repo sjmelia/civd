@@ -87,7 +87,7 @@ void unit_phase(int player)
             if (turn_tick * cur_tier > 200 || (map_visible_to[townbuf[i].x][townbuf[i].y] & (1 << player))
                 || civnow != townbuf[i].owner) {
                 if ((treaties[player][townbuf[i].owner] & 0x102) != 2 && ((i + turn_tick) & 3) != 0)
-                    add_target(player, townbuf[i].x, townbuf[i].y, 1, (townbuf[i].buildings & 0x80) ? 3 : 5);
+                    add_target(player, townbuf[i].x, townbuf[i].y, 1, (townbuf[i].buildings & HAS_CITY_WALLS) ? 3 : 5);
             }
         } else {
             city_count[player]++;
@@ -355,7 +355,7 @@ int ai_order(int player, int unit)
         best_scorem = -1;
         for (cn = 0; cn < 128; cn++) {
             sc_d = townbuf[cn].owner;
-            if (townbuf[cn].status != -1 && !(townbuf[cn].buildings & 0x10000L)
+            if (townbuf[cn].status != -1 && !(townbuf[cn].buildings & HAS_SDI)
                 && (military_table[player] * 3 < military_table[sc_d] * 2 || (treaties[player][sc_d] & 8)
                     || (forces_present[sc_d][25] == 0 && military_table[player] < military_table[sc_d] * 2))
                 && (treaties[player][sc_d] & 0x82) == 0x80 && townbuf[cn].size > 4) {
@@ -464,7 +464,7 @@ int ai_order(int player, int unit)
             if (own_b != -1 && utypes[armydata[player][own_b].type].defense < utypes[armydata[player][unit].type].defense)
                 return 0x66;
             divisor = unit_blocked(player, uxk, uyk) ? 3 : 4;
-            if (townbuf[home].buildings & 1)
+            if (townbuf[home].buildings & HAS_PALACE)
                 divisor--;
             else if (rstatem == 0)
                 divisor++;
