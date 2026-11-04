@@ -832,7 +832,7 @@ test_c:
                 if (rolel == 0)
                     continue;
                 if (!(treaties[player][cowner] & 2)) {
-                    stk_d = stack_other(cowner, stk_d);
+                    stk_d = stack_top(cowner, stk_d);
                     if (utypes[armydata[cowner][stk_d].type].domain == 1 && armydata[player][unit].type != UTYPE_FIGHTER && !(map_flags(nx, ny) & 1))
                         continue;
                     odds_f = battle(player, unit, cowner, stk_d, 0, 0);

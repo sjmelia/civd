@@ -770,7 +770,7 @@ mv:                            /* move unit */
                                 }
                                 if (stk_plr == civnow)
                                     map_center(civnow, oq, mc);
-                                qo = stack_other(stk_plr, qo);
+                                qo = stack_top(stk_plr, qo);
                                 if (civ == civnow || stk_plr == civnow)
                                     see_fight_all = 1;
                                 hh = battle(civ, jf, stk_plr, qo, 1L);
