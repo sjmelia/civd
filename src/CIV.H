@@ -57,9 +57,27 @@ struct city {
 };
 
 /* City improvement bits (improvement number minus one). */
-#define HAS_PALACE      0x00000001L
-#define HAS_CITY_WALLS  0x00000080L
-#define HAS_SDI         0x00010000L
+#define HAS_PALACE          0x00000001L
+#define HAS_BARRACKS        0x00000002L
+#define HAS_GRANARY         0x00000004L
+#define HAS_TEMPLE          0x00000008L
+#define HAS_MARKETPLACE     0x00000010L
+#define HAS_LIBRARY         0x00000020L
+#define HAS_COURTHOUSE      0x00000040L
+#define HAS_CITY_WALLS      0x00000080L
+#define HAS_AQUEDUCT        0x00000100L
+#define HAS_BANK            0x00000200L
+#define HAS_CATHEDRAL       0x00000400L
+#define HAS_UNIVERSITY      0x00000800L
+#define HAS_MASS_TRANSIT    0x00001000L
+#define HAS_COLOSSEUM       0x00002000L
+#define HAS_FACTORY         0x00004000L
+#define HAS_MFG_PLANT       0x00008000L
+#define HAS_SDI             0x00010000L
+#define HAS_RECYCLING_CNTR  0x00020000L
+#define HAS_POWER_PLANT     0x00040000L
+#define HAS_HYDRO_PLANT     0x00080000L
+#define HAS_NUCLEAR_PLANT   0x00100000L
 
 /* DGROUP 81D4: 128 units per civilization, 12 bytes each. */
 struct unit {

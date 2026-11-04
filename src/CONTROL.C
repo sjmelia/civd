@@ -792,7 +792,7 @@ mv:                            /* move unit */
                                     uk = city_at(oq, mc);
                                     if (townbuf[uk].owner != civnow)
                                         townbuf[uk].status |= CITY_AUTO_BUILD;
-                                    if (U.type != -1 && !(townbuf[uk].buildings & 0x80L) && iw != 10 && (cur_tier != 0 || stk_plr != civnow))
+                                    if (U.type != -1 && !(townbuf[uk].buildings & HAS_CITY_WALLS) && iw != 10 && (cur_tier != 0 || stk_plr != civnow))
                                         --townbuf[uk].size;
                                     if (townbuf[uk].size == 0) {
                                         vanish(uk, oq, mc);

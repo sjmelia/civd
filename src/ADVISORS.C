@@ -327,7 +327,7 @@ int civ_arg;
             } else {
                 cap = -1;
                 for (i = 0; i < 128; i++) {
-                    if (townbuf[i].owner == civ && townbuf[i].status != -1 && (townbuf[i].buildings & 1)) {
+                    if (townbuf[i].owner == civ && townbuf[i].status != -1 && (townbuf[i].buildings & HAS_PALACE)) {
                         cap = i;
                     }
                 }
@@ -470,7 +470,7 @@ void civ_dossier(int civ)
 
     cap = -1;
     for (i = 0; i < 128; i++) {
-        if (townbuf[i].owner == civ && townbuf[i].status != -1 && (townbuf[i].buildings & 1)) {
+        if (townbuf[i].owner == civ && townbuf[i].status != -1 && (townbuf[i].buildings & HAS_PALACE)) {
             cap = i;
         }
     }
@@ -564,7 +564,7 @@ void mood_rpt(int civ)
             rect_fill(scrbuf, 212, y - 1, 90, 10, 11);
 
             for (i = 0; i < 24; i++) {
-                if ((townbuf[city].buildings & (1 << i)) & 0x2618) {
+                if ((townbuf[city].buildings & (1 << i)) & (HAS_TEMPLE | HAS_MARKETPLACE | HAS_BANK | HAS_CATHEDRAL | HAS_COLOSSEUM)) {
                     draw_icon(i + 1, x, y - 1);
                     x += 18;
                 }

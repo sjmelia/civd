@@ -30,7 +30,7 @@ int civil_war(int old)
     for (i = 0; i < 128; i++) {
         if (townbuf[i].status != -1 && townbuf[i].owner == old) {
             rsz[region_key(townbuf[i].x, townbuf[i].y)] += townbuf[i].size;
-            if (townbuf[i].buildings & 1)
+            if (townbuf[i].buildings & HAS_PALACE)
                 if (caprg == -1 || x_cap[old] == townbuf[i].x) {
                     caprg = region_key(townbuf[i].x, townbuf[i].y);
                     x = townbuf[i].x;
@@ -176,14 +176,14 @@ int civil_war(int old)
         }
     }
     city = central_city(new_civ);
-    townbuf[city].buildings |= 1;
+    townbuf[city].buildings |= HAS_PALACE;
     x_cap[new_civ] = townbuf[city].x;
     if (old == civnow) {
         reveal(civnow, map_x0, map_y0);
     } else {
         townbuf[cpt].owner = -1;
         city = central_city(old);
-        townbuf[city].buildings |= 1;
+        townbuf[city].buildings |= HAS_PALACE;
         x_cap[old] = townbuf[city].x;
         townbuf[cpt].owner = old;
     }

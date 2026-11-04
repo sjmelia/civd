@@ -340,7 +340,7 @@ int nearest_unit_distance(int civ, int x, int y)
 
     mind = 16;
     for (i = 0; i < 128; i++) {
-        if (townbuf[i].status != -1 && townbuf[i].owner == civ && (*(char *) &townbuf[i].buildings & 1)) {
+        if (townbuf[i].status != -1 && townbuf[i].owner == civ && (*(char *) &townbuf[i].buildings & HAS_PALACE)) {
             d = map_dist(townbuf[i].x, x, townbuf[i].y, y);
             if (d < mind)
                 mind = d;
