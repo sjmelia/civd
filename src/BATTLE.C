@@ -169,12 +169,12 @@ int attacker_civ_b, attacker_unit_m, defender_civ_e, defender_unit_p, flag;
     }
     if (attacker_civ_b == civnow)
         treaties[defender_civ_e][attacker_civ_b] &= ~0x200;
-    if (attacker_type_j == 0x19) {
+    if (attacker_type_j == UTYPE_NUCLEAR) {
         atom(attacker_civ_b, armydata[defender_civ_e][defender_unit_p].x, armydata[defender_civ_e][defender_unit_p].y);
         return 1;
     }
     if (attacker_wins) {
-        if (defender_civ_e == 0 && armydata[defender_civ_e][defender_unit_p].type == 0x1a) {
+        if (defender_civ_e == 0 && armydata[defender_civ_e][defender_unit_p].type == UTYPE_DIPLOMAT) {
             money[attacker_civ_b] += 100;
             if (attacker_civ_b == civnow) {
                 msgtext[0] = 0;

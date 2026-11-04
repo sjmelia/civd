@@ -85,7 +85,7 @@ void ai_turn(int civ)
             if (U.type == -1)
                 continue;
             if (U.type >= 28)
-                U.type = 1;
+                U.type = UTYPE_MILITIA;
             if (wy == 0)
                 unit_sight(U.x, U.y, civ, jf, 0L);
             if (U.status & (UNIT_FORTIFIED | UNIT_SENTRY))
@@ -150,7 +150,7 @@ rd:                            /* redraw map and units */
                     if (jf < 128 && ((U.status & 0xc2) || U.goto_x != -1)) {
                         ek = 'r';
                         if (U.status & UNIT_IRRIGATING)
-                            ek = U.type != 0 ? 'm' : 'i';
+                            ek = U.type != UTYPE_SETTLERS ? 'm' : 'i';
                         if (U.status & UNIT_MINING) {
                             ek = 'm';
                             if (U.status & UNIT_IRRIGATING)
@@ -168,7 +168,7 @@ rd:                            /* redraw map and units */
                         notice_a("*FIRSTMOVE");
                         wy = 1;
                     }
-                    if (U.type == 0 && wy == 0) {
+                    if (U.type == UTYPE_SETTLERS && wy == 0) {
                         /* Overlay 8 entry at 058E. */
                         advice(civ, jf);
                         wy = 1;
@@ -327,7 +327,7 @@ uc:                            /* unit command */
                         drop_u_stack(civ, jf);
                         break;
                     case 'P':
-                        if ((map_flags(ku, jv) & 1) || U.type >= 26 || U.type == 14) {
+                        if ((map_flags(ku, jv) & 1) || U.type >= UTYPE_DIPLOMAT || U.type == UTYPE_FIGHTER) {
                             human_msg("*PILLAGE");
                             break;
                         } else {
@@ -363,7 +363,7 @@ uc:                            /* unit command */
                         unit_note(civ, jf);
                         break;
                     case 'u':
-                        if ((utypes[U.type].capacity != 0 || U.type == 23) && U.next != -1) {
+                        if ((utypes[U.type].capacity != 0 || U.type == UTYPE_CARRIER) && U.next != -1) {
                             each_stack(civ, jf, unit_reset);
                             oa = 0;
                             lt = 1;
@@ -414,7 +414,7 @@ uc:                            /* unit command */
                         }
                         break;
                     case 'p':
-                        if (U.type != 0) {
+                        if (U.type != UTYPE_SETTLERS) {
                             human_msg("*SETTLERS");
                             break;
                         }
@@ -440,7 +440,7 @@ uc:                            /* unit command */
                         break;
                     case 'f':
                         if (utypes[U.type].domain == 0) {
-                            if (U.type != 0) {
+                            if (U.type != UTYPE_SETTLERS) {
                                 U.status |= UNIT_FORTIFYING;
                                 U.moves = 0;
                                 unit_note(civ, jf);
@@ -466,7 +466,7 @@ uc:                            /* unit command */
                         }
                         break;
                     case 'r':
-                        if (U.type != 0) {
+                        if (U.type != UTYPE_SETTLERS) {
                             human_msg("*SETTLERS");
                             break;
                         }
@@ -491,9 +491,9 @@ uc:                            /* unit command */
                         U.fuel = 0;
                         break;
                     case 'i':
-                        if (U.type != 0 || !(rule_options & 2) || (map_flags(ku, jv) & 2)) {
+                        if (U.type != UTYPE_SETTLERS || !(rule_options & 2) || (map_flags(ku, jv) & 2)) {
                             map_center(civ, ku, jv);
-                            if (U.type != 0)
+                            if (U.type != UTYPE_SETTLERS)
                                 human_msg("*SETTLERS");
                             else
                                 U.fuel = 0;
@@ -533,9 +533,9 @@ uc:                            /* unit command */
                         U.fuel = 0;
                         break;
                     case 'm':
-                        if (U.type != 0 || (map_flags(ku, jv) & 4)) {
+                        if (U.type != UTYPE_SETTLERS || (map_flags(ku, jv) & 4)) {
                             map_center(civ, ku, jv);
-                            if (U.type != 0)
+                            if (U.type != UTYPE_SETTLERS)
                                 human_msg("*SETTLERS");
                             else
                                 U.fuel = 0;
@@ -571,7 +571,7 @@ uc:                            /* unit command */
                         U.fuel = 0;
                         break;
                     case 'b':
-                        if (U.type != 0) {
+                        if (U.type != UTYPE_SETTLERS) {
                             human_msg("*SETTLERS");
                             break;
                         }
@@ -656,9 +656,9 @@ mv:                            /* move unit */
                                 reveal(civ, vj - 8, tl - 7);
                             break;
                         }
-                        if (civ == 0 && U.type != 26) {
+                        if (civ == 0 && U.type != UTYPE_DIPLOMAT) {
                             fz = map_flags(ku, jv);
-                            if (!(fz & 1) && (fz & 6) && U.type != 3 && U.type != 7 && townbuf[near_city(ku, jv)].owner == civnow) {
+                            if (!(fz & 1) && (fz & 6) && U.type != UTYPE_LEGION && U.type != UTYPE_KNIGHTS && townbuf[near_city(ku, jv)].owner == civnow) {
                                 unflag(6, ku, jv);
                                 if (map_visible_to[ku][jv] & (1 << civnow)) {
                                     map_mark(ku, jv);
@@ -675,7 +675,7 @@ mv:                            /* move unit */
                         fz = map_flags(oq, mc);
                         qo = map_stack(oq, mc);
                         if (utypes[U.type].domain == 0) {
-                            if (qo == -1 && if_open(civ, ku, jv) != 0 && if_open(civ, oq, mc) != 0 && U.type < 26 && iw != 10) {
+                            if (qo == -1 && if_open(civ, ku, jv) != 0 && if_open(civ, oq, mc) != 0 && U.type < UTYPE_DIPLOMAT && iw != 10) {
                                 if (civ == civnow)
                                     sound(37);
                                 if (debug & 1)
@@ -683,12 +683,12 @@ mv:                            /* move unit */
                                 U.goto_x = -1;
                                 break;
                             }
-                            if (U.type >= 26) {
+                            if (U.type >= UTYPE_DIPLOMAT) {
                                 uk = city_at(oq, mc);
                                 if (uk != -1) {
                                     if (townbuf[uk].owner != civ && iw == 10)
                                         break;
-                                    if (U.type == 26 && civ != townbuf[uk].owner) {
+                                    if (U.type == UTYPE_DIPLOMAT && civ != townbuf[uk].owner) {
                                         if (townbuf[uk].owner == civnow) {
                                             U.visibility |= 1 << civnow;
                                             map_center(civnow, U.x, U.y);
@@ -698,7 +698,7 @@ mv:                            /* move unit */
                                         dip_menu(uk, civ, jf);
                                         break;
                                     }
-                                    if (U.type == 27) {
+                                    if (U.type == UTYPE_CARAVAN) {
                                         hh = map_dist(oq, townbuf[U.home_city].x, mc, townbuf[U.home_city].y);
                                         if (!(townbuf[uk].owner == civ && townbuf[uk].production >= -24 && hh < 10 && region_key(oq, mc) == region_key(townbuf[U.home_city].x, townbuf[U.home_city].y))) {
                                             strcpy(msgtext, "Will you?\n Keep moving\n Establish trade route\n");
@@ -721,7 +721,7 @@ mv:                            /* move unit */
                                         }
                                     }
                                 } else {
-                                    if (U.type == 26 && qo != -1 && civ != stk_plr) {
+                                    if (U.type == UTYPE_DIPLOMAT && qo != -1 && civ != stk_plr) {
                                         buy_u(stk_plr, qo, civ);
                                         U.goto_x = -1;
                                     }
@@ -742,13 +742,13 @@ mv:                            /* move unit */
                                     U.goto_x = -1;
                                     break;
                                 }
-                                if (gi != 10 && U.type == 22)
+                                if (gi != 10 && U.type == UTYPE_SUBMARINE)
                                     break;
                                 if (civ != civnow && utypes[U.type].attack == 0)
                                     break;
-                                if (U.type == 26)
+                                if (U.type == UTYPE_DIPLOMAT)
                                     break;
-                                if (utypes[armydata[stk_plr][qo].type].domain == 1 && U.type != 14 && !(fz & 1)) {
+                                if (utypes[armydata[stk_plr][qo].type].domain == 1 && U.type != UTYPE_FIGHTER && !(fz & 1)) {
                                     human_msg("*FIGHTER");
                                     U.goto_x = -1;
                                     break;
@@ -784,7 +784,7 @@ mv:                            /* move unit */
                                     U.moves -= 3;
                                     if (U.moves < 0)
                                         U.moves = 0;
-                                    if (U.type == 15)
+                                    if (U.type == UTYPE_BOMBER)
                                         U.moves = 0;
                                 }
                                 if (fz & 1) {
@@ -823,7 +823,7 @@ mv:                            /* move unit */
                             break;
                         }
                         if (utypes[U.type].domain != 0 && (fz & 1) && map_city(oq, mc) != civ) {
-                            if (U.type != 25) {
+                            if (U.type != UTYPE_NUCLEAR) {
                                 human_msg("*OCCUPY");
                                 U.goto_x = -1;
                                 break;
@@ -864,7 +864,7 @@ mv:                            /* move unit */
                         }
                         yg = pixel_at(2, oq + 80, mc);
                         if (yg != 0 && yg < 8) {
-                            if (gi != 10 && iw != 10 && U.type < 26 && (fz & 15) && yg != civ && (civ == civnow || yg == civnow) && utypes[U.type].domain == 0 && map_owner(oq, mc) != civ) {
+                            if (gi != 10 && iw != 10 && U.type < UTYPE_DIPLOMAT && (fz & 15) && yg != civ && (civ == civnow || yg == civnow) && utypes[U.type].domain == 0 && map_owner(oq, mc) != civ) {
                                 if (civ == civnow) {
                                     U.goto_x = -1;
                                     if (attack_ok(yg) == -1)
@@ -913,7 +913,7 @@ mv:                            /* move unit */
                         }
                         if (iw == 10 && gi != 10 && utypes[U.type].domain != 1)
                             U.moves = 0;
-                        if ((utypes[U.type].capacity != 0 || U.type == 23) && sm != -1) {
+                        if ((utypes[U.type].capacity != 0 || U.type == UTYPE_CARRIER) && sm != -1) {
                             gy = bn = 0;
                             do {
                                 ao = armydata[civ][sm].next;
@@ -931,7 +931,7 @@ mv:                            /* move unit */
                                     ++gy;
                                 }
                                 sm = ao;
-                            } while (++bn < 20 && sm != -1 && (utypes[U.type].capacity > gy || U.type == 23 || civ == 0));
+                            } while (++bn < 20 && sm != -1 && (utypes[U.type].capacity > gy || U.type == UTYPE_CARRIER || civ == 0));
 
                         }
                         if ((fz & 1) && cm != civ) {
@@ -967,7 +967,7 @@ mv:                            /* move unit */
                             U.moves = 0;
                             U.goto_x = -1;
                         }
-                        if (utypes[U.type].fuel != 0 && utypes[U.type].domain == 1 && count_u(civ, jf, 23) != 0) {
+                        if (utypes[U.type].fuel != 0 && utypes[U.type].domain == 1 && count_u(civ, jf, UTYPE_CARRIER) != 0) {
                             U.status &= ~UNIT_ROAD;
                             U.moves = 0;
                             U.fuel = utypes[U.type].fuel;
@@ -1213,14 +1213,14 @@ dn:            ;               /* unit finished */
                     oa = 0;
                 else {
                     if (utypes[U.type].fuel != 0) {
-                        if ((map_flags(U.x, U.y) & 1) || count_u(civ, jf, 23) != 0)
+                        if ((map_flags(U.x, U.y) & 1) || count_u(civ, jf, UTYPE_CARRIER) != 0)
                             U.fuel = utypes[U.type].fuel;
                         if (--U.fuel < 0) {
                             drop_u_stack(civ, jf);
                             human_msg("*FUEL");
                         }
                     }
-                    if (U.type == 16 && civ == civnow && rand_scaled(2) != 0) {
+                    if (U.type == UTYPE_TRIREME && civ == civnow && rand_scaled(2) != 0) {
                         hx = 0;
                         for (gy = 1; gy <= 8; gy++) {
                             if (terrain_at(U.x + spiral_x[gy], U.y + spiral_y[gy]) != 10) {

@@ -56,8 +56,8 @@ void unit_phase(int player)
             fog_map[x][y] = 0;
     troops_total[player] = civ_settlers_n[player] = military_table[player] = 0;
     for (i = 0; i < 128; i++) {
-        if (armydata[player][i].type != -1 && armydata[player][i].type != 0x19) {
-            if (armydata[player][i].type == 0)
+        if (armydata[player][i].type != -1 && armydata[player][i].type != UTYPE_NUCLEAR) {
+            if (armydata[player][i].type == UTYPE_SETTLERS)
                 civ_settlers_n[player]++;
             else
                 troops_total[player]++;
@@ -185,7 +185,7 @@ void unit_phase(int player)
         slots[j] = cap;
     for (i = 0; i < 128; i++) {
         if (armydata[player][i].type == -1 || (armydata[player][i].status & UNIT_ASSIGNED)
-            || armydata[player][i].type == 0x19)
+            || armydata[player][i].type == UTYPE_NUCLEAR)
             continue;
         best_cost = 9999;
         flags = -1;
@@ -194,7 +194,7 @@ void unit_phase(int player)
         island = region_key(x, y);
         if (((i + turn_tick) & 15) == 0 && (has_tech(player, utypes[armydata[player][i].type].obsolete_by)
                                             || ((civ_gov[player] > 1 || civ_area_plan[player][island] == 5)
-                                                && armydata[player][i].type == 1))
+                                                && armydata[player][i].type == UTYPE_MILITIA))
             && !unit_blocked(player, x, y)
             && !((map_flags(x, y) & 1) && armydata[player][i].next == -1)
             && terrain_at(x, y) != 10 && civ_area_plan[player][island] != 2) {
@@ -204,9 +204,9 @@ void unit_phase(int player)
         for (j = 0; j < 32; j++) {
             if (objectives_type[player][j] != -1 && ((utypes[armydata[player][i].type].role == objectives_type[player][j]
                                                       && region_key(civ_targets_x[player][j], civ_targets_y[player][j]) == island)
-                                                     || (armydata[player][i].type == 15 && (utypes[armydata[player][i].type].role == objectives_type[player][j]
-                                                                                            || objectives_type[player][j] == 3)))) {
-                if (armydata[player][i].type == 15) {
+                                                     || (armydata[player][i].type == UTYPE_BOMBER && (utypes[armydata[player][i].type].role == objectives_type[player][j]
+                                                                                                      || objectives_type[player][j] == 3)))) {
+                if (armydata[player][i].type == UTYPE_BOMBER) {
                     if ((aim_count[player][j] & 1) && ((j + (turn_tick >> 1)) & 1)) {
                         rating = map_dist(x, civ_targets_x[player][j], y, civ_targets_y[player][j]);
                         rating = (utypes[armydata[player][i].type].moves >= rating ? 2 : 4)
@@ -293,15 +293,15 @@ int ai_order(int player, int unit)
         ai_break();
     if (player == 0)
         return unit_ai_move(player, unit);
-    if (armydata[player][unit].type == 15 && armydata[player][unit].fuel <= 0)
+    if (armydata[player][unit].type == UTYPE_BOMBER && armydata[player][unit].fuel <= 0)
         return 0x68;
-    if (armydata[player][unit].type == 14 && armydata[player][unit].goto_x == -1) {
+    if (armydata[player][unit].type == UTYPE_FIGHTER && armydata[player][unit].goto_x == -1) {
         if (utypes[armydata[player][unit].type].moves / 2 * 3 >= armydata[player][unit].moves)
             return 0x68;
         best_d_c = 999;
         best_c = -1;
         for (k = 0; k < 128; k++) {
-            if (armydata[civnow][k].type == 15 && (armydata[civnow][k].visibility & (1 << player))) {
+            if (armydata[civnow][k].type == UTYPE_BOMBER && (armydata[civnow][k].visibility & (1 << player))) {
                 dn = map_dist(armydata[player][unit].x, armydata[civnow][k].x, armydata[player][unit].y, armydata[civnow][k].y);
                 if (dn < best_d_c) {
                     best_d_c = dn;
@@ -351,13 +351,13 @@ int ai_order(int player, int unit)
     rstatem = civ_area_plan[player][region];
     pbitn = 1 << player;
 
-    if (utypej == 25) {
+    if (utypej == UTYPE_NUCLEAR) {
         best_scorem = -1;
         for (cn = 0; cn < 128; cn++) {
             sc_d = townbuf[cn].owner;
             if (townbuf[cn].status != -1 && !(townbuf[cn].buildings & HAS_SDI)
                 && (military_table[player] * 3 < military_table[sc_d] * 2 || (treaties[player][sc_d] & 8)
-                    || (forces_present[sc_d][25] == 0 && military_table[player] < military_table[sc_d] * 2))
+                    || (forces_present[sc_d][UTYPE_NUCLEAR] == 0 && military_table[player] < military_table[sc_d] * 2))
                 && (treaties[player][sc_d] & 0x82) == 0x80 && townbuf[cn].size > 4) {
                 sc_d = 0;
                 for (k = 0; k <= 8; k++) {
@@ -389,7 +389,7 @@ int ai_order(int player, int unit)
                 }
             }
         }
-        if (best_scorem >= 10 && forces_present[player][25] > 1) {
+        if (best_scorem >= 10 && forces_present[player][UTYPE_NUCLEAR] > 1) {
             cn = home;
             armydata[player][unit].goto_x = townbuf[cn].x;
             armydata[player][unit].goto_y = townbuf[cn].y;
@@ -409,7 +409,7 @@ int ai_order(int player, int unit)
         }
         goto give_up;
     }
-    if (utypej == 26) {
+    if (utypej == UTYPE_DIPLOMAT) {
         if ((unsigned char) armydata[player][unit].goto_x != 0xff)
             return 0;
         if (townbuf[home].owner != player) {
@@ -587,7 +587,7 @@ give_up:
             }
             if (blocked_i == 0 || rolel == 5) {
                 if ((unsigned char) armydata[player][unit].goto_x == 0xff && ((roles & 2) || !(roles & 1))
-                    && armydata[player][unit].type != 16) {
+                    && armydata[player][unit].type != UTYPE_TRIREME) {
                     best_d_c = 999;
                     k = turn_tick & 7;
                     goto test_c;
@@ -606,7 +606,7 @@ test_c:
                     if (k < 128)
                         goto loop_c;
                 }
-                if ((unsigned char) armydata[player][unit].goto_x == 0xff && armydata[player][unit].type != 16) {
+                if ((unsigned char) armydata[player][unit].goto_x == 0xff && armydata[player][unit].type != UTYPE_TRIREME) {
                     best_d_c = 999;
                     vl = -1;
                     if (terrain_at(uxk, uyk) != 10)
@@ -688,7 +688,7 @@ test_c:
                     nx = spiral_x[sc_d] + uxk;
                     ny = spiral_y[sc_d] + uyk;
                     own_b = map_stack(nx, ny);
-                    if (own_b != -1 && (player != the_enemy || count_u(player, own_b, 0)))
+                    if (own_b != -1 && (player != the_enemy || count_u(player, own_b, UTYPE_SETTLERS)))
                         continue;
                     if (work_rules[terrain_at(nx, ny)][has_tech(player, 5) ? WORK_ROAD_BRIDGES : WORK_ROAD] != 0 && work_tile(nx, ny)
                         && !(townbuf[home].size < 3 && terrain_at(nx, ny) == 4 && !patterned_cell(4, nx, ny))
@@ -766,7 +766,7 @@ test_c:
         armydata[player][unit].last_dir = -1;
     else
         freem = 1;
-    if (utypej == 1 && rstatem == 1)
+    if (utypej == UTYPE_MILITIA && rstatem == 1)
         rolel = 1;
     for (k = 1; k <= 8; k++) {
         nx = wrap_x(spiral_x[k] + uxk);
@@ -778,19 +778,19 @@ test_c:
         if (tern == 10 && utypes[armydata[player][unit].type].domain == 0)
             continue;
         stk_d = map_stack(nx, ny);
-        if (stk_d != -1 && armydata[the_enemy][stk_d].type == 26) {
+        if (stk_d != -1 && armydata[the_enemy][stk_d].type == UTYPE_DIPLOMAT) {
             own_b = stk_d;
             do {
                 own_b = armydata[the_enemy][own_b].next;
-            } while (own_b != -1 && own_b != stk_d && armydata[the_enemy][own_b].type == 26);
+            } while (own_b != -1 && own_b != stk_d && armydata[the_enemy][own_b].type == UTYPE_DIPLOMAT);
             if (own_b != -1)
                 stk_d = own_b;
         }
-        if (blocked_i && utypes[armydata[player][unit].type].domain == 0 && stk_d == -1 && if_open(player, nx, ny) && armydata[player][unit].type < 26 && terrain_g != 10)
+        if (blocked_i && utypes[armydata[player][unit].type].domain == 0 && stk_d == -1 && if_open(player, nx, ny) && armydata[player][unit].type < UTYPE_DIPLOMAT && terrain_g != 10)
             continue;
         if (terrain_g == 10 && utypes[armydata[player][unit].type].domain == 0 && stk_d != -1 && cowner != player)
             continue;
-        if (utypes[armydata[player][unit].type].domain == 2 && tern != 10 && (stk_d == -1 || cowner == player || utypej == 22 || terrain_g != 10))
+        if (utypes[armydata[player][unit].type].domain == 2 && tern != 10 && (stk_d == -1 || cowner == player || utypej == UTYPE_SUBMARINE || terrain_g != 10))
             continue;
         if (stk_d != -1 && cowner == player && stack_len(player, stk_d, 2) >= 2)
             continue;
@@ -833,7 +833,7 @@ test_c:
                     continue;
                 if (!(treaties[player][cowner] & 2)) {
                     stk_d = stack_other(cowner, stk_d);
-                    if (utypes[armydata[cowner][stk_d].type].domain == 1 && armydata[player][unit].type != 14 && !(map_flags(nx, ny) & 1))
+                    if (utypes[armydata[cowner][stk_d].type].domain == 1 && armydata[player][unit].type != UTYPE_FIGHTER && !(map_flags(nx, ny) & 1))
                         continue;
                     odds_f = battle(player, unit, cowner, stk_d, 0, 0);
                     odds_f = (stack_len(cowner, stk_d, 0) + 1) * odds_f;
@@ -1242,14 +1242,14 @@ int unit_ai_move(int player, int unit)
         armydata[player][unit].last_dir = unit_goal(player, unit);
     }
     armydata[player][unit].goto_x = -1;
-    if (armydata[player][unit].type == 0x1a) {
+    if (armydata[player][unit].type == UTYPE_DIPLOMAT) {
         land = terrain_at(armydata[player][unit].x, armydata[player][unit].y);
-        if (armydata[player][unit].next != -1 && land != 10 && armydata[player][armydata[player][unit].next].type != 0x1a)
+        if (armydata[player][unit].next != -1 && land != 10 && armydata[player][armydata[player][unit].next].type != UTYPE_DIPLOMAT)
             return 0x20;
         dist29 = town_gap;
         if (land != 10) {
             closest = nearest_unit(player, unit, armydata[player][unit].x, armydata[player][unit].y);
-            if (town_gap <= 3 && armydata[player][closest].type != 0x1a) {
+            if (town_gap <= 3 && armydata[player][closest].type != UTYPE_DIPLOMAT) {
                 armydata[player][unit].goto_x = armydata[player][closest].x;
                 armydata[player][unit].goto_y = armydata[player][closest].y;
                 return 0;
@@ -1277,7 +1277,7 @@ next:
         if (!map_in_bounds(tx1, ty1))
             continue;
         st6 = map_stack(tx1, ty1);
-        if (armydata[player][unit].type == 0x1a) {
+        if (armydata[player][unit].type == UTYPE_DIPLOMAT) {
             value = 0;
             if (st6 != -1)
                 value += (player == the_enemy) ? 99 : -99;
@@ -1298,7 +1298,7 @@ next:
                 } else {
                     if (terrain_at(ux1, uy) == 10)
                         continue;
-                    if (armydata[the_enemy][st6].type != 0x1a)
+                    if (armydata[the_enemy][st6].type != UTYPE_DIPLOMAT)
                         value += 99;
                 }
             }
