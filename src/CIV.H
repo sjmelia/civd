@@ -37,6 +37,36 @@ struct unit_type {
     int prereq;
 };
 
+/* Unit type IDs (indices into utypes table) */
+#define UTYPE_SETTLERS      0
+#define UTYPE_MILITIA       1
+#define UTYPE_PHALANX       2
+#define UTYPE_LEGION        3
+#define UTYPE_MUSKETEERS    4
+#define UTYPE_RIFLEMEN      5
+#define UTYPE_CAVALRY       6
+#define UTYPE_KNIGHTS       7
+#define UTYPE_CATAPULT      8
+#define UTYPE_CANNON        9
+#define UTYPE_CHARIOT       10
+#define UTYPE_ARMOR         11
+#define UTYPE_MECH_INF      12
+#define UTYPE_ARTILLERY     13
+#define UTYPE_FIGHTER       14
+#define UTYPE_BOMBER        15
+#define UTYPE_TRIREME       16
+#define UTYPE_SAIL          17
+#define UTYPE_FRIGATE       18
+#define UTYPE_IRONCLAD      19
+#define UTYPE_CRUISER       20
+#define UTYPE_BATTLESHIP    21
+#define UTYPE_SUBMARINE     22
+#define UTYPE_CARRIER       23
+#define UTYPE_TRANSPORT     24
+#define UTYPE_NUCLEAR       25
+#define UTYPE_DIPLOMAT      26
+#define UTYPE_CARAVAN       27
+
 /* DGROUP 70EC: 128 cities, 28 bytes each. */
 struct city {
     long buildings;             /* bit (n-1) set: improvement n is built */

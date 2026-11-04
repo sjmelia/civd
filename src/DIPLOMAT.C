@@ -234,7 +234,7 @@ void buy_u(int player, int unit_id, int bribing_player)
 
     distance = nearest_unit_distance(player, armydata[player][unit_id].x, armydata[player][unit_id].y);
     cost = (money[player] + 750) / (distance + 2) * utypes[armydata[player][unit_id].type].cost;
-    if (armydata[player][unit_id].type != 0)
+    if (armydata[player][unit_id].type != UTYPE_SETTLERS)
         cost /= 2;
 
     if (bribing_player != civnow) {

@@ -284,7 +284,7 @@ int init_civ(int civ)
             strcpy(civ_names[civ], msgtext);
         }
         map_refresh(civ, x, y);
-        create_unit(civ, 0, x, y);
+        create_unit(civ, UTYPE_SETTLERS, x, y);
         x_cap[civ] = x;
         for (i = 0; i < 128; i++)
             if (armydata[0][i].type != -1 && map_dist(x, armydata[0][i].x, y, armydata[0][i].y) <= 8)
@@ -425,7 +425,7 @@ int rate_starts(void)
             strcpy(msgtext, "Skills: ");
             if (best_score - pts[p] > 3) {
                 pts[p] += 3;
-                create_unit(p, 0, armydata[p][0].x, armydata[p][0].y);
+                create_unit(p, UTYPE_SETTLERS, armydata[p][0].x, armydata[p][0].y);
                 strcat(msgtext, "Settlers+");
             }
             for (j = 0; j < best_score - pts[p]; j++) {

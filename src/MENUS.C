@@ -125,7 +125,7 @@ void unit_orders_menu(int p, int u)
     strcat(msgtext, " No Orders \217space\n");
     keybuf[pos++] = ' ';
     dialog_dim = 0;
-    if (armydata[p][u].type == 0) {
+    if (armydata[p][u].type == UTYPE_SETTLERS) {
         strcat(msgtext, (tileflags & 1) ? " Add to City \217b\n" : " Found New City \217b\n");
         keybuf[pos++] = 'b';
         if (!(tileflags & 8)) {
@@ -172,7 +172,7 @@ void unit_orders_menu(int p, int u)
             keybuf[pos++] = 'p';
         }
     }
-    if (armydata[p][u].type == 0) {
+    if (armydata[p][u].type == UTYPE_SETTLERS) {
         strcat(msgtext, " Build Fortress \217f\n");
         if (!has_tech(p, 0x2d))
             dialog_dim |= 1 << pos;

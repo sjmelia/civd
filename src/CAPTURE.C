@@ -136,7 +136,7 @@ int a, b, c;
             city_process(b, 1L);
             sel_player();
         } else {
-            townbuf[b].production = 0;
+            townbuf[b].production = UTYPE_SETTLERS;
             townbuf[b].production = find_slot(a, b);
             if (townbuf[b].production >= 0)
                 ++civ_units_ordered[a][townbuf[b].production];

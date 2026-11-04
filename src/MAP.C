@@ -306,7 +306,7 @@ int unit_redraw(int player, int unit)
     int wh;
 
     if (still == 1) {
-        rect_fill(scrbuf, armydata[player][unit].x * 4 + 1, armydata[player][unit].y * 4 + 1, 3, 3, armydata[player][unit].type == 0 ? 6 : 0);
+        rect_fill(scrbuf, armydata[player][unit].x * 4 + 1, armydata[player][unit].y * 4 + 1, 3, 3, armydata[player][unit].type == UTYPE_SETTLERS ? 6 : 0);
         rect_fill(scrbuf, armydata[player][unit].x * 4, armydata[player][unit].y * 4, 3, 3, civ_colours[player]);
     } else {
         sx = wrap_x(armydata[player][unit].x - map_x0) << 4;
