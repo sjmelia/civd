@@ -37,7 +37,7 @@ helpers built on it are:
 
 ## Choosing the defender
 
-When a stack is attacked, `stack_other()` picks the defender with the
+When a stack is attacked, `stack_top()` picks the defender with the
 highest score from `score_defender()`:
 
 ```text

@@ -2,7 +2,7 @@
 
 A unit attacks by moving onto a tile held by another civilization.
 `ai_turn()` checks that the attack is allowed, chooses the defender with
-`stack_other()` (see [Stacks](unit_stacking.md#choosing-the-defender)) and
+`stack_top()` (see [Stacks](unit_stacking.md#choosing-the-defender)) and
 calls `battle(attacker_civ, attacker, defender_civ, defender, 1)`. One
 random comparison decides the outcome, and the loser is destroyed.
 
