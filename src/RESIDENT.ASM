@@ -134,8 +134,6 @@ _DATA SEGMENT WORD PUBLIC 'DATA'
 PUBLIC _random_seed
 _random_seed EQU _F2B01+05C38H
 PUBLIC _target_value, _match_count
-_target_value EQU _F2B01+0653AH
-_match_count EQU _F2B01+0653CH
 PUBLIC _scrbuf
 _scrbuf EQU _F2B01+0AAH
 PUBLIC _sound_command
@@ -144,7 +142,6 @@ PUBLIC _sprite_arena_init, _load_program
 PUBLIC _mouse_hide_limit
 PUBLIC _page_ready
 PUBLIC _sound_shutdown, _restore_timer, _set_page, _set_palette
-_mouse_hide_limit EQU _F2B01+0652EH
 PUBLIC _blit, _apply_palette, _free_paragraphs
 PUBLIC _set_cycle, _start_cycle, _stop_cycle
 DB 00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H,00H
@@ -203,7 +200,164 @@ PAD ENDS
 EPAD SEGMENT BYTE COMMON 'MSG'
 EPAD ENDS
 _BSS SEGMENT WORD PUBLIC 'BSS'
+; Resident uninitialized storage.
+PUBLIC f0_bss
+f0_bss LABEL BYTE
 DB 05DEH DUP (0)
+; Name the storage in place, so that each PUBDEF carries DGROUP.
+ORG 0000H
+_mouse_hide_limit LABEL BYTE
+ORG 0002H
+_selected_stack_index LABEL BYTE
+ORG 0004H
+_stack_total LABEL BYTE
+ORG 0006H
+_selected_score LABEL BYTE
+ORG 0008H
+_total_mode LABEL BYTE
+ORG 000AH
+_total_limit LABEL BYTE
+ORG 000CH
+_target_value LABEL BYTE
+ORG 000EH
+_match_count LABEL BYTE
+ORG 0010H
+_selected_city LABEL BYTE
+ORG 0012H
+_radius_tiles LABEL BYTE
+ORG 0014H
+_excess_unhappy LABEL BYTE
+ORG 0018H
+_units_abroad LABEL BYTE
+ORG 001AH
+_selected_owner LABEL BYTE
+ORG 001CH
+_menu_result LABEL BYTE
+ORG 001EH
+_hilite_colour LABEL BYTE
+ORG 0020H
+_line_off LABEL BYTE
+ORG 0060H
+_line_count LABEL BYTE
+ORG 0062H
+_path_target_x LABEL BYTE
+ORG 0064H
+_path_target_y LABEL BYTE
+ORG 0066H
+_path_queue_x LABEL BYTE
+ORG 0166H
+_path_queue_y LABEL BYTE
+ORG 0266H
+_path_limit LABEL BYTE
+ORG 0268H
+_path_cache_x LABEL BYTE
+ORG 026AH
+_path_cache_y LABEL BYTE
+ORG 026CH
+_bios_regs LABEL BYTE
+ORG 0284H
+_sound_choices LABEL BYTE
+ORG 02A9H
+_custom_sounds LABEL BYTE
+ORG 02B2H
+_gfx_choices LABEL BYTE
+ORG 02BAH
+_shown_face LABEL BYTE
+ORG 02BCH
+_faces_loaded LABEL BYTE
+ORG 02BEH
+_leader_font LABEL BYTE
+ORG 02C0H
+_modern_court LABEL BYTE
+ORG 02C2H
+_no_portraits LABEL BYTE
+ORG 02C4H
+_audience_civ LABEL BYTE
+ORG 02C6H
+_anim_step LABEL BYTE
+ORG 02C8H
+_talk_hold LABEL BYTE
+ORG 02CAH
+_portrait LABEL BYTE
+ORG 02CCH
+_advisors_loaded LABEL BYTE
+ORG 02CEH
+_story_skip LABEL BYTE
+ORG 02D0H
+_land_count LABEL BYTE
+ORG 02D2H
+_story_clock LABEL BYTE
+ORG 02D4H
+_story_line LABEL BYTE
+ORG 02D6H
+_story_file LABEL BYTE
+ORG 02D8H
+_story_wait LABEL BYTE
+ORG 02DAH
+_pedia_more LABEL BYTE
+ORG 02DCH
+_replay_mode LABEL BYTE
+ORG 02DEH
+_replay_file LABEL BYTE
+ORG 02E0H
+_replay_auto LABEL BYTE
+ORG 02E2H
+_replay_civ LABEL BYTE
+ORG 02E4H
+_nearest_dist LABEL BYTE
+ORG 02ECH
+_save_mode LABEL BYTE
+ORG 02EEH
+_save_error LABEL BYTE
+ORG 02F0H
+_save_fd LABEL BYTE
+ORG 02F2H
+_save_index LABEL BYTE
+ORG 02F4H
+_save_turn LABEL BYTE
+ORG 02F6H
+_save_player LABEL BYTE
+ORG 02F8H
+_save_year LABEL BYTE
+ORG 02FAH
+_selected_tile LABEL BYTE
+ORG 02FCH
+_ship_tiles LABEL BYTE
+ORG 0310H
+_star_x LABEL BYTE
+ORG 0324H
+_star_y LABEL BYTE
+ORG 0338H
+_star_on LABEL BYTE
+ORG 034CH
+_ship_state LABEL BYTE
+ORG 0352H
+_pop_tiles LABEL BYTE
+ORG 0372H
+_city_wonder_tiles LABEL BYTE
+ORG 039EH
+_edit_cursor LABEL BYTE
+ORG 03A0H
+_edit_cursor_w LABEL BYTE
+ORG 03A2H
+_edit_cursor_x LABEL BYTE
+ORG 03A4H
+_sprite_header LABEL BYTE
+ORG 03ACH
+_image_file LABEL BYTE
+ORG 03AEH
+_source_offset LABEL BYTE
+ORG 03B0H
+_source_segment LABEL BYTE
+ORG 03B2H
+_archive_index LABEL BYTE
+ORG 03B4H
+_picture_width LABEL BYTE
+ORG 03B6H
+_picture_height LABEL BYTE
+ORG 03B8H
+_picture_bytes LABEL BYTE
+ORG 05DEH
 _BSS ENDS
 XOB SEGMENT WORD PUBLIC 'BSS'
 XOB ENDS
@@ -213,11 +367,16 @@ XOE SEGMENT WORD PUBLIC 'BSS'
 XOE ENDS
 ZBSS SEGMENT PARA PUBLIC 'BSS'
 ZBSS ENDS
+; Start of the C communals; asm names them by offset so their order is kept.
+c_common SEGMENT PARA PUBLIC 'BSS'
+PUBLIC f0_common
+f0_common LABEL BYTE
+c_common ENDS
 STACK SEGMENT PARA STACK 'STACK'
 STACK ENDS
 TAIL SEGMENT PARA 'STACK'
 TAIL ENDS
-DGROUP GROUP DANCHOR,_DATA,DPOST,CDATA,XIFB,XIF,XIFE,XIB,XI,XIE,XPB,XP,XPE,XCB,XC,XCE,XCFB,XCF,XCFE,OVERLAY_DATA,CONST,HDR,MSG,PAD,EPAD,_BSS,XOB,XO,XOE,ZBSS,STACK,TAIL
+DGROUP GROUP DANCHOR,_DATA,DPOST,CDATA,XIFB,XIF,XIFE,XIB,XI,XIE,XPB,XP,XPE,XCB,XC,XCE,XCFB,XCF,XCFE,OVERLAY_DATA,CONST,HDR,MSG,PAD,EPAD,_BSS,XOB,XO,XOE,ZBSS,c_common,STACK,TAIL
 ZBSS SEGMENT PARA PUBLIC 'BSS'
 ZBSS ENDS
 STACK SEGMENT PARA STACK 'STACK'
@@ -227,101 +386,54 @@ TAIL ENDS
 F1DC4 SEGMENT WORD PUBLIC 'CODE'
 F1DC4 ENDS
 PUBLIC _menu_result
-_menu_result EQU _F2B01+0654AH
 PUBLIC _hilite_colour
-_hilite_colour EQU _F2B01+0654CH
 PUBLIC _line_count
-_line_count EQU _F2B01+0658EH
 PUBLIC _line_off
-_line_off EQU _F2B01+0654EH
 PUBLIC _bios_regs
-_bios_regs EQU _F2B01+0679AH
 PUBLIC _gfx_choices
-_gfx_choices EQU _F2B01+067E0H
 PUBLIC _sound_choices
-_sound_choices EQU _F2B01+067B2H
 PUBLIC _custom_sounds
-_custom_sounds EQU _F2B01+067D7H
 PUBLIC _edit_cursor
-_edit_cursor EQU _F2B01+068CCH
 PUBLIC _edit_cursor_w
-_edit_cursor_w EQU _F2B01+068CEH
 PUBLIC _edit_cursor_x
-_edit_cursor_x EQU _F2B01+068D0H
 PUBLIC _page_string, _timer_reset, _timer_read
 PUBLIC _page_read_row
 PUBLIC _save_error
-_save_error EQU _F2B01+0681CH
 PUBLIC _save_fd
-_save_fd EQU _F2B01+0681EH
 PUBLIC _save_index
-_save_index EQU _F2B01+06820H
 PUBLIC _save_mode
-_save_mode EQU _F2B01+0681AH
 PUBLIC _save_player
-_save_player EQU _F2B01+06824H
 PUBLIC _save_turn
-_save_turn EQU _F2B01+06822H
 PUBLIC _save_year
-_save_year EQU _F2B01+06826H
 PUBLIC _selected_tile
-_selected_tile EQU _F2B01+06828H
 PUBLIC _nearest_dist
-_nearest_dist EQU _F2B01+06812H
 PUBLIC _replay_auto
-_replay_auto EQU _F2B01+0680EH
 PUBLIC _replay_civ
-_replay_civ EQU _F2B01+06810H
 PUBLIC _replay_file
-_replay_file EQU _F2B01+0680CH
 PUBLIC _replay_mode
-_replay_mode EQU _F2B01+0680AH
 PUBLIC _ship_state
-_ship_state EQU _F2B01+0687AH
 PUBLIC _ship_tiles
-_ship_tiles EQU _F2B01+0682AH
 PUBLIC _star_on
-_star_on EQU _F2B01+06866H
 PUBLIC _star_x
-_star_x EQU _F2B01+0683EH
 PUBLIC _star_y
-_star_y EQU _F2B01+06852H
 PUBLIC _pedia_more
-_pedia_more EQU _F2B01+06808H
 PUBLIC _archive_index
-_archive_index EQU _F2B01+068E0H
 PUBLIC _image_file
-_image_file EQU _F2B01+068DAH
 PUBLIC _picture_bytes
-_picture_bytes EQU _F2B01+068E6H
 PUBLIC _picture_height
-_picture_height EQU _F2B01+068E4H
 PUBLIC _picture_width
-_picture_width EQU _F2B01+068E2H
 PUBLIC _source_offset
-_source_offset EQU _F2B01+068DCH
 PUBLIC _source_segment
-_source_segment EQU _F2B01+068DEH
 PUBLIC _sprite_header
-_sprite_header EQU _F2B01+068D2H
 PUBLIC _path_cache_x
-_path_cache_x EQU _F2B01+06796H
 PUBLIC _path_cache_y
-_path_cache_y EQU _F2B01+06798H
 PUBLIC _path_limit
-_path_limit EQU _F2B01+06794H
 PUBLIC _path_queue_x
-_path_queue_x EQU _F2B01+06594H
 PUBLIC _path_queue_y
-_path_queue_y EQU _F2B01+06694H
 PUBLIC _path_target_x
-_path_target_x EQU _F2B01+06590H
 PUBLIC _path_target_y
-_path_target_y EQU _F2B01+06592H
 PUBLIC _city_wonder_tiles
-_city_wonder_tiles EQU _F2B01+068A0H
 PUBLIC _pop_tiles
-_pop_tiles EQU _F2B01+06880H
 PUBLIC _wonder_bounds
 _wonder_bounds EQU _F2767+00H
 PUBLIC _human_msg
@@ -333,55 +445,29 @@ _land_unit EQU _F0403+03D51H
 PUBLIC _unit_note
 _unit_note EQU _F0403+03702H
 PUBLIC _shown_face
-_shown_face EQU _F2B01+067E8H
 PUBLIC _faces_loaded
-_faces_loaded EQU _F2B01+067EAH
 PUBLIC _modern_court
-_modern_court EQU _F2B01+067EEH
 PUBLIC _no_portraits
-_no_portraits EQU _F2B01+067F0H
 PUBLIC _audience_civ
-_audience_civ EQU _F2B01+067F2H
 PUBLIC _anim_step
-_anim_step EQU _F2B01+067F4H
 PUBLIC _talk_hold
-_talk_hold EQU _F2B01+067F6H
 PUBLIC _portrait
-_portrait EQU _F2B01+067F8H
 PUBLIC _advisors_loaded
-_advisors_loaded EQU _F2B01+067FAH
 PUBLIC _leader_font
-_leader_font EQU _F2B01+067ECH
 PUBLIC _excess_unhappy
-_excess_unhappy EQU _F2B01+06542H
 PUBLIC _selected_city
-_selected_city EQU _F2B01+0653EH
 PUBLIC _selected_owner
-_selected_owner EQU _F2B01+06548H
 PUBLIC _radius_tiles
-_radius_tiles EQU _F2B01+06540H
 PUBLIC _units_abroad
-_units_abroad EQU _F2B01+06546H
 PUBLIC _land_count
-_land_count EQU _F2B01+067FEH
 PUBLIC _story_clock
-_story_clock EQU _F2B01+06800H
 PUBLIC _story_file
-_story_file EQU _F2B01+06804H
 PUBLIC _story_line
-_story_line EQU _F2B01+06802H
 PUBLIC _story_skip
-_story_skip EQU _F2B01+067FCH
 PUBLIC _story_wait
-_story_wait EQU _F2B01+06806H
 PUBLIC _stack_total
-_stack_total EQU _F2B01+06532H
 PUBLIC _selected_score
-_selected_score EQU _F2B01+06534H
 PUBLIC _selected_stack_index
-_selected_stack_index EQU _F2B01+06530H
 PUBLIC _total_limit
-_total_limit EQU _F2B01+06538H
 PUBLIC _total_mode
-_total_mode EQU _F2B01+06536H
 END
