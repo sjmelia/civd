@@ -9,11 +9,12 @@
 #include "DRIVER.H"
 #include "STRBIOS.H"
 
+/* Module state, stored in RESIDENT.ASM. */
+extern char gfx_choices[];
+extern char sound_choices[];
+extern char custom_sounds[];
+
 extern union REGS bios_regs;
-
-
-extern char graphics_driver;
-extern char sound_driver;
 
 char *gfx_names[4] = { ") VGA (256 color)", ") MCGA (256 color)", ") EGA (16 color)", ") Tandy 1000 (16 color)" };
 char *sound_names[6] = { ") No sounds please", ") IBM sounds", ") Tandy sounds", ") AdLib/Sound Blaster", ") Roland MT-32 MIDI board", ") Custom sound driver" };
@@ -75,7 +76,7 @@ void setup_main(void)
     option_count_n = 1;
     for (option_m = 0; option_m < 4; option_m++) {
         itoa(option_count_n, option_text_e, 10);
-        table1[option_count_n] = gfx_codes[option_m];
+        gfx_choices[option_count_n] = gfx_codes[option_m];
         strcat(option_text_e, gfx_names[option_m]);
         print_at(option_count_n++ + 14, 27, option_text_e);
     }
@@ -84,7 +85,7 @@ void setup_main(void)
         set_cursor(13, 49);
         key_n = key_echo();
         if (key_n >= '1' && key_n < option_count_n + '0') {
-            graphics_driver = table1[key_n - '0'];
+            *graphics_driver = gfx_choices[key_n - '0'];
             await_choice_d = 0;
         }
     } while (await_choice_d);
@@ -103,11 +104,11 @@ void setup_main(void)
         unused_limit_k = 7;
         for (option_m = 0; option_m < 6; option_m++) {
             itoa(option_count_n, option_text_e, 10);
-            table2[option_count_n] = sound_codes[option_m];
+            sound_choices[option_count_n] = sound_codes[option_m];
             /* Dormant custom-driver entries are outside the six built-in choices. */
             if (option_m >= 7) {
-                sound_names[option_m][15] = table3[option_m];
-                table2[option_count_n] = table3[option_m];
+                sound_names[option_m][15] = custom_sounds[option_m];
+                sound_choices[option_count_n] = custom_sounds[option_m];
             }
             strcat(option_text_e, sound_names[option_m]);
             print_at(option_row_l++ + 13, 27, option_text_e);
@@ -118,7 +119,7 @@ void setup_main(void)
             set_cursor(13, 50);
             key_n = key_echo();
             if (key_n >= '1' && key_n < option_count_n + '0') {
-                sound_driver = table2[key_n - '0'];
+                *sound_driver = sound_choices[key_n - '0'];
                 await_choice_d = 0;
             }
         } while (await_choice_d);

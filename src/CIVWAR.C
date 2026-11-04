@@ -1,6 +1,5 @@
 /* Overlay 15: civil war when a capital is captured. */
 #include <string.h>
-#include "CIV.H"
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
@@ -11,13 +10,6 @@
 #include "UNITS.H"
 #include "CORE.H"
 #include "TURN.H"
-
-extern struct city townbuf[];
-extern struct unit armydata[8][128];
-extern struct {
-    char a, b;
-} treaties[8][8];
-
 
 int civil_war(int old)
 {
@@ -84,8 +76,8 @@ int civil_war(int old)
     for (i = 0; i < 5; i++)
         advances_known[new_civ][i] = advances_known[old][i];
     last_met_turn[new_civ] = turn_tick - 8;
-    treaties[old][new_civ].a |= 1;
-    treaties[new_civ][old].a |= 9;
+    treaty_low(old, new_civ) |= 1;
+    treaty_low(new_civ, old) |= 9;
     l = rsz[caprg];
     m = 0;
     for (i = 0; i < 16; i++) {

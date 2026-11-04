@@ -1,8 +1,8 @@
 /* Overlay 3: Hall of Fame. */
+#include <io.h>
 #include <string.h>
 #include <stdlib.h>
 #include <dos.h>
-#include "CIV.H"
 #include "CORE.H"
 #include "GAME.H"
 #include "GLOBALS.H"
@@ -17,19 +17,13 @@
 #include "DRIVER.H"
 
 struct fame {
-    int score, level, f4, year, f8, f10, f12;
+    int score, level, score_scale, year, wonder_points, citizen_points, population;
     char leader[16];
     char name[16];
 };
 
-extern struct city townbuf[];
 extern struct fame far fame_ranks[];
 extern char far hall_text[][25];
-
-extern int open();
-extern int read(), write(), close();
-
-
 
 
 void clear_fame_records(void)
@@ -113,7 +107,7 @@ int show_fame(int who)
         draw_string(msgtext, x, y, 0);
         y += 8;
         strcpy(msgtext, "Population: ");
-        format_total(fame_ranks[i + 1].f12);
+        format_population(fame_ranks[i + 1].population);
         strcat(msgtext, ", Score: ");
         strcat(msgtext, itoa(fame_ranks[i + 1].score, nstr, 10));
         switch (fame_ranks[i + 1].level) {
@@ -174,11 +168,11 @@ again:
             copy_to_far(leader_names[civnow], (char far *) fame_ranks[i + 1].leader, 14);
             copy_to_far(civ_names[civnow], (char far *) fame_ranks[i + 1].name, 16);
             fame_ranks[i + 1].level = cur_tier;
-            fame_ranks[i + 1].f4 = ratio_score;
-            fame_ranks[i + 1].f8 = marvel_points;
-            fame_ranks[i + 1].f10 = merit_people;
+            fame_ranks[i + 1].score_scale = ratio_score;
+            fame_ranks[i + 1].wonder_points = marvel_points;
+            fame_ranks[i + 1].citizen_points = merit_people;
             fame_ranks[i + 1].year = year;
-            fame_ranks[i + 1].f12 = count_weighted_units(civnow);
+            fame_ranks[i + 1].population = population_points(civnow);
             if (show_fame(i)) {
                 clear_fame_records();
                 goto again;

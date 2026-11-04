@@ -5,11 +5,11 @@ resource records. Each record is 19 bytes. The special record supplies a
 replacement yield, rather than a bonus to add to the base terrain.
 
 ```c
-{{#include ../../../src/CIV.H:5:10}}
+{{#include ../../../src/CIV.H:8:13}}
 ```
 
 ```c
-{{#include ../../../src/GAME.C:61:86}}
+{{#include ../../../src/GAME.C:35:60}}
 ```
 
 The fields after the name are movement cost, defence in halves, food,

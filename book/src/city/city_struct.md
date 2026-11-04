@@ -5,10 +5,10 @@ The world has room for 128 cities, shared by all eight civilization slots.
 so the array occupies 3,584 bytes. A `status` of −1 marks a free record.
 
 ```c
-{{#include ../../../src/CIV.H:29:45}}
+{{#include ../../../src/CIV.H:41:57}}
 ```
 
-`o20_city()` in `CITY.C` finds a free record when a Settler founds a city.
+`city_create()` in `CITY.C` finds a free record when a Settler founds a city.
 `city_create()` sets up its position, owner, name, workers and reserves.
 `vanish()` in `ECONOMY.C` removes a city, clears its map flags and removes
 references to it from trade routes and supported units.
@@ -29,7 +29,7 @@ references to it from trade routes and supported units.
 | `0x0e` | `shield_box` | Stored production, a 16-bit integer |
 | `0x10` | `workers` | Worked tiles in bits 0–20; specialist count in bits 26–31 |
 | `0x14` | `specialists` | Eight two-bit specialist types |
-| `0x16` | `name_id` | Unsigned index into `place_name[256][13]`, accessed with a cast |
+| `0x16` | `name_id` | Unsigned index into `place_name[256][13]` |
 | `0x17–19` | `routes` | Up to three destination cities; −1 means empty |
 | `0x1a–1b` | `garrison` | Two stored unit types, with veteran bit `0x40`; −1 means empty |
 

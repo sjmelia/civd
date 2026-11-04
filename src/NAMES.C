@@ -1,3 +1,5 @@
+#include <conio.h>
+#include <string.h>
 #include "CAPTURE.H"
 #include "CONTROL.H"
 #include "CORE.H"
@@ -11,21 +13,11 @@
 #include "DIALOG.H"
 #include "MAP.H"
 
-struct city {
-    unsigned long flags;
-    unsigned char x, y;
-    char status, f7, f8, f9, f10, owner;
-    char pad12[10];
-    unsigned char f22, slot[5];
-};
+/* Module state, stored in RESIDENT.ASM. */
+extern int edit_cursor;
+extern int edit_cursor_w;
+extern int edit_cursor_x;
 
-extern struct city townbuf[];
-extern char far place_name[][13];
-extern char far map_visible_to[];
-
-extern int kbhit(void), getch(void);
-extern int strlen(), strnicmp();
-extern char *strcpy(char *, char *);
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
 int rename_city(int city)
@@ -44,7 +36,7 @@ int rename_city(int city)
         ret = edit_line(88, 96, 12);
     } while (strlen(msgtext) == 0);
     if (ret)
-        copy_to_far(msgtext, place_name[townbuf[city].f22], 13);
+        copy_to_far(msgtext, place_name[townbuf[city].name_id], 13);
     menu_end();
     mouse_on();
     return ret;
@@ -97,7 +89,7 @@ void goto_city(void)
     mouse_off();
     menu_begin();
     city = find_city("Where in the heck is ... (city name)");
-    if (city != -1 && (map_visible_to[50 * townbuf[city].x + townbuf[city].y] & (1 << civnow))) {
+    if (city != -1 && (map_visible_to[townbuf[city].x][townbuf[city].y] & (1 << civnow))) {
         reveal(civnow, townbuf[city].x - 7, townbuf[city].y - 6);
     } else {
         rect_fill(scrbuf, 64, 78, 224, 10, 15);
@@ -126,7 +118,7 @@ int find_city(char *prompt)
         copy_from_far(place_name[k], name, 13);
         if (strnicmp(msgtext, name, strlen(msgtext)) == 0) {
             for (index = 0; index < 128; index++)
-                if (townbuf[index].status != -1 && townbuf[index].f22 == k)
+                if (townbuf[index].status != -1 && townbuf[index].name_id == k)
                     return index;
         }
     }
@@ -237,7 +229,7 @@ int edit_redraw(int x, int y, int n)
     y += 2;
     for (index = 0; index < n; index++) {
         rect_fill(scrbuf, x, y, 8, 8, 15);
-        if (strlen(msgtext) > index) {
+        if ((int) strlen(msgtext) > index) {
             character = msgtext[index + 1];
             msgtext[index + 1] = 0;
             draw_string_dim(msgtext + index, x, y, 0);

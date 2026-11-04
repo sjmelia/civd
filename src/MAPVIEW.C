@@ -1,5 +1,7 @@
 /* Overlay 10: world map and unit-roster report. */
-#include "CIV.H"
+#include <conio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
@@ -10,15 +12,6 @@
 #include "MAP.H"
 #include "TURN.H"
 
-extern char far map_visible_to[];
-extern struct unit_type utypes[];
-extern struct unit armydata[8][128];
-extern int row_flag[8][16];
-
-
-extern int getch(void);
-extern char *itoa(int, char *, int), *strcpy(char *, char *), *strcat(char *, char *);
-extern int strlen();
 
 void view_army(void)
 {
@@ -54,7 +47,7 @@ int map_report(int civ)
     known = 1 << civ;
     for (cy = 0; cy < 50; cy++) {
         for (x = 0; x < 80; x++) {
-            if (!(map_visible_to[50 * x + cy] & known) && !xray_on)
+            if (!(map_visible_to[x][cy] & known) && !xray_on)
                 continue;
             tx = x * 4;
             ty = cy * 4;
@@ -164,7 +157,7 @@ int report_unit(int civ, int idx)
     while (n != -1) {
         if (n == idx)
             break;
-        if (strlen(msgtext) >= 0x200)
+        if ((int) strlen(msgtext) >= 0x200)
             break;
         strcat(msgtext, utypes[armydata[civ][n].type].name);
         strcat(msgtext, "\n*");

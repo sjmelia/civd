@@ -25,29 +25,14 @@
 #include "LOADER.H"
 #include "LOADTAIL.H"
 #include "MOUSE.H"
+#include "NOTES.H"
+#include "TIMER.H"
 
-extern union REGS bios_call_reg_block_io;
-
-
-
-
-
-extern void (interrupt far * _dos_getvect(int)) ();
-extern void _dos_setvect(int, void (interrupt far *) ());
-
-extern void show_help(char *);
-
-struct terrain_rec {
-    char name[12];
-    unsigned char f0, f1, f2, f3, f4, f5, f6;
-};
-
-struct word_rec {
-    int a, b, c, d;
-};
+/* Module state, stored in RESIDENT.ASM. */
+extern int mouse_hide_limit;
 
 /* 0-11 the terrain types, 12-23 the same with their special resource. */
-struct terrain_rec terrains[24] = {
+struct terrain_type terrains[24] = {
     { "Desert", 1, 2, 0, 1, 0, 1, 14 },
     { "Plains", 1, 2, 1, 1, 0, 1, 6 },
     { "Grassland", 1, 2, 2, 1, 0, 1, 10 },
@@ -74,25 +59,19 @@ struct terrain_rec terrains[24] = {
     { "River", 1, 3, 2, 1, 1, 2, 9 },
 };
 
-struct word_rec work_rules[18] = {
-    { -2, 5, -2, 5 },
-    { 0, 0, -2, 5 },
-    { 2, 15, 1, 1 },
-    { -2, 5, 2, 10 },
-    { 0, 1, 6, 5 },
-    { -1, 5, 0, 0 },
-    { -2, 10, -4, 10 },
-    { 1, 1, -1, 0 },
-    { -2, 10, 0, 0 },
-    { -1, 0, -1, 0 },
-    { 0, 0, -1, 0 },
-    { -1, 0, 0, 0 },
-    { 10, 15, 2, 15 },
-    { 0, 0, 10, 15 },
-    { 2, 15, 0, 0 },
-    { -1, 0, -1, 0 },
-    { 0, 0, -2, 5 },
-    { -1, 0, 0, 1 },
+int work_rules[12][6] = {
+    { -2, 5, -2, 5, 0, 0 },     /* Desert */
+    { -2, 5, 2, 15, 1, 1 },     /* Plains */
+    { -2, 5, 2, 10, 0, 1 },     /* Grassland */
+    { 6, 5, -1, 5, 0, 0 },      /* Forest */
+    { -2, 10, -4, 10, 1, 1 },   /* Hills */
+    { -1, 0, -2, 10, 0, 0 },    /* Mountains */
+    { -1, 0, -1, 0, 0, 0 },     /* Tundra */
+    { -1, 0, -1, 0, 0, 0 },     /* Arctic */
+    { 10, 15, 2, 15, 0, 0 },    /* Swamp */
+    { 10, 15, 2, 15, 0, 0 },    /* Jungle */
+    { -1, 0, -1, 0, 0, 0 },     /* Ocean */
+    { -2, 5, -1, 0, 0, 1 },     /* River */
 };
 
 struct advance advances[72] = {
@@ -299,13 +278,6 @@ int improvement_words[22] = {
 };
 
 /* Unit types and civilization/leader tables. */
-
-struct unit_type {
-    char name[12];
-    int obsolete_by;
-    int domain;
-    int moves, fuel, attack, defense, cost, sight, capacity, role, prereq;
-};
 
 struct unit_type utypes[28] = {
     { "Settlers", 127, 0, 1, 0, 0, 1, 4, 0, 0, 0, -1 },

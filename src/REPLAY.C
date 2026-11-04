@@ -1,7 +1,8 @@
 /* Overlay 9: game replay and world-conquest ending. */
+#include <io.h>
+#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CIV.H"
 #include "AUDIENCE.H"
 #include "CAPTURE.H"
 #include "CONTROL.H"
@@ -19,19 +20,17 @@
 #include "REPLAY.H"
 #include "MESSAGE.H"
 
-extern struct unit_type utypes[];
+/* Module state, stored in RESIDENT.ASM. */
+extern int nearest_dist;
+extern int replay_auto;
+extern int replay_civ;
+extern int replay_file;
+extern int replay_mode;
 
 extern int far replay_cities[3][128];
-extern unsigned char far replay_log[];
-extern char far place_name[][13];
 extern char far fame_ranks[];
-extern int far portrait_size[][2], far portrait_offset[][2];
-
-extern int open();
-extern int write(), close();
 
 
-extern int getch(void);
 
 int replay_length = 0;          /* bytes used in replay_log */
 
@@ -181,7 +180,7 @@ void replay(void)
                 strcat(msgtext, ": ");
                 strcat(msgtext, itoa(x, nstr, 10));
                 strcat(msgtext, " cities; ");
-                format_total((y << 8) + z);
+                format_population((y << 8) + z);
                 strcat(msgtext, " population");
                 replay_line();
                 break;

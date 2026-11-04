@@ -1,4 +1,5 @@
 /* Screen-image run-length encoding. */
+#include <stdlib.h>
 #include "GLOBALS.H"
 #include "RESIDENT.H"
 #include "DRIVER.H"
@@ -23,7 +24,7 @@ int image_rect(struct page *page, int x, int y, int width, int height, char *nam
     int last, run, value, alignment;
     unsigned char *begin, *pixels, *end;
     if (image_begin(name, width, height))
-        return image_error;
+        return errno;
     alignment = x & 7;
     begin = unpack_raster + alignment;
     end = begin + width;
@@ -52,7 +53,7 @@ int image_rect(struct page *page, int x, int y, int width, int height, char *nam
     }
     image_run(run, last);
     if (image_finish())
-        return image_error;
+        return errno;
     return 0;
 }
 

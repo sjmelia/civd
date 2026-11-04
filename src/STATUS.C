@@ -12,16 +12,6 @@
 #include "UNITS.H"
 #include "ECONOMY.H"
 
-struct unit_type {
-    char name[12];
-    int fields[11];
-};
-
-extern struct unit_type utypes[];
-extern unsigned char far advance_owners[][2];
-extern int treaties[8][8];
-
-
 void civ_info(int p)
 {                               /* civilization profile (debug) */
     int i, y, j, z, k;
@@ -36,7 +26,7 @@ void civ_info(int p)
     strcat(msgtext, government_names[civ_gov[p]]);
     draw_string(msgtext, 16, 24, 15);
     strcpy(msgtext, "Population: ");
-    count_weighted_units(p);
+    population_points(p);
     draw_string(msgtext, 16, 32, 15);
     strcpy(msgtext, "Treasury: $");
     strcat(msgtext, itoa(money[p], nstr, 10));
@@ -96,7 +86,7 @@ void civ_info(int p)
     for (i = 0; i < 72; i++) {
         if (has_tech(p, i)) {
             strcpy(msgtext, advances[i].name);
-            draw_string(msgtext, k % 3 * 100 + 8, y, (advance_owners[i][0] & 7) == p ? 15 : 7);
+            draw_string(msgtext, k % 3 * 100 + 8, y, (advance_owners[i] & 7) == p ? 15 : 7);
             k++;
             if (k % 3 == 0)
                 y += 8;

@@ -1,6 +1,7 @@
 /* Overlay 12: world map, PowerGraph, wonders, rankings and demographics. */
 
-#include "CIV.H"
+#include <stdlib.h>
+#include <string.h>
 #include "GAME.H"
 #include "GLOBALS.H"
 #include "RESIDENT.H"
@@ -18,26 +19,6 @@
 #include "MAP.H"
 #include "MESSAGE.H"
 #include "PATH.H"
-
-extern struct unit armydata[][128];
-extern struct city townbuf[];
-extern char far map_visible_to[][50];
-
-extern unsigned char far power_history[][8];
-
-extern int treaties[8][8];
-
-    /* historian ranking points; [0] counts reports */
-
-
-extern int abs(int);
-extern char *itoa(int, char *, int);
-extern char *strcat(char *, char *);
-extern char *strcpy(char *, char *);
-
-
-
-
 
 
 /* Function 1: [0000, 03AC) - World Map View (F10) */
@@ -208,8 +189,8 @@ test_turn:
             continue;
         draw_string(civ_adjectives[p], 8, (p << 3) + 4, civ_colours[p]);
         for (i = 0; i < turn_tick / 4; i++) {
-            if (max_val < power_history[i][p])
-                max_val = power_history[i][p];
+            if (max_val < (unsigned char) power_history[i][p])
+                max_val = (unsigned char) power_history[i][p];
         }
     }
 
@@ -224,7 +205,7 @@ test_turn:
         goto test_i;
         do {
             x = i * 2;
-            y = (180U * power_history[i][p]) / max_val;
+            y = (180U * (unsigned char) power_history[i][p]) / max_val;
             draw_line(turn + 4, 192 - y0, x + 4, 192 - y, civ_colours[p]);
             turn = x;
             y0 = y;
@@ -525,7 +506,7 @@ test_city:
     draw_shadowed("Population:", 8, y, 15);
     for (i = 1; i < 8; i++) {
         msgtext[0] = 0;
-        rank[i] = count_weighted_units(i);
+        rank[i] = population_points(i);
         if (i == player) {
             draw_string(msgtext, 104, y, 15);
         }

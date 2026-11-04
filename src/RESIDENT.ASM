@@ -210,7 +210,7 @@ _mouse_hide_limit LABEL BYTE
 ORG 0002H
 _selected_stack_index LABEL BYTE
 ORG 0004H
-_group_total LABEL BYTE
+_stack_total LABEL BYTE
 ORG 0006H
 _selected_score LABEL BYTE
 ORG 0008H
@@ -256,11 +256,11 @@ _path_cache_y LABEL BYTE
 ORG 026CH
 _bios_regs LABEL BYTE
 ORG 0284H
-_table2 LABEL BYTE
+_sound_choices LABEL BYTE
 ORG 02A9H
-_table3 LABEL BYTE
+_custom_sounds LABEL BYTE
 ORG 02B2H
-_table1 LABEL BYTE
+_gfx_choices LABEL BYTE
 ORG 02BAH
 _shown_face LABEL BYTE
 ORG 02BCH
@@ -390,9 +390,9 @@ PUBLIC _hilite_colour
 PUBLIC _line_count
 PUBLIC _line_off
 PUBLIC _bios_regs
-PUBLIC _table1
-PUBLIC _table2
-PUBLIC _table3
+PUBLIC _gfx_choices
+PUBLIC _sound_choices
+PUBLIC _custom_sounds
 PUBLIC _edit_cursor
 PUBLIC _edit_cursor_w
 PUBLIC _edit_cursor_x
@@ -465,7 +465,7 @@ PUBLIC _story_file
 PUBLIC _story_line
 PUBLIC _story_skip
 PUBLIC _story_wait
-PUBLIC _group_total
+PUBLIC _stack_total
 PUBLIC _selected_score
 PUBLIC _selected_stack_index
 PUBLIC _total_limit

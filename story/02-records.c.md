@@ -38,8 +38,8 @@ eight two-bit specialist types.
 indices. The two `garrison` bytes store unit types and veteran flags for
 units packed into the city record. Empty route and garrison slots use `-1`.
 
-`name_id` is stored as a `char`, with explicit unsigned casts when used
-as an index. Those casts matter on a compiler with signed plain characters.
+`name_id` is an unsigned byte because it indexes a table of 256 names. Under
+this compiler's signed plain `char`, the higher indices would turn negative.
 
 `buildings` is a bit mask stored in a `long`. The masks below identify a
 palace, city walls and SDI defence. Battle code can test a particular
