@@ -1,37 +1,37 @@
 # Unit and Terrain IDs
 
-Unit IDs follow `utypes` table order. These names are source display strings, not proposed enum declarations.
+Unit IDs follow `utypes` table order. `CIV.H` defines `UTYPE_*` macros for each unit type.
 
-| ID | Unit |
-| --- | --- |
-| 0 | Settlers |
-| 1 | Militia |
-| 2 | Phalanx |
-| 3 | Legion |
-| 4 | Musketeers |
-| 5 | Riflemen |
-| 6 | Cavalry |
-| 7 | Knights |
-| 8 | Catapult |
-| 9 | Cannon |
-| 10 | Chariot |
-| 11 | Armor |
-| 12 | Mech. Inf. |
-| 13 | Artillery |
-| 14 | Fighter |
-| 15 | Bomber |
-| 16 | Trireme |
-| 17 | Sail |
-| 18 | Frigate |
-| 19 | Ironclad |
-| 20 | Cruiser |
-| 21 | Battleship |
-| 22 | Submarine |
-| 23 | Carrier |
-| 24 | Transport |
-| 25 | Nuclear |
-| 26 | Diplomat |
-| 27 | Caravan |
+| ID | Macro | Unit |
+|:--:|:------|:-----|
+| 0 | `UTYPE_SETTLERS` | Settlers |
+| 1 | `UTYPE_MILITIA` | Militia |
+| 2 | `UTYPE_PHALANX` | Phalanx |
+| 3 | `UTYPE_LEGION` | Legion |
+| 4 | `UTYPE_MUSKETEERS` | Musketeers |
+| 5 | `UTYPE_RIFLEMEN` | Riflemen |
+| 6 | `UTYPE_CAVALRY` | Cavalry |
+| 7 | `UTYPE_KNIGHTS` | Knights |
+| 8 | `UTYPE_CATAPULT` | Catapult |
+| 9 | `UTYPE_CANNON` | Cannon |
+| 10 | `UTYPE_CHARIOT` | Chariot |
+| 11 | `UTYPE_ARMOR` | Armor |
+| 12 | `UTYPE_MECH_INF` | Mech. Inf. |
+| 13 | `UTYPE_ARTILLERY` | Artillery |
+| 14 | `UTYPE_FIGHTER` | Fighter |
+| 15 | `UTYPE_BOMBER` | Bomber |
+| 16 | `UTYPE_TRIREME` | Trireme |
+| 17 | `UTYPE_SAIL` | Sail |
+| 18 | `UTYPE_FRIGATE` | Frigate |
+| 19 | `UTYPE_IRONCLAD` | Ironclad |
+| 20 | `UTYPE_CRUISER` | Cruiser |
+| 21 | `UTYPE_BATTLESHIP` | Battleship |
+| 22 | `UTYPE_SUBMARINE` | Submarine |
+| 23 | `UTYPE_CARRIER` | Carrier |
+| 24 | `UTYPE_TRANSPORT` | Transport |
+| 25 | `UTYPE_NUCLEAR` | Nuclear |
+| 26 | `UTYPE_DIPLOMAT` | Diplomat |
+| 27 | `UTYPE_CARAVAN` | Caravan |
 
 Terrain IDs follow `terrains` table order.
 

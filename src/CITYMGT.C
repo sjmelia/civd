@@ -288,7 +288,7 @@ label_render_restart:
         if (townbuf[city].food_box < 0) {
             scratch_i = -1;
             for (index_i = 0; index_i < 128; index_i++) {
-                if (armydata[selected_owner][index_i].type == 0 && armydata[selected_owner][index_i].home_city == city) {
+                if (armydata[selected_owner][index_i].type == UTYPE_SETTLERS && armydata[selected_owner][index_i].home_city == city) {
                     scratch_i = index_i;
                     break;
                 }
@@ -350,7 +350,7 @@ label_render_restart:
     for (index_i = 0; index_i < 128; index_i++) {
         if (armydata[selected_owner][index_i].type != -1) {
             if (armydata[selected_owner][index_i].home_city == city) {
-                if (armydata[selected_owner][index_i].type < 26) {
+                if (armydata[selected_owner][index_i].type < UTYPE_DIPLOMAT) {
                     if (townbuf[city].size < ++home_troops_maintained || (civ_gov[selected_owner] > 1 && (rule_options & 2))) {
                         city_keep++;
                     }
@@ -358,7 +358,7 @@ label_render_restart:
                         units_abroad++;
                     }
                 }
-                if (armydata[selected_owner][index_i].type == 0) {
+                if (armydata[selected_owner][index_i].type == UTYPE_SETTLERS) {
                     colonist_homed++;
                 }
             }
@@ -581,11 +581,11 @@ label_governor_done:
         /* Positive production IDs are units; negative IDs select improvements. */
         if (townbuf[city].production >= 0) {
             if (utypes[townbuf[city].production].cost * cost_scale <= townbuf[city].shield_box) {
-                if (townbuf[city].production == 0 && townbuf[city].size == 1 && cur_tier == 0)
+                if (townbuf[city].production == UTYPE_SETTLERS && townbuf[city].size == 1 && cur_tier == 0)
                     goto label_ai_buy;
                 townbuf[city].shield_box -= utypes[townbuf[city].production].cost * cost_scale;
                 unit = -1;
-                if (selected_owner == civnow || townbuf[city].production != 26)
+                if (selected_owner == civnow || townbuf[city].production != UTYPE_DIPLOMAT)
                     unit = create_unit(selected_owner, townbuf[city].production, townbuf[city].x, townbuf[city].y);
                 if (!(advance_owners[townbuf[city].production] & 8)) {
                     post_event(6, 2, selected_owner, townbuf[city].production);
@@ -593,7 +593,7 @@ label_governor_done:
                 }
                 if ((townbuf[city].buildings & HAS_BARRACKS) && unit != -1)
                     armydata[selected_owner][unit].status |= UNIT_VETERAN;
-                if (unit != -1 && townbuf[city].production == 0) {
+                if (unit != -1 && townbuf[city].production == UTYPE_SETTLERS) {
                     if (townbuf[city].size > 1 || city_count[selected_owner] > 1) {
                         if (--townbuf[city].size == 0) {
                             vanish(city, townbuf[city].x, townbuf[city].y);
@@ -605,7 +605,7 @@ label_governor_done:
                     }
                 }
                 if (selected_owner != civnow) {
-                    if (townbuf[city].production == 27) {
+                    if (townbuf[city].production == UTYPE_CARAVAN) {
                         ai_result_i = best_idx_o = -1;
                         for (city_index = 0; city_index < 128; city_index++) {
                             if (townbuf[city_index].owner != selected_owner && townbuf[city_index].status != -1 && townbuf[city_index].owner != civnow && townbuf[city_index].trade > ai_result_i) {
@@ -616,7 +616,7 @@ label_governor_done:
                         rpath(selected_owner, unit, best_idx_o);
                     }
                     /* AI diplomats are placed by an existing unit near a human city. */
-                    if (townbuf[city].production == 26) {
+                    if (townbuf[city].production == UTYPE_DIPLOMAT) {
                         best_idx_o = -1;
                         ai_result_i = 32767;
                         choice_f = 0;
@@ -639,7 +639,7 @@ label_governor_done:
                             }
                         }
                         if (ai_result_i <= 3 && !(treaties[selected_owner][civnow] & 2)) {
-                            unit = create_unit(selected_owner, 26, armydata[selected_owner][best_idx_o].x, armydata[selected_owner][best_idx_o].y);
+                            unit = create_unit(selected_owner, UTYPE_DIPLOMAT, armydata[selected_owner][best_idx_o].x, armydata[selected_owner][best_idx_o].y);
                             if (unit != -1) {
                                 armydata[selected_owner][unit].goto_x = townbuf[dist_city_e].x;
                                 armydata[selected_owner][unit].goto_y = townbuf[dist_city_e].y;
@@ -648,12 +648,12 @@ label_governor_done:
                             townbuf[city].shield_box += utypes[townbuf[city].production].cost * cost_scale;
                         }
                     }
-                    if (townbuf[city].production == 25 && forces_present[selected_owner][25] == 1)
+                    if (townbuf[city].production == UTYPE_NUCLEAR && forces_present[selected_owner][UTYPE_NUCLEAR] == 1)
                         last_met_turn[civnow] = -1;
                     city_retarget(city);
                 } else {
                     townbuf[city].shield_box = 0;
-                    if (unit != -1 && (townbuf[city].production == 0 || townbuf[city].production >= 26)) {
+                    if (unit != -1 && (townbuf[city].production == UTYPE_SETTLERS || townbuf[city].production >= UTYPE_DIPLOMAT)) {
                         show_city_display = 1;
                         msgtext[0] = 0;
                         append_place_name(city);
@@ -1018,7 +1018,7 @@ label_support_restart:
     unit_y_i = 116;
     for (index_i = 0; index_i < 128; index_i++) {
         if (armydata[selected_owner][index_i].type != -1 && armydata[selected_owner][index_i].home_city == city) {
-            if (armydata[selected_owner][index_i].type < 26) {
+            if (armydata[selected_owner][index_i].type < UTYPE_DIPLOMAT) {
                 if (townbuf[city].size < ++home_troops_maintained || (civ_gov[selected_owner] > 1 && (rule_options & 2)))
                     city_keep++;
             }
@@ -1026,7 +1026,7 @@ label_support_restart:
                 if (town_res_sums[1] < city_keep || ((townbuf[city].status & CITY_DISORDER) && ((index_i + turn_tick) & 7) == 0 && selected_owner != civnow && civ_gov[selected_owner] >= 4)) {
                     ai_result_i = best_idx_o = -1;
                     for (choice_f = 0; choice_f < 128; choice_f++) {
-                        if (armydata[selected_owner][choice_f].type != -1 && armydata[selected_owner][choice_f].home_city == city && armydata[selected_owner][choice_f].type < 26) {
+                        if (armydata[selected_owner][choice_f].type != -1 && armydata[selected_owner][choice_f].home_city == city && armydata[selected_owner][choice_f].type < UTYPE_DIPLOMAT) {
                             distance_f = map_dist(townbuf[city].x, armydata[selected_owner][choice_f].x, townbuf[city].y, armydata[selected_owner][choice_f].y);
                             if (distance_f > ai_result_i) {
                                 ai_result_i = distance_f;
@@ -1037,7 +1037,7 @@ label_support_restart:
                     if (town_res_sums[1] >= city_keep) {
                         if (gangmode != 0 && tech_count[selected_owner] < tech_count[civnow]) {
                             margin_democracy = -999;
-                        } else if (ai_result_i > 0 && utypes[armydata[selected_owner][best_idx_o].type].domain == 0 && armydata[selected_owner][best_idx_o].type != 0) {
+                        } else if (ai_result_i > 0 && utypes[armydata[selected_owner][best_idx_o].type].domain == 0 && armydata[selected_owner][best_idx_o].type != UTYPE_SETTLERS) {
                             drop_u_stack(selected_owner, best_idx_o);
                             townbuf[city].status &= ~CITY_DISORDER;
                         }
@@ -1057,10 +1057,10 @@ label_support_restart:
                 }
             }
             if (mode == 1L) {
-                if (armydata[selected_owner][index_i].type < 26) {
+                if (armydata[selected_owner][index_i].type < UTYPE_DIPLOMAT) {
                     if (city_keep != 0)
                         label_with_style(9, draw_x_l + 8, draw_y_k + 12);
-                    if (armydata[selected_owner][index_i].type == 0) {
+                    if (armydata[selected_owner][index_i].type == UTYPE_SETTLERS) {
                         label_with_style(8, draw_x_l, draw_y_k + 12);
                         if (civ_gov[selected_owner] >= 2)
                             label_with_style(8, draw_x_l + 2, draw_y_k + 12);

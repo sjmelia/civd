@@ -151,11 +151,11 @@ next_radius:
                 diplomacy_event(owner, fight_enemy, x, y);
                 if (!(treaty_low(owner, fight_enemy) & 2)) {
                     c = 1;
-                    if (fight_enemy != 0 && armydata[fight_enemy][a].type != 26 && (!(armydata[fight_enemy][a].status & UNIT_FORTIFIED) || utypes[armydata[fight_enemy][a].type].role != 2))
+                    if (fight_enemy != 0 && armydata[fight_enemy][a].type != UTYPE_DIPLOMAT && (!(armydata[fight_enemy][a].status & UNIT_FORTIFIED) || utypes[armydata[fight_enemy][a].type].role != 2))
                         c = 3;
                     add_target(owner, h, i, 1, c);
                 }
-                if (armydata[owner][index].type != 26) {
+                if (armydata[owner][index].type != UTYPE_DIPLOMAT) {
                     if (owner != 0)
                         add_target(fight_enemy, x, y, 2, 2);
                     else
@@ -180,7 +180,7 @@ next_radius:
         if ((utypes[armydata[owner][index].type].sight & 2) && (utypes[armydata[owner][index].type].domain != 2 || terrain_at(h, i) == 10)) {
             if (owner != 0)
                 civ_vis_grid[h][i] |= (char) (1 << owner);
-            if (a != -1 && owner != fight_enemy && armydata[fight_enemy][a].type != 22) {
+            if (a != -1 && owner != fight_enemy && armydata[fight_enemy][a].type != UTYPE_SUBMARINE) {
                 if (!(k & 1))
                     armydata[fight_enemy][a].visibility |= 1 << owner;
                 if (terrain_at(h, i) == 10 && fight_enemy != 0 && !(treaty_low(owner, fight_enemy) & 2))
@@ -191,7 +191,7 @@ next_radius:
                 map_claim(h + 240, i, help_probe(2, h, i) == 1 ? 1 : 2, 2);
             }
         }
-        if (a != -1 && owner != fight_enemy && armydata[owner][index].type != 22) {
+        if (a != -1 && owner != fight_enemy && armydata[owner][index].type != UTYPE_SUBMARINE) {
             b = armydata[fight_enemy][a].type;
             if ((utypes[b].sight & 2) && (utypes[b].domain != 2 || terrain_at(x, y) == 10)) {
                 armydata[fight_enemy][a].status &= ~UNIT_SENTRY;
@@ -682,7 +682,7 @@ gold:
             c = armydata[owner][index].x + spiral_x[h];
             e = armydata[owner][index].y + spiral_y[h];
             if (map_owner(c, e) == -1 && !(map_flags(c, e) & 1) && terrain_at(c, e) != 10) {
-                b = (signed char) terrains[terrain_at(c, e)].move_cost > 2 ? 3 : 6;
+                b = (signed char) terrains[terrain_at(c, e)].move_cost > 2 ? UTYPE_LEGION : UTYPE_CAVALRY;
                 armydata[0][create_unit(0, b, c, e)].visibility |= 1 << owner;
                 if (owner == civnow)
                     map_note(c, e);
@@ -694,7 +694,7 @@ mercenaries:
         strcpy(msgtext, "You have discovered\na friendly tribe of\nskilled mercenaries.\n");
         if (owner == civnow)
             show_msg(msgtext, 100, 80);
-        create_unit(owner, rand_scaled(2) ? 3 : 6, armydata[owner][index].x, armydata[owner][index].y, 1);
+        create_unit(owner, rand_scaled(2) ? UTYPE_LEGION : UTYPE_CAVALRY, armydata[owner][index].x, armydata[owner][index].y, 1);
         if (owner == civnow)
             map_note(armydata[owner][index].x, armydata[owner][index].y);
         break;
@@ -869,7 +869,7 @@ int near_base(int owner, int index)
     }
     d = 0;
     do {
-        if (armydata[owner][d].type != 23)
+        if (armydata[owner][d].type != UTYPE_CARRIER)
             goto unit_next;
         {
             e = abs(armydata[owner][index].x - armydata[owner][d].x);

@@ -333,14 +333,14 @@ void uprising(void)
             y = rand_scaled(44) + 3;
         } while (terrain_at(x, y) != 10 || map_owner(x, y) != -1 || map_region(x, y) < 16);
         count = clamp(turn_tick / 150 + 1, 1, 3);
-        create_unit(0, count < 3 ? 17 : 18, x, y);
+        create_unit(0, count < 3 ? UTYPE_SAIL : UTYPE_FRIGATE, x, y);
         for (i = 0; i <= count; i++) {
             if (!(advance_owners[56] & 7))
-                t = 3;
+                t = UTYPE_LEGION;
             else
-                t = 7;
+                t = UTYPE_KNIGHTS;
             if (i == count)
-                t = 26;
+                t = UTYPE_DIPLOMAT;
             dx = create_unit(0, t, x, y);
             armydata[0][dx].status |= UNIT_SENTRY;
         }
@@ -372,11 +372,11 @@ void uprising(void)
     count = clamp(rand_scaled(townbuf[i].size / 2), 2, 99);
     for (k = 0; k <= count; k++) {
         if (advance_owners[35] & 7)
-            t = (k & 4) ? 9 : 4;
+            t = (k & 4) ? UTYPE_CANNON : UTYPE_MUSKETEERS;
         else
-            t = (k & 4) ? 10 : 6;
+            t = (k & 4) ? UTYPE_CHARIOT : UTYPE_CAVALRY;
         if (k == count)
-            t = 26;
+            t = UTYPE_DIPLOMAT;
         armydata[0][create_unit(0, t, x, y)].visibility |= civ_vis_grid[x][y];
         if (townbuf[i].owner == civnow)
             map_note(x, y);

@@ -110,12 +110,12 @@ int city_create(int player, int unused, int x, int y, int size)
         townbuf[city].size = size;
         townbuf[city].workers = townbuf[city].visible_size = 0;
         townbuf[city].buildings = townbuf[city].shield_box = townbuf[city].food_box = townbuf[city].trade = 0;
-        townbuf[city].production = 1;
+        townbuf[city].production = UTYPE_MILITIA;
         if (has_tech(player, 34)) {
-            townbuf[city].production = 4;
+            townbuf[city].production = UTYPE_MUSKETEERS;
         }
         if (has_tech(player, 64)) {
-            townbuf[city].production = 5;
+            townbuf[city].production = UTYPE_RIFLEMEN;
         }
         townbuf[city].garrison[0] = townbuf[city].garrison[1] = -1;
 
