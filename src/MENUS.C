@@ -59,16 +59,16 @@ void cmd_menu(int x, int y, int sel)
 
 void game_menu_a(void)
 {
-    int choice_h, unused_a_o, unused_b_m;
+    int choice, unused_a_o, unused_b_m;
 
     if (!turn_tick)
         dialog_dim = 0x10;
     strcpy(msgtext, " Tax Rate\n Luxuries Rate\n FindCity\n Options\n Save Game\n REVOLUTION!\n \n Retire\n QUIT to DOS\n");
     if (game_flags & 0x100)
         strcat(msgtext, " View Replay\n");
-    choice_h = menu_choose(msgtext, 0x10, 8);
+    choice = menu_choose(msgtext, 0x10, 8);
     repaint();
-    switch (choice_h) {
+    switch (choice) {
     case 5:
         cmd_code = -2;
         break;
@@ -85,12 +85,12 @@ void game_menu_a(void)
         strcpy(msgtext, "Options:\n Instant Advice\n AutoSave\n End of Turn\n Animations\n Sound\n Enemy Moves\n Civilopedia Text\n Palace\n");
         do {
             marked_mask = debug;
-            choice_h = menu_choose(msgtext, 0x18, 0x10);
-            if (choice_h != -1 && !edit_mode)
-                debug ^= 1 << choice_h;
-            if (choice_h != -1)
-                editing = choice_h;
-        } while (choice_h != -1 || edit_mode);
+            choice = menu_choose(msgtext, 0x18, 0x10);
+            if (choice != -1 && !edit_mode)
+                debug ^= 1 << choice;
+            if (choice != -1)
+                editing = choice;
+        } while (choice != -1 || edit_mode);
         break;
     case 4:
         cmd_code = 0x53;
@@ -215,16 +215,16 @@ void unit_orders_menu(int p, int u)
 
 void advisor_menu(void)
 {
-    int unused_word_c, choice_h;
+    int unused_word_c, choice;
 
     strcpy(msgtext, " City Status (F1)\n Military Advisor (F2)\n Intelligence Advisor (F3)\n Attitude Advisor (F4)\n");
     strcat(msgtext, " Trade Advisor (F5)\n Science Advisor (F6)\n");
-    choice_h = menu_choose(msgtext, 0x70, 8);
+    choice = menu_choose(msgtext, 0x70, 8);
     mouse_off();
     menu_end();
     mouse_on();
     menu_result = -1;
-    switch (choice_h) {
+    switch (choice) {
     case 4:
         trade_rpt(civnow);
         break;
@@ -251,18 +251,18 @@ void advisor_menu(void)
 
 void world_menu(void)
 {
-    int unused_word_c, choice_h;
+    int unused_word_c, choice;
 
     if (!(game_flags & 0xfe00))
         dialog_dim = 0x20;
     strcpy(msgtext, " Wonders of the World (F7)\n Top 5 Cities (F8)\n Civilization Score (F9)\n");
     strcat(msgtext, " World Map (F10)\n Demographics\n SpaceShips\n");
-    choice_h = menu_choose(msgtext, 0x90, 8);
+    choice = menu_choose(msgtext, 0x90, 8);
     mouse_off();
     menu_end();
     mouse_on();
     menu_result = -1;
-    switch (choice_h) {
+    switch (choice) {
     case 0:
         wonders();
         break;
@@ -286,13 +286,13 @@ void world_menu(void)
 
 void civilopedia_menu(void)
 {
-    int choice_h;
+    int choice;
 
     strcpy(msgtext, " Complete\n Civilization Advances\n City Improvements\n Military Units\n Terrain Types\n");
     strcat(msgtext, " Miscellaneous\n");
-    choice_h = menu_choose(msgtext, 0xb6, 8);
-    if (choice_h != -1) {
-        civilopedia(0, choice_h - 1);
+    choice = menu_choose(msgtext, 0xb6, 8);
+    if (choice != -1) {
+        civilopedia(0, choice - 1);
         menu_result = -1;
     } else
         menu_result = 1;

@@ -32,14 +32,14 @@ char *advisor_title[] = {
     "Domestic Advisor:", "Foreign Minister:", "Science Advisor:"
 };
 
-int menu_choose(char *text_m, int x_k, int y_k)
+int menu_choose(char *text, int x, int y)
 {
-    return menu_core(text_m, x_k, y_k, 0);
+    return menu_core(text, x, y, 0);
 }
 
-int menu_dialog(char *text_m, int x_k, int y_k)
+int menu_dialog(char *text, int x, int y)
 {
-    return menu_core(text_m, x_k, y_k, 1);
+    return menu_core(text, x, y, 1);
 }
 
 /* Non-prototype ABI calls below; NOLINTBEGIN(clang-diagnostic-deprecated-non-prototype) */
